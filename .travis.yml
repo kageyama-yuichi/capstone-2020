@@ -1,0 +1,12 @@
+sudo: required
+version: '2.7'
+services:
+- docker
+language: java
+node_js:
+- stable
+git:
+  quiet: true
+branches:
+  only:
+  - master
