@@ -1,0 +1,42 @@
+{
+  "name": "l8z-app",
+  "version": "2.0.1",
+  "private": true,
+  "dependencies": {
+    "axios": "^0.18.1",
+    "bootstrap": "^4.3.1",
+    "formik": "^1.5.1",
+    "moment": "^2.24.0",
+    "node": "^12.7.0",
+    "react": "^16.10.1",
+    "react-dom": "^16.10.1",
+    "react-router-dom": "^4.3.1",
+    "react-scripts": "^3.1.1",
+    "react-stomp": "^4.1.1",
+    "react-talk": "^1.0.0",
+    "reactstrap": "^8.0.1",
+    "stomp": "^0.1.1",
+    "stompjs": "^2.3.3"
+  },
+  "scripts": {
+    "start": "set PORT=6942 && react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
+  "devDependencies": {
+    "cross-env": "^5.2.0",
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-react-16": "^1.14.0",
+    "react-addons-test-utils": "^15.6.2"
+  }
+}

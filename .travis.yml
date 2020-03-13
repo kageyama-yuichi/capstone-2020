@@ -10,3 +10,8 @@ git:
 branches:
   only:
   - master
+script:
+# Enter Scripts Here
+- cd backend/
+notifications:
+  email: false
