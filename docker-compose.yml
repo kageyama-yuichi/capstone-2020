@@ -1,1 +1,37 @@
-# N/A
+# Docker Compose file Reference (https://docs.docker.com/compose/compose-file/)
+
+version: '3.0'
+
+# Define Services
+services:
+ app-server:
+  build:
+   context: backend
+   dockerfile: Dockerfile
+  environment:
+   API_HOST: ${API_HOST}
+   SERVER_PORT: ${SERVER_PORT}
+  ports:
+   - ${SERVER_PORT}:${SERVER_PORT}
+  restart: always
+  #depends_on:
+  # - db
+  networks:
+   - backend
+   - frontend
+ app-client:
+  build:
+   context: frontend
+   dockerfile: Dockerfile
+  environment:
+   - ${CLIENT_PORT}=${CLIENT_PORT}
+  ports:
+   - "6942:80"
+  restart: always
+  depends_on:
+   - app-server
+  networks:
+   - frontend
+networks:
+ backend:
+ frontend:
