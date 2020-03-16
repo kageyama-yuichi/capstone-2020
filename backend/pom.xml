@@ -10,8 +10,9 @@
 	</parent>
 	<groupId>com</groupId>
 	<artifactId>l8z</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<name>l8z</name>
+	<packaging>jar</packaging>
 	<description>Chat System</description>
 
 	<properties>
@@ -35,7 +36,27 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+			<version>2.1.4.RELEASE</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+			<version>1.4.199</version>
+		</dependency>
+		<!--
+		<dependency>
+            <groupId>mysql</groupId>
+       		<artifactId>mysql-connector-java</artifactId>
+       	</dependency>
+		-->
 	</dependencies>
+	
 
 	<build>
 		<plugins>
