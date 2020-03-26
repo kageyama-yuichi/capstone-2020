@@ -1,10 +1,46 @@
 :root {
-    font-size: 16px;
-    font-family: 'Segoe UI';
+    cursor: default;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     --text-primary: #707070;
     --text-secondary: #083B66;
     --bg-primary: #DB504A;
     --bg-secondary: #06233B;
     --bg-tertiary: #247BA0;
+    color: var(--text-primary);
+    height: 100%;
+    width: 100%;
 }
 
+/* To override user agent stylesheet */
+* {
+    margin:0px;
+    height: inherit;
+    width: inherit;
+}
+
+
+@font-face {
+    font-family: "Segoe UI";
+    font-weight: 200;
+    src: local("Segoe UI Light"), local("Segoe UI");
+}
+@font-face {
+    font-family: "Segoe UI";
+    font-weight: 300;
+    src: local("Segoe UI Semilight"), local("Segoe UI");
+}
+@font-face {
+    font-family: "Segoe UI";
+    font-weight: 400;
+    src: local("Segoe UI"), local("Segoe UI");
+}
+@font-face {
+    font-family: "Segoe UI";
+    font-weight: 600;
+    src: local("Segoe UI Semibold"), local("Segoe UI");
+}
+@font-face {
+    font-family: "Segoe UI";
+    font-weight: 700;
+    src: local("Segoe UI Bold"), local("Segoe UI");
+}
