@@ -1,0 +1,14 @@
+.footer{
+    position: absolute;
+    bottom: 0px;
+    height: 30px;
+    background-color: var(--bg-secondary);
+    color: white;
+    text-align: center;
+    padding: auto;
+    margin: auto;
+}
+.footer span{
+    margin-top: 50%;
+    height:fit-content;
+}

@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { Nav, NavItem, NavLink } from "reactstrap";
 import "./LandingComponent.css";
+import FooterComponent from '../Footer/FooterComponent.jsx'
+
 import logoSVG from "../../assests/Logo_v4.svg";
 
 class LandingComponent extends Component {
@@ -47,7 +49,8 @@ class LandingComponent extends Component {
 									New user? <a>Create a new account</a>
 								</p>
 							</div>
-						</div>
+                        </div>
+                        <FooterComponent/> 
 					</div>
 					<div className="info-container">
 						<p className="motto">THIS MOTTO.</p>
