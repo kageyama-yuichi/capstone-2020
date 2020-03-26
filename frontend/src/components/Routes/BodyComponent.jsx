@@ -12,12 +12,12 @@ class BodyComponent extends Component {
             <div className="BodyComponent">
                 <Router>
                     <>
-                        <HeaderComponent/>
+                        {/* <HeaderComponent/> */}
                         <Switch>
-                            <Route path="/" exact component={LandingComponent}/>
+                            <Route path="/" exact component={LandingComponent} />
                             <Route component={ErrorComponent}/>
                         </Switch>
-                        <FooterComponent/>
+                        {/* <FooterComponent/> */}
                     </>
                 </Router>
             </div>

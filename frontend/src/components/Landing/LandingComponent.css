@@ -1,0 +1,188 @@
+.home-page{
+    background-image:  url("../../assests/Login\ Screen.jpg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    overflow: hidden;
+
+}
+
+.login-container{
+    width: 800px;
+    height: 100%;
+    background-color: white;
+}
+.logo-container{
+    position: absolute;
+    height:20%;
+    top: 5%;
+    
+}
+.logo{
+    height: 100%;
+    width: 100%;
+    vertical-align: middle;
+    align-items: center;
+}
+.login-form{
+    position: relative;
+    top:30%;
+    width: 70%;
+    height: fit-content;
+    margin: auto;
+    text-align: center;
+}
+
+.login-title{
+    position: relative;
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--bg-secondary);
+}
+
+.input-container{
+    width:100%;
+    height: auto; 
+    margin:auto;
+    margin-top: 20px;
+}
+
+.password-reset{
+    width:fit-content;
+    text-align: right;
+    font-size: 15px;
+    margin-left: auto;
+    color: var(--text-secondary);
+}
+
+.password-reset:hover{
+    text-decoration: underline;
+}
+
+.login-button{
+    height: fit-content;
+    width: fit-content;
+    text-align: center;
+    margin: 20px 0px;
+    padding: 20px 70px;
+    background-color: var(--bg-primary);
+    color: white;
+    font-weight: 700;
+    font-size: 20px;
+}
+
+.login-button:hover{
+    border: 1px solid white;
+    padding: 19.5px 70px;
+}
+
+.register-container{
+    top:35%;
+    position:relative;
+    height: fit-content;
+    width: 70%;
+    margin:auto;
+}
+
+.or{
+    text-align: center;
+    margin:auto;
+    z-index: 1;
+    background-color: white;
+    width: fit-content;
+    padding: 0px 5px;
+}
+
+.create-account-container{
+    padding: 30px;
+    margin: auto;
+}
+
+.create-account-container p{
+    text-align: center;
+    margin:auto;
+    word-wrap: normal;
+    white-space: nowrap;
+}
+
+.create-account-container a{
+    color: var(--text-secondary);
+}
+
+.create-account-container a:hover{
+    text-decoration: underline;
+}
+
+
+.info-container{
+    height: 100%;
+    width: 60%;
+    position: absolute;
+    left: 800px;
+    top: 0px;
+    color: white;
+    
+}
+
+.motto{
+    margin-top: 10%;
+    margin-left: 10%;
+    margin-right: 0px;
+    font-weight: 700;
+    font-size: 100px;
+    width: 100px;
+    height: fit-content;
+}
+
+.more-motto{
+    position: relative;
+    width: 40%;
+    margin-left: 10%;
+    font-weight: 700;
+    font-size: 25px;
+
+}
+
+
+
+hr{
+    width: 100%;
+    
+    top: 15px;
+    position: absolute;
+}
+
+input{
+    font-size: 20px;
+    font-weight: 300;
+    white-space: nowrap;
+    height: 1em;
+    text-align: left;
+    width: 100%;
+    margin-top: 0px;
+    margin-bottom: 15px;
+    border-style: none none solid;
+    border-width: 1px;
+    outline: none;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+input:focus{
+    outline:none;
+}
+
+a, p, h1{
+    height: auto;
+    position: relative;
+    font-size: 20px;
+    font-weight: 300;
+    text-align: left;
+}
+
+p{
+    text-align: left;
+}
+
+
+
