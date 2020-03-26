@@ -1,0 +1,10 @@
+:root {
+    font-size: 16px;
+    font-family: 'Segoe UI';
+    --text-primary: #707070;
+    --text-secondary: #083B66;
+    --bg-primary: #DB504A;
+    --bg-secondary: #06233B;
+    --bg-tertiary: #247BA0;
+}
+
