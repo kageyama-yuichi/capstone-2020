@@ -11,7 +11,8 @@ class RegisterComponent extends Component {
 			<div>
 				<div className="bg" onClick={this.props.handler}></div>
 
-				<div className="popup">
+				<div className="overlay">
+					<button className="exit-button" onClick={this.props.handler}>X</button>
 					<div className="info-text">
 						<h1>Get started with your L8Z account</h1>
 						<h2>
@@ -22,25 +23,50 @@ class RegisterComponent extends Component {
 					</div>
 					<form className="signup-form">
 						<div className="input-container">
-							<p>Full name</p>
-							<input type="text" className="name-field"></input>
-                        </div>
-                        <div className="input-container">
-							<p>Email</p>
-							<input type="email" className="email-field"></input>
-                        </div>
-                        <div className="input-container">
-							<p>Username</p>
-							<input type="text" className="username-field"></input>
-                        </div>
-                        <div className="input-container">
-							<p>Password</p>
-							<input type="text" className="password-field"></input>
-                        </div>
-                        <div className="input-container">
-							<p>Address</p>
-							<input type="text" className="name-field"></input>
+							<input
+								type="text"
+								className="name-field"
+								placeholder="Full name"
+							></input>
 						</div>
+						<div className="input-container">
+							<input
+								type="email"
+								className="email-field"
+								placeholder="Email"
+							></input>
+						</div>
+
+						<div className="input-container">
+							<input
+								type="text"
+								className="address-field"
+								placeholder="Address"
+							></input>
+						</div>
+
+						<div className="input-container">
+							<input
+								type="text"
+								className="username-field"
+								placeholder="Username"
+							></input>
+							<input
+								type="text"
+								className="password-field"
+								placeholder="Password"
+							></input>
+						</div>
+						<p className="pass-info">
+							Password must use 8 or more characters with a mix of
+							letters, numbers and symbols
+						</p>
+						<input
+							type="button"
+							formAction="submit"
+							className="signup-button"
+							value="SIGN UP"
+						></input>
 					</form>
 				</div>
 			</div>
