@@ -1,0 +1,55 @@
+.bg{
+    background-color: rgba(255, 255, 255, .9);
+    height:100%;
+    width:100%;
+    position: absolute;
+    top: 0;
+    z-index: 2;
+}
+@supports ((-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))) {
+    .bg {
+      background-color: rgba(255, 255, 255, .1);
+      -webkit-backdrop-filter: blur(1em);
+      backdrop-filter: blur(1em);
+    }
+}
+
+.popup{
+    top: 50%;
+    left: 50%;
+    display: block;
+    height: 700px;
+    width:700px;
+    margin: -350px -350px;
+    background-color: white;
+    position: fixed;
+    z-index: 5;
+    border: 3px solid lightgrey;
+}
+
+.info-text{
+    width: 70%;
+    margin: auto;
+    margin-top: 50px;
+    height:fit-content;
+}
+
+.info-text h1{
+    font-weight: 600;
+
+}
+
+.info-text h2{
+    font-weight: 300;
+    font-size: 15px;
+    width: 100%;
+}
+
+.signup-form{
+    width:70%;
+    margin: auto;
+}
+
+.signup-form .input-container{
+    margin: 5px auto;
+}
