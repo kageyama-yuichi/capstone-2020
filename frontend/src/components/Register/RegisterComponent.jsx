@@ -8,7 +8,7 @@ class RegisterComponent extends Component {
 
 	render() {
 		return (
-			<div>
+			<div className="wrapper">
 				<div className="bg" onClick={this.props.handler}></div>
 
 				<div className="overlay">
