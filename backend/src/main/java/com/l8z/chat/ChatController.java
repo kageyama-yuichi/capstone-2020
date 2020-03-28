@@ -2,28 +2,50 @@ package com.l8z.chat;
 //Sourced from: https://www.callicoder.com/spring-boot-websocket-chat-example/
 
 import com.l8z.chat.ChatMessage; // Importing our ChatMessage class
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 @Controller
 public class ChatController {
-	// 
-    @MessageMapping("/chat.send_message")
+	// Group Chatting
+    @MessageMapping("/send_message")
     @SendTo("/topic/public")
-    public ChatMessage sendMessage(@Payload ChatMessage chatMessage) {
-        return chatMessage;
+    public ChatMessage sendMessage(@Payload ChatMessage chat_message) {
+        return chat_message;
     }
 
-    @MessageMapping("/chat.exisiting_user")
+    @MessageMapping("/exisiting_user")
     @SendTo("/topic/public")
-    public ChatMessage addUser(@Payload ChatMessage chatMessage, 
-                               SimpMessageHeaderAccessor headerAccessor) {
-        // Add username in web socket session
-        headerAccessor.getSessionAttributes().put("username", chatMessage.get_sender());
-        return chatMessage;
+    public ChatMessage addUser(@Payload ChatMessage chat_message, 
+                               SimpMessageHeaderAccessor header_accessor) {
+        // Add user in Web Socket Session
+    	header_accessor.getSessionAttributes().put("username", chat_message.get_sender());
+        return chat_message;
     }
+    
+    // Private Chatting
+    @Autowired
+	private SimpMessagingTemplate simp_messaging_template;
+
+	@MessageMapping("/send_private_message")
+	public void send_private_message(@Payload ChatMessage chat_message) {
+		simp_messaging_template.convertAndSendToUser(
+				chat_message.get_receiver().trim(), "/reply", chat_message); 
+	}
+
+	@MessageMapping("/add_private_user")
+	@SendTo("/queue/reply")
+	public ChatMessage add_private_user(@Payload ChatMessage chat_message,
+			SimpMessageHeaderAccessor header_accessor) {
+		// Add user in web socket session
+		header_accessor.getSessionAttributes().put("private-username", chat_message.get_sender());
+		return chat_message;
+	}
 
 }
