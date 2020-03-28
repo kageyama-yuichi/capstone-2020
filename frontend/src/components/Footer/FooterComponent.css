@@ -1,0 +1,10 @@
+.footer{
+    position: relative;
+    margin-top: -30px;
+    height: 30px;
+    background-color: var(--bg-secondary);
+    color: white;
+    text-align: center;
+    z-index: 2;
+    clear:both;
+}

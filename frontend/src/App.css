@@ -1,5 +1,5 @@
 :root {
-    cursor: default;
+    cursor:default;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     --text-primary: #707070;
     --text-secondary: #083B66;
@@ -18,6 +18,9 @@
     width: inherit;
 }
 
+a, button, input[type=button], input[type=submit]{
+    cursor: pointer;
+}
 
 @font-face {
     font-family: "Segoe UI";
