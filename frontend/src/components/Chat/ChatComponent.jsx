@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import SockJS from 'sockjs-client'
 import StompJS from 'stompjs'
+import { API_URL } from '../../Constants'
 
 var stomp_client = null;
 
@@ -27,7 +28,7 @@ class ChatComponent extends Component {
 		if (new_username) {
 			const Stomp = require('stompjs')
 			var SockJS = require('sockjs-client')
-			var socket = new SockJS('http://localhost:8080/chat')
+			var socket = new SockJS(API_URL+'/chat')
 			stomp_client = Stomp.over(socket);
 			console.log(stomp_client);
 			stomp_client.connect({}, this.on_connected, this.on_error);
