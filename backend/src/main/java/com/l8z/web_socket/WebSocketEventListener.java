@@ -32,10 +32,10 @@ public class WebSocketEventListener {
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         StompHeaderAccessor header_accessor = StompHeaderAccessor.wrap(event.getMessage());
-        logger.info("User DC?");
         String username = (String) header_accessor.getSessionAttributes().get("username");
         //String private_username = (String) header_accessor.getSessionAttributes().get("private-username");
-        
+        logger.info(username);
+
         // Group Users
         if(username != null) {
             logger.info("User Disconnected : " + username);

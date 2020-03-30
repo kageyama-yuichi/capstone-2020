@@ -16,13 +16,13 @@ public class ChatController {
 	// Group Chatting
     @MessageMapping("/send_message")
     @SendTo("http://localhost:6492/group/public")
-    public ChatMessage sendMessage(@Payload ChatMessage chat_message) {
+    public ChatMessage send_message(@Payload ChatMessage chat_message) {
         return chat_message;
     }
 
     @MessageMapping("/exisiting_user")
     @SendTo("http://localhost:6492/group/public")
-    public ChatMessage addUser(@Payload ChatMessage chat_message, 
+    public ChatMessage add_user(@Payload ChatMessage chat_message, 
                                SimpMessageHeaderAccessor header_accessor) {
         // Add user in Web Socket Session
     	header_accessor.getSessionAttributes().put("username", chat_message.get_sender());
