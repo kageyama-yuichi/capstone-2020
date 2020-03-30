@@ -32,9 +32,9 @@ public class WebSocketEventListener {
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         StompHeaderAccessor header_accessor = StompHeaderAccessor.wrap(event.getMessage());
-
+        logger.info("User DC?");
         String username = (String) header_accessor.getSessionAttributes().get("username");
-        String private_username = (String) header_accessor.getSessionAttributes().get("private-username");
+        //String private_username = (String) header_accessor.getSessionAttributes().get("private-username");
         
         // Group Users
         if(username != null) {
@@ -44,9 +44,10 @@ public class WebSocketEventListener {
             chat_dc.set_type(ChatMessage.MessageType.LEAVE);
             chat_dc.set_sender(username);
             // Send the Message
-            messaging_template.convertAndSend("/topic/public", chat_dc);
+            messaging_template.convertAndSend("/group/public", chat_dc);
         }
         
+        /*
         // Private User
         if(private_username != null) {
             logger.info("User Disconnected : " + private_username);
@@ -57,6 +58,7 @@ public class WebSocketEventListener {
 
             messaging_template.convertAndSend("/queue/reply", chat_dc);
         }
+        */
         
     }
 }

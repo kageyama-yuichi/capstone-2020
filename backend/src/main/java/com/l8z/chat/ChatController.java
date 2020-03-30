@@ -15,13 +15,13 @@ import org.springframework.stereotype.Controller;
 public class ChatController {
 	// Group Chatting
     @MessageMapping("/send_message")
-    @SendTo("/topic/public")
+    @SendTo("http://localhost:6492/group/public")
     public ChatMessage sendMessage(@Payload ChatMessage chat_message) {
         return chat_message;
     }
 
     @MessageMapping("/exisiting_user")
-    @SendTo("/topic/public")
+    @SendTo("http://localhost:6492/group/public")
     public ChatMessage addUser(@Payload ChatMessage chat_message, 
                                SimpMessageHeaderAccessor header_accessor) {
         // Add user in Web Socket Session
@@ -29,6 +29,7 @@ public class ChatController {
         return chat_message;
     }
     
+    /*
     // Private Chatting
     @Autowired
 	private SimpMessagingTemplate simp_messaging_template;
@@ -40,12 +41,12 @@ public class ChatController {
 	}
 
 	@MessageMapping("/add_private_user")
-	@SendTo("/queue/reply")
+	@SendTo("http://localhost:6492/queue/reply")
 	public ChatMessage add_private_user(@Payload ChatMessage chat_message,
 			SimpMessageHeaderAccessor header_accessor) {
 		// Add user in web socket session
 		header_accessor.getSessionAttributes().put("private-username", chat_message.get_sender());
 		return chat_message;
 	}
-
+	*/
 }
