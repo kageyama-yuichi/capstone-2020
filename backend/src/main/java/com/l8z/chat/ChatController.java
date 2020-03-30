@@ -1,6 +1,7 @@
 package com.l8z.chat;
 //Sourced from: https://www.callicoder.com/spring-boot-websocket-chat-example/
 
+import com.l8z.GlobalVariable;
 import com.l8z.chat.ChatMessage; // Importing our ChatMessage class
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,16 +16,16 @@ import org.springframework.stereotype.Controller;
 public class ChatController {
 	// Group Chatting
     @MessageMapping("/send_message")
-    //@SendTo("http://localhost:6492/group/public")
-    @SendTo("http://localhost:6492/chat")
+    //@SendTo(GlobalVariable.L8Z_URL+"/group/public")
+    @SendTo(GlobalVariable.L8Z_URL+"/chat")
     public ChatMessage send_message(@Payload ChatMessage chat_message) {
     	System.out.println("Hello - Send Message");
         return chat_message;
     }
 
     @MessageMapping("/existing_user")
-    //@SendTo("http://localhost:6492/group/public")
-    @SendTo("http://localhost:6492/chat")
+    //@SendTo(GlobalVariable.L8Z_URL+"/group/public")
+    @SendTo(GlobalVariable.L8Z_URL+"/chat")
     //public ChatMessage existing_user(@Payload ChatMessage chat_message,
     public ChatMessage existing_user(@Payload ChatMessage chat_message, 
                                SimpMessageHeaderAccessor header_accessor) {
@@ -49,7 +50,7 @@ public class ChatController {
 	}
 
 	@MessageMapping("/add_private_user")
-	@SendTo("http://localhost:6492/queue/reply")
+	@SendTo(GlobalVariable.L8Z_URL+"/queue/reply")
 	public ChatMessage add_private_user(@Payload ChatMessage chat_message,
 			SimpMessageHeaderAccessor header_accessor) {
 		// Add user in web socket session

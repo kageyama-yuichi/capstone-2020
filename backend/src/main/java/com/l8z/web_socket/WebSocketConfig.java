@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.*;
 
+import com.l8z.GlobalVariable;
+
 @Configuration
 @EnableWebSocketMessageBroker // Enables our WebSocket server
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
@@ -12,7 +14,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override // Clients will use to Connect
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // SockJS is used to enable fallback options for browsers that don’t support WebSocket
-    	registry.addEndpoint("/chat").setAllowedOrigins("http://localhost:6942").withSockJS();
+    	registry.addEndpoint("/chat").setAllowedOrigins(GlobalVariable.L8Z_URL).withSockJS();
         
     }
 
