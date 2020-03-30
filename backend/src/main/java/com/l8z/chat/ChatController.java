@@ -15,16 +15,24 @@ import org.springframework.stereotype.Controller;
 public class ChatController {
 	// Group Chatting
     @MessageMapping("/send_message")
-    @SendTo("http://localhost:6492/group/public")
+    //@SendTo("http://localhost:6492/group/public")
+    @SendTo("http://localhost:6492/chat")
     public ChatMessage send_message(@Payload ChatMessage chat_message) {
+    	System.out.println("Hello - Send Message");
         return chat_message;
     }
 
-    @MessageMapping("/exisiting_user")
-    @SendTo("http://localhost:6492/group/public")
-    public ChatMessage add_user(@Payload ChatMessage chat_message, 
+    @MessageMapping("/existing_user")
+    //@SendTo("http://localhost:6492/group/public")
+    @SendTo("http://localhost:6492/chat")
+    //public ChatMessage existing_user(@Payload ChatMessage chat_message,
+    public ChatMessage existing_user(@Payload ChatMessage chat_message, 
                                SimpMessageHeaderAccessor header_accessor) {
         // Add user in Web Socket Session
+    	//ChatMessage chat_message = null;
+    	System.out.println("Hello - Existing User");
+    	chat_message.display_message();
+    	//System.out.println(chat_message2);
     	header_accessor.getSessionAttributes().put("username", chat_message.get_sender());
         return chat_message;
     }

@@ -3,14 +3,16 @@ package com.l8z.chat;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 // Message Payload that will be Sent to the Server
 public class ChatMessage {
 	// Members
-    private MessageType type;
-    private String content;
-    private String sender;
-    private String receiver;
-	private LocalDateTime date_time=LocalDateTime.now();; 
+	@JsonProperty("type") private MessageType type;
+	@JsonProperty("content") private String content;
+	@JsonProperty("sender") private String sender;
+	@JsonProperty("receiver") private String receiver;
+	private LocalDateTime date_time=LocalDateTime.now(); 
 
     // Enumeration Class to define Types
     public enum MessageType {
@@ -52,4 +54,12 @@ public class ChatMessage {
     public void set_date_time(LocalDateTime date_time) {
 		this.date_time = date_time;
 	}
+    
+    public void display_message() {
+    	System.out.println("Type: "+this.type);
+    	System.out.println("Content: "+this.content);
+    	System.out.println("Sender: "+this.sender);
+    	System.out.println("Receiver: "+this.receiver);
+    	System.out.println("Date Time: "+this.date_time);
+    }
 }
