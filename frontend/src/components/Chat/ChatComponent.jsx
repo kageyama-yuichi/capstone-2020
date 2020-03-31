@@ -12,26 +12,27 @@ class ChatComponent extends Component {
 			username: '',
 			channel_connected: false,
 			message: '',
-			messages: [],
 			room_notification: [],
 			broadcast_message: [],
 			error: '',
 			bottom: false,
-			curTime: '',
-			openNotifications: false,
-			bellRing: false
+			current_time: '',
+			open_notifications: false,
+			bell_ring: false
 		};
-		var id_counter = 0;
 	}
 	
+	// Function to Connect the User to the Server
 	my_connect = (new_username) => {
 		console.log("System - Trying to Connect...");
 		if (new_username) {
+			// Create the Socket
 			const Stomp = require('stompjs')
 			var SockJS = require('sockjs-client')
 			var socket = new SockJS(API_URL+'/chat')
 			stomp_client = Stomp.over(socket);
 			console.log(stomp_client);
+			// Connect the User
 			stomp_client.connect({}, this.on_connected, this.on_error);
 			this.setState({
 				username: new_username,
@@ -39,6 +40,7 @@ class ChatComponent extends Component {
 		}
 	}
 	
+	// Subscribe the User to the Groups and Send the Server Notification of User
 	on_connected = () => {
 		console.log("System - Session is Connected.");
 		this.setState({
@@ -50,22 +52,42 @@ class ChatComponent extends Component {
 		stomp_client.send("/app/existing_user", {}, JSON.stringify({ type: 'JOIN', sender: this.state.username }))
 	}
 	
+	// Send Messages to the Server
 	send_message = (type, value) => {
+		var valid_message = true;
 		if (stomp_client) {
-			var message = {
-				sender: this.state.username,
-				content: type === 'TYPING' ? value : value,
-				type: type
-			};
-		  // send public message
-		  stomp_client.send("/app/send_message", {}, JSON.stringify(message));
+			if(value === "")
+				valid_message = false;
+			else {
+				var message = {
+					sender: this.state.username,
+					content: type === 'TYPING' ? value : value,
+					type: type
+				};
+			}
+			// Send Public Message
+			if(valid_message)
+				stomp_client.send("/app/send_message", {}, JSON.stringify(message));
 		}
 	}
 
+	// Handles Server Responses Accordingly
 	on_message_received = (payload) => {
 		var message_text = JSON.parse(payload.body);
+		var user_exists = false;
 		if (message_text.type === 'JOIN') {
-			this.state.room_notification.push({ 'sender': message_text.sender + " ~ joined", 'status': 'online', 'dateTime': message_text.dateTime })
+			// Checks if the Users already Exists
+			this.state.room_notification.map((notification, i) => {
+				if (notification.sender === message_text.sender) {
+					notification.status = "online";
+					notification.date_time = message_text.date_time;
+					user_exists = true;
+				}
+			})
+			// If the User wasn't in Cache
+			if(!user_exists){
+				this.state.room_notification.push({ 'sender': message_text.sender, 'status': 'online', 'date_time': message_text.date_time })
+			}
 			this.setState({
 				room_notification: this.state.room_notification,
 				bell_ring: true
@@ -73,10 +95,9 @@ class ChatComponent extends Component {
 		}
 		else if (message_text.type === 'LEAVE') {
 			this.state.room_notification.map((notification, i) => {
-				if (notification.sender === message_text.sender + " ~ joined") {
+				if (notification.sender === message_text.sender) {
 					notification.status = "offline";
-					notification.sender = message_text.sender + " ~ left";
-					notification.dateTime = message_text.dateTime;
+					notification.date_time = message_text.date_time;
 				}
 			})
 			this.setState({
@@ -86,7 +107,7 @@ class ChatComponent extends Component {
 		}
 		else if (message_text.type === 'TYPING') {
 			this.state.room_notification.map((notification, i) => {
-				if (notification.sender === message_text.sender + " ~ joined") {
+				if (notification.sender === message_text.sender) {
 					if (message_text.content)
 						notification.status = "typing...";
 					else
@@ -100,14 +121,14 @@ class ChatComponent extends Component {
 		else if (message_text.type === 'CHAT') {
 			console.log("System - Chat Message Received");
 			this.state.room_notification.map((notification, i) => {
-				if (notification.sender === message_text.sender + " ~ joined") {
-				notification.status = "online";
+				if (notification.sender === message_text.sender) {
+					notification.status = "online";
 				}
 			})
 			this.state.broadcast_message.push({
 				message: message_text.content,
 				sender: message_text.sender,
-				dateTime: message_text.dateTime
+				date_time: message_text.date_time
 			})
 			this.setState({
 				broadcast_message: this.state.broadcast_message,
@@ -161,11 +182,11 @@ class ChatComponent extends Component {
 		this.username = 'Michael';
 		this.my_connect(this.username);
 		this.setState({
-			curTime: new Date().toLocaleString()
+			current_time: new Date().toLocaleString()
 		})
 		this.timerID = setInterval(
-			() => this.state.bellRing ? this.setState({
-			bellRing: false
+			() => this.state.bell_ring ? this.setState({
+			bell_ring: false
 			}) : "",
 			10000	
 		);
@@ -176,7 +197,14 @@ class ChatComponent extends Component {
 		console.log("System - Connection Status: "+this.state.channel_connected);
         return (
             <div className="ChatComponent">
-				<h1>L8Z Chatting</h1>
+				<h1>L8Z Chat Room</h1>
+				<h1>Users</h1>
+				{
+					this.state.room_notification.map((rm_not, i) => (
+					<p key={i}>{rm_not.sender} ({rm_not.status})</p>
+					))
+				}
+				<h1>Messages</h1>
 				{
 					this.state.broadcast_message.map((bc_msg, i) => (
 						<p key={i}>{bc_msg.sender}: {bc_msg.message}</p>
@@ -194,6 +222,9 @@ class ChatComponent extends Component {
                         }
                     }}
 					/>
+					{
+						this.scroll_to_bottom()
+					}
 			</div>
         )
     }
