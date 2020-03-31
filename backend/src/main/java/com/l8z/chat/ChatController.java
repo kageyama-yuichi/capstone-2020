@@ -19,7 +19,7 @@ public class ChatController {
     //@SendTo(GlobalVariable.L8Z_URL+"/group/public")
     @SendTo(GlobalVariable.L8Z_URL+"/chat")
     public ChatMessage send_message(@Payload ChatMessage chat_message) {
-    	System.out.println("Hello - Send Message");
+    	chat_message.display_message(); // Displays the Chat Message for Debugging Purposes
         return chat_message;
     }
 
@@ -30,10 +30,7 @@ public class ChatController {
     public ChatMessage existing_user(@Payload ChatMessage chat_message, 
                                SimpMessageHeaderAccessor header_accessor) {
         // Add user in Web Socket Session
-    	//ChatMessage chat_message = null;
-    	System.out.println("Hello - Existing User");
-    	chat_message.display_message();
-    	//System.out.println(chat_message2);
+    	chat_message.display_message(); // Displays the Chat Message for Debugging Purposes
     	header_accessor.getSessionAttributes().put("username", chat_message.get_sender());
         return chat_message;
     }
