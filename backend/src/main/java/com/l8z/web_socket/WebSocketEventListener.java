@@ -45,6 +45,7 @@ public class WebSocketEventListener {
             chat_dc.set_sender(username);
             // Send the Message
             messaging_template.convertAndSend("/group/public", chat_dc);
+            //messaging_template.convertAndSend("/chat", chat_dc);
         }
         
         /*

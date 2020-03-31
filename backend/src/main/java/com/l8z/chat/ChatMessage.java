@@ -19,7 +19,7 @@ public class ChatMessage {
         CHAT,
         JOIN,
         LEAVE,
-        IS_TYPING
+        TYPING
     }
     
     // Getters 

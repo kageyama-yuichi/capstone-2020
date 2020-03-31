@@ -1,7 +1,6 @@
 package com.l8z.chat;
 //Sourced from: https://www.callicoder.com/spring-boot-websocket-chat-example/
 
-import com.l8z.GlobalVariable;
 import com.l8z.chat.ChatMessage; // Importing our ChatMessage class
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,21 +15,18 @@ import org.springframework.stereotype.Controller;
 public class ChatController {
 	// Group Chatting
     @MessageMapping("/send_message")
-    //@SendTo(GlobalVariable.L8Z_URL+"/group/public")
-    @SendTo(GlobalVariable.L8Z_URL+"/chat")
+    @SendTo("/group/public")
     public ChatMessage send_message(@Payload ChatMessage chat_message) {
-    	chat_message.display_message(); // Displays the Chat Message for Debugging Purposes
+    	//chat_message.display_message(); // Displays the Chat Message for Debugging Purposes
         return chat_message;
     }
 
     @MessageMapping("/existing_user")
-    //@SendTo(GlobalVariable.L8Z_URL+"/group/public")
-    @SendTo(GlobalVariable.L8Z_URL+"/chat")
-    //public ChatMessage existing_user(@Payload ChatMessage chat_message,
+    @SendTo("/group/public")
     public ChatMessage existing_user(@Payload ChatMessage chat_message, 
                                SimpMessageHeaderAccessor header_accessor) {
         // Add user in Web Socket Session
-    	chat_message.display_message(); // Displays the Chat Message for Debugging Purposes
+    	//chat_message.display_message(); // Displays the Chat Message for Debugging Purposes
     	header_accessor.getSessionAttributes().put("username", chat_message.get_sender());
         return chat_message;
     }

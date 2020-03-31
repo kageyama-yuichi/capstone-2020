@@ -21,6 +21,7 @@ class ChatComponent extends Component {
 			openNotifications: false,
 			bellRing: false
 		};
+		var id_counter = 0;
 	}
 	
 	my_connect = (new_username) => {
@@ -44,8 +45,7 @@ class ChatComponent extends Component {
 		  channel_connected: true
 		})
 		// Subscribing to the public Group
-		//stomp_client.subscribe('/group/pubic', this.on_message_received);
-		stomp_client.subscribe('/chat', this.on_message_received);
+		stomp_client.subscribe('/group/public', this.on_message_received, {});
 		// Registering user to server as a public chat user
 		stomp_client.send("/app/existing_user", {}, JSON.stringify({ type: 'JOIN', sender: this.state.username }))
 	}
@@ -65,56 +65,56 @@ class ChatComponent extends Component {
 	on_message_received = (payload) => {
 		var message_text = JSON.parse(payload.body);
 		if (message_text.type === 'JOIN') {
-		  this.state.room_notification.push({ 'sender': message_text.sender + " ~ joined", 'status': 'online', 'dateTime': message_text.dateTime })
-		  this.setState({
-			room_notification: this.state.room_notification,
-			bell_ring: true
-		  })
+			this.state.room_notification.push({ 'sender': message_text.sender + " ~ joined", 'status': 'online', 'dateTime': message_text.dateTime })
+			this.setState({
+				room_notification: this.state.room_notification,
+				bell_ring: true
+			})
 		}
 		else if (message_text.type === 'LEAVE') {
-		  this.state.room_notification.map((notification, i) => {
-			if (notification.sender === message_text.sender + " ~ joined") {
-			  notification.status = "offline";
-			  notification.sender = message_text.sender + " ~ left";
-			  notification.dateTime = message_text.dateTime;
-			}
-		  })
-		  this.setState({
-			room_notification: this.state.room_notification,
-			bell_ring: true
-		  })
+			this.state.room_notification.map((notification, i) => {
+				if (notification.sender === message_text.sender + " ~ joined") {
+					notification.status = "offline";
+					notification.sender = message_text.sender + " ~ left";
+					notification.dateTime = message_text.dateTime;
+				}
+			})
+			this.setState({
+				room_notification: this.state.room_notification,
+				bell_ring: true
+			})
 		}
 		else if (message_text.type === 'TYPING') {
-		  this.state.room_notification.map((notification, i) => {
-			if (notification.sender === message_text.sender + " ~ joined") {
-			  if (message_text.content)
-				notification.status = "typing...";
-			  else
-				notification.status = "online";
-			}
-		  })
-		  this.setState({
-			room_notification: this.state.room_notification
-		  })
+			this.state.room_notification.map((notification, i) => {
+				if (notification.sender === message_text.sender + " ~ joined") {
+					if (message_text.content)
+						notification.status = "typing...";
+					else
+						notification.status = "online";
+				}
+			})
+			this.setState({
+				room_notification: this.state.room_notification
+			})
 		}
 		else if (message_text.type === 'CHAT') {
-		  this.state.room_notification.map((notification, i) => {
-			if (notification.sender === message_text.sender + " ~ joined") {
-			  notification.status = "online";
-			}
-		  })
-		  this.state.broadcast_message.push({
-			message_text: message_text.content,
-			sender: message_text.sender,
-			dateTime: message_text.dateTime
-		  })
-		  this.setState({
-			broadcast_message: this.state.broadcast_message,
-
-		  })
+			console.log("System - Chat Message Received");
+			this.state.room_notification.map((notification, i) => {
+				if (notification.sender === message_text.sender + " ~ joined") {
+				notification.status = "online";
+				}
+			})
+			this.state.broadcast_message.push({
+				message: message_text.content,
+				sender: message_text.sender,
+				dateTime: message_text.dateTime
+			})
+			this.setState({
+				broadcast_message: this.state.broadcast_message,
+			})
 		}
 		else {
-		  // do nothing...
+		// do nothing...
 		}
 	}
 	
@@ -172,14 +172,14 @@ class ChatComponent extends Component {
 	}
 	
 	render() {
-		console.log("Rendering ...");
-		console.log(this.state.channel_connected);
+		console.log("System - Rendering Page...");
+		console.log("System - Connection Status: "+this.state.channel_connected);
         return (
             <div className="ChatComponent">
 				<h1>L8Z Chatting</h1>
 				{
-					this.state.messages.map((message, i) => (
-						<p>{message}</p>
+					this.state.broadcast_message.map((bc_msg, i) => (
+						<p key={i}>{bc_msg.sender}: {bc_msg.message}</p>
 					))
 				}
 				<input 
