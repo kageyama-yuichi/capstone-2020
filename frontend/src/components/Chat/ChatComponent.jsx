@@ -14,6 +14,7 @@ class ChatComponent extends Component {
 			message: '',
 			room_notification: [],
 			broadcast_message: [],
+			old_messages: [],
 			error: '',
 			bottom: false,
 			current_time: '',
@@ -48,6 +49,8 @@ class ChatComponent extends Component {
 		})
 		// Subscribing to the public Group
 		stomp_client.subscribe('/group/public', this.on_message_received, {});
+		stomp_client.subscribe('/group/public/history', this.on_history_received, {});
+		this.fetch_history();
 		// Registering user to server as a public chat user
 		stomp_client.send("/app/existing_user", {}, JSON.stringify({ type: 'JOIN', sender: this.state.username }))
 	}
@@ -71,8 +74,29 @@ class ChatComponent extends Component {
 		}
 	}
 
+	// Handles Chat History
+	on_history_received = (payload) => {
+		console.log(payload);
+		var obj = JSON.parse(payload.body);
+		console.log(obj);
+		console.log(obj.length);
+	
+		for(let i=0; i<obj.length; i++){
+			this.state.old_messages.push({
+				message: obj[i].content,
+				sender: obj[i].sender,
+				date_time: obj[i].date_time
+			})
+			this.setState({
+				old_messages: this.state.old_messages,
+			})
+		}
+		
+	}
+	
 	// Handles Server Responses Accordingly
 	on_message_received = (payload) => {
+		console.log(payload);
 		var message_text = JSON.parse(payload.body);
 		var user_exists = false;
 		if (message_text.type === 'JOIN') {
@@ -146,7 +170,9 @@ class ChatComponent extends Component {
 	}
 	
 	fetch_history = () => {
-		alert('History Not Available!\nIt is Not Yet Implemented!');
+		console.log("System - Retrieving Old Messages");
+		stomp_client.send("/app/fetch_history");
+		//alert('History Not Available!\nIt is Not Yet Implemented!');
 	}
 
 	scroll_to_bottom = () => {
@@ -180,6 +206,12 @@ class ChatComponent extends Component {
 
 	componentDidMount() {
 		this.username = 'Michael';
+		this.state.room_notification.map((notification, i) => {
+				console.log("HERE");
+				if (notification.sender === this.username) {
+					this.username = 'Shaahin';
+				}
+			})
 		this.my_connect(this.username);
 		this.setState({
 			current_time: new Date().toLocaleString()
@@ -205,6 +237,11 @@ class ChatComponent extends Component {
 					))
 				}
 				<h1>Messages</h1>
+				{
+					this.state.old_messages.map((old_msg, i) => (
+						<p key={i}>{old_msg.sender}: {old_msg.message}</p>
+					))
+				}
 				{
 					this.state.broadcast_message.map((bc_msg, i) => (
 						<p key={i}>{bc_msg.sender}: {bc_msg.message}</p>

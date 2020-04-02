@@ -15,8 +15,10 @@
 /* To override user agent stylesheet */
 * {
     margin:0px;
-    height: inherit;
+    /* 
+	height: inherit;
     width: inherit;
+	*/
 }
 
 

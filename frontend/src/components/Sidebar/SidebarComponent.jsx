@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 class SidebarComponent extends Component {
 	render() {
 		//Do not load sidebar on landing page
-		if (window.location.pathname === `/`) {
+		if (window.location.pathname === `/` || window.location.pathname === '/chat') {
 			return null;
 		} else {
 			return (

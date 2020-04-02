@@ -1,14 +1,13 @@
 package com.l8z.chat;
 //Sourced from: https://www.callicoder.com/spring-boot-websocket-chat-example/
 
-import com.l8z.chat.ChatMessage; // Importing our ChatMessage class
+import java.util.ArrayList;
+import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 @Controller
@@ -31,7 +30,39 @@ public class ChatController {
         return chat_message;
     }
     
+    // Group Loading
     /*
+    @MessageMapping("/fetch_history")
+    @SendTo("/group/public/history")
+    public ChatMessage fetch_history() {
+    	ChatMessage old_messages = new ChatMessage();
+    	old_messages.set_sender("Joe");
+    	old_messages.set_type(ChatMessage.MessageType.CHAT);
+    	old_messages.set_content("HELLO WORLD");
+    	return old_messages;
+    }
+    */
+    
+    // Group Loading
+    @MessageMapping("/fetch_history")
+    @SendTo("/group/public/history")
+    public List<ChatMessage> fetch_history() {
+    	List<ChatMessage> old_messages = new ArrayList<ChatMessage>();
+    	ChatMessage temp = new ChatMessage();
+    	temp.set_sender("Joe");
+    	temp.set_type(ChatMessage.MessageType.CHAT);
+    	temp.set_content("HELLO WORLD ME");
+    	old_messages.add(temp);
+    	temp = new ChatMessage();
+    	temp.set_sender("Michael");
+    	temp.set_type(ChatMessage.MessageType.CHAT);
+    	temp.set_content("HELLO WORLD ME");
+    	old_messages.add(temp);
+
+    	return old_messages;
+    }
+
+/*
     // Private Chatting
     @Autowired
 	private SimpMessagingTemplate simp_messaging_template;
