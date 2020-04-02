@@ -5,10 +5,11 @@
     --text-secondary: #083B66;
     --bg-primary: #DB504A;
     --bg-secondary: #06233B;
-    --bg-tertiary: #247BA0;
+    --bg-tertiary: #083B66;
     color: var(--text-primary);
     height: 100%;
-    width: 100%;
+    width: 100%; 
+    font-size: 16px;
 }
 
 /* To override user agent stylesheet */
@@ -17,6 +18,7 @@
     height: inherit;
     width: inherit;
 }
+
 
 a, button, input[type=button], input[type=submit]{
     cursor: pointer;

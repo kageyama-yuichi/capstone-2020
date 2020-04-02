@@ -6,16 +6,10 @@
 
 }
 
-.home-page::-webkit-scrollbar{
-    display:none;
-}
-
 .login-container {
 	width: 800px;
-    height: fit-content%;
-    min-height: 100vh;
+	min-height: 100vh;
     background-color: white;
-
 }
 
 /* .cont{
@@ -60,6 +54,8 @@
 	font-size: 30px;
 	font-weight: 700;
 	color: var(--bg-secondary);
+	height: auto;
+	text-align: left;
 }
 
 .input-container {
@@ -88,13 +84,14 @@
 	color: white;
 	font-weight: 700;
 	font-size: 20px;
+	border:none;
 }
 
 .login-button:hover {
     border: 1px solid white;
     opacity: 90%;
 
-	padding: 19.5px 70px;
+	padding: 19px 70px;
 }
 
 .register-container {
@@ -113,6 +110,7 @@
 	background-color: white;
 	width: fit-content;
 	padding: 0px 5px;
+	position: relative;
 }
 
 .create-account-container {
@@ -159,13 +157,13 @@
 	font-size: 25px;
 }
 
-hr {
+ hr {
 	width: 100%;
 	top: 14px;
 	position: absolute;
 }
 
-input {
+.input-field {
 	font-size: 20px;
 	font-weight: 300;
 	white-space: nowrap;
@@ -181,29 +179,23 @@ input {
 	padding-bottom: 5px;
 }
 
-input:focus {
+.input-field:focus {
 	outline: none;
 }
+.input-name{
+	text-align:left;
+}
 
-a,
-p,
-h1 {
+.login-link-text{
 	height: auto;
 	position: relative;
 	text-align: left;
-}
-
-p {
-	text-align: left;
-}
-
-a {
-    font-weight: 600;
+	font-weight: 600;
     font-size: 18px;
 	user-select: none;
+	color: var(--text-secondary);
 }
 
-a:hover {
-    text-decoration: underline;
-    
+.login-link-text:hover{
+	text-decoration: underline;
 }
