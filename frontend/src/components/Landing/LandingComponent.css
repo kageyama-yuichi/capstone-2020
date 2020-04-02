@@ -84,13 +84,14 @@
 	color: white;
 	font-weight: 700;
 	font-size: 20px;
+	border:none;
 }
 
 .login-button:hover {
     border: 1px solid white;
     opacity: 90%;
 
-	padding: 19.5px 70px;
+	padding: 19px 70px;
 }
 
 .register-container {
@@ -160,7 +161,6 @@
 	width: 100%;
 	top: 14px;
 	position: absolute;
-	z-index: 0;
 }
 
 .input-field {
