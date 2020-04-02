@@ -30,20 +30,7 @@ public class ChatController {
         return chat_message;
     }
     
-    // Group Loading
-    /*
-    @MessageMapping("/fetch_history")
-    @SendTo("/group/public/history")
-    public ChatMessage fetch_history() {
-    	ChatMessage old_messages = new ChatMessage();
-    	old_messages.set_sender("Joe");
-    	old_messages.set_type(ChatMessage.MessageType.CHAT);
-    	old_messages.set_content("HELLO WORLD");
-    	return old_messages;
-    }
-    */
-    
-    // Group Loading
+    // Group History Loading
     @MessageMapping("/fetch_history")
     @SendTo("/group/public/history")
     public List<ChatMessage> fetch_history() {
@@ -51,15 +38,45 @@ public class ChatController {
     	ChatMessage temp = new ChatMessage();
     	temp.set_sender("Joe");
     	temp.set_type(ChatMessage.MessageType.CHAT);
-    	temp.set_content("HELLO WORLD ME");
+    	temp.set_content("Hey Bois, make sure to do your work tonight mmk?");
     	old_messages.add(temp);
     	temp = new ChatMessage();
     	temp.set_sender("Michael");
     	temp.set_type(ChatMessage.MessageType.CHAT);
-    	temp.set_content("HELLO WORLD ME");
+    	temp.set_content("Hey Joe, sorry I'm quite busy with React");
     	old_messages.add(temp);
 
     	return old_messages;
+    }
+
+    // Group Member Loading
+    @MessageMapping("/fetch_members")
+    @SendTo("/group/public/members")
+    public List<ChatMessage> fetch_members() {
+    	List<ChatMessage> members = new ArrayList<ChatMessage>();
+    	ChatMessage temp = new ChatMessage();
+    	temp.set_sender("Joe");
+    	members.add(temp);
+    	temp = new ChatMessage();
+    	temp.set_sender("Michael");
+    	members.add(temp);
+    	temp = new ChatMessage();
+    	temp.set_sender("Tyler");
+    	members.add(temp);
+    	temp = new ChatMessage();
+    	temp.set_sender("Yuichi");
+    	members.add(temp);
+    	temp = new ChatMessage();
+    	temp.set_sender("Matthew");
+    	members.add(temp);
+    	temp = new ChatMessage();
+    	temp.set_sender("Raimond");
+    	members.add(temp);
+    	temp = new ChatMessage();
+    	temp.set_sender("Hung");
+    	members.add(temp);
+
+    	return members;
     }
 
 /*

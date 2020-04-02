@@ -48,8 +48,10 @@ class ChatComponent extends Component {
 		  channel_connected: true
 		})
 		// Subscribing to the public Group
-		stomp_client.subscribe('/group/public', this.on_message_received, {});
+		stomp_client.subscribe('/group/public/members', this.on_members_received, {});
 		stomp_client.subscribe('/group/public/history', this.on_history_received, {});
+		stomp_client.subscribe('/group/public', this.on_message_received, {});
+		this.fetch_members();
 		this.fetch_history();
 		// Registering user to server as a public chat user
 		stomp_client.send("/app/existing_user", {}, JSON.stringify({ type: 'JOIN', sender: this.state.username }))
@@ -76,10 +78,7 @@ class ChatComponent extends Component {
 
 	// Handles Chat History
 	on_history_received = (payload) => {
-		console.log(payload);
 		var obj = JSON.parse(payload.body);
-		console.log(obj);
-		console.log(obj.length);
 	
 		for(let i=0; i<obj.length; i++){
 			this.state.old_messages.push({
@@ -89,6 +88,23 @@ class ChatComponent extends Component {
 			})
 			this.setState({
 				old_messages: this.state.old_messages,
+			})
+		}
+		
+	}
+	
+	// Handles Member Loading
+	on_members_received = (payload) => {
+		var obj = JSON.parse(payload.body);
+	
+		for(let i=0; i<obj.length; i++){
+			this.state.room_notification.push({
+				'sender': obj[i].sender,
+				'status': 'offline',
+				'date_time': obj[i].date_time
+			})
+			this.setState({
+				room_notification: this.state.room_notification
 			})
 		}
 		
@@ -172,7 +188,11 @@ class ChatComponent extends Component {
 	fetch_history = () => {
 		console.log("System - Retrieving Old Messages");
 		stomp_client.send("/app/fetch_history");
-		//alert('History Not Available!\nIt is Not Yet Implemented!');
+	}
+	
+	fetch_members = () => {
+		console.log("System - Retrieving Members");
+		stomp_client.send("/app/fetch_members");
 	}
 
 	scroll_to_bottom = () => {
