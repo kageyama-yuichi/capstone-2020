@@ -144,7 +144,7 @@ class RegisterComponent extends Component {
 						
 							<input
 								type="text"
-								className="firstname-field"
+								className="input-field firstname-field"
 								name="firstname"
 								placeholder="First name"
 								onChange={this.handleChange.bind(this)}
@@ -153,7 +153,7 @@ class RegisterComponent extends Component {
 
 							<input
 								type="text"
-								className="lastname-field"
+								className="input-field lastname-field"
 								name="lastname"
 								placeholder="Last name"
 								onChange={this.handleChange.bind(this)}
@@ -163,7 +163,7 @@ class RegisterComponent extends Component {
 						<div className="input-container">
 							<input
 								type="email"
-								className="email-field"
+								className="input-field email-field"
 								name="email"
 								placeholder="Email"
 								onChange={this.handleChange.bind(this)}
@@ -174,7 +174,7 @@ class RegisterComponent extends Component {
 						<div className="input-container">
 							<input
 								type="text"
-								className="address-field"
+								className="input-field address-field"
 								name="address"
 								placeholder="Address"
 								onChange={this.handleChange.bind(this)}
@@ -185,15 +185,15 @@ class RegisterComponent extends Component {
 						<div className="input-container">
 							<input
 								type="text"
-								className="username-field"
+								className="input-field username-field"
 								name="username"
 								placeholder="Username"
 								onChange={this.handleChange.bind(this)}
 								value={this.state.username}
 							></input>
 							<input
+								className="input-field password-field"
 								type="password"
-								className="password-field"
 								name="password"
 								placeholder="Password"
 								onChange={this.handleChange.bind(this)}

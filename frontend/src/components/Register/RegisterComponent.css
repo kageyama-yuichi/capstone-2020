@@ -110,7 +110,8 @@
 	background-color: var(--bg-primary);
 	color: white;
 	font-weight: 700;
-	font-size: 20px;
+    font-size: 20px;
+    border: none;
 }
 
 .signup-button:hover {
@@ -120,7 +121,7 @@
 	padding: 19.5px 70px;
 }
 
-button{
+.exit-button{
     width: fit-content;
     height:fit-content;
     background: none;
@@ -128,6 +129,6 @@ button{
     font-weight: 800;
     padding: 10px;
 }
-button:focus{
+.exit-button:focus{
     outline: none;
 }

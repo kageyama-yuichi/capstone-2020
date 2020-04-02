@@ -9,10 +9,10 @@ class LandingComponent extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			showRegister: true,
+			showRegister: false,
 			windowSize: ""
 		};
-
+		this.handleSubmit = this.handleSubmit.bind(this);
 		this.newUserOnClickHandler = this.newUserOnClickHandler.bind(this);
 	}
 
@@ -28,7 +28,6 @@ class LandingComponent extends Component {
 			document.getElementsByClassName("login-form")[0].offsetHeight;
 
 		let cont = document.getElementsByClassName("cont")[0];
-		console.log(this.getBodyHeight());
 		if (h <= this.getBodyHeight()) {
 			cont.style.height = "100%";
 		} else {
@@ -51,12 +50,21 @@ class LandingComponent extends Component {
 		this.calcFormSize();
 	}
 
+	componentWillUnmount() {
+		window.removeEventListener("resize", this.handleResize);
+	}
+
 	getBodyHeight() {
 		return document.getElementsByTagName("body")[0].offsetHeight;
 	}
 
 	getBodyWidth() {
 		return document.getElementsByTagName("body")[0].offsetWidth;
+	}
+
+	handleSubmit(e) {
+		e.preventDefault();
+		this.props.history.push("/dashboard");
 	}
 
 	render() {
@@ -68,31 +76,30 @@ class LandingComponent extends Component {
 							<div className="logo-container">
 								<img className="logo" src={logoSVG}></img>
 							</div>
-							<form className="login-form">
+							<form className="login-form" onSubmit={this.handleSubmit}>
 								<h1 className="login-title">LOGIN</h1>
 								<div className="input-container">
-									<p>Username</p>
+									<p className="input-name">Username</p>
 									<input
 										type="text"
-										className="username-field"
+										className="input-field username-field"
 										placeholder="Enter your username"
 									></input>
 								</div>
 								<div className="input-container">
-									<p>Password</p>
+									<p className="input-name">Password</p>
 									<input
 										type="text"
-										className="password-field"
+										className="input-field password-field"
 										placeholder="Enter your password"
 									></input>
 								</div>
 								<div className="password-reset">
-									<a>Forgot password?</a>
+									<a className="login-link-text">Forgot password?</a>
 								</div>
 
 								<input
-									type="button"
-									formAction="submit"
+									type="submit"
 									className="login-button"
 									value="SIGN IN"
 								></input>
@@ -103,7 +110,7 @@ class LandingComponent extends Component {
 								<div className="create-account-container">
 									<p>
 										New user?{" "}
-										<a onClick={this.newUserOnClickHandler}>
+										<a className="login-link-text" onClick={this.newUserOnClickHandler}>
 											Create a new account
 										</a>
 									</p>
