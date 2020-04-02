@@ -1,10 +1,9 @@
 import React, {Component} from 'react'
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
 import ErrorComponent from '../Error/ErrorComponent.jsx'
-import HeaderComponent from '../Header/HeaderComponent.jsx'
-import FooterComponent from '../Footer/FooterComponent.jsx'
-import WelcomeComponent from '../WelcomeComponent.jsx'
 import LandingComponent from '../Landing/LandingComponent.jsx'
+import DashboardComponent from '../Dashboard/DashboardComponent.jsx'
+import SidebarComponent from '../Sidebar/SidebarComponent.jsx'
 
 class BodyComponent extends Component {
     render() {
@@ -12,9 +11,10 @@ class BodyComponent extends Component {
             <div className="BodyComponent">
                 <Router>
                     <>
-                        {/* <HeaderComponent/> */}
+                        {<SidebarComponent/>}
                         <Switch>
                             <Route path="/" exact component={LandingComponent} />
+                            <Route path="/dashboard" exact component={DashboardComponent} />
                             <Route component={ErrorComponent}/>
                         </Switch>
                         {/* <FooterComponent/> */}
