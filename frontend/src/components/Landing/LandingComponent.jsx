@@ -64,7 +64,6 @@ class LandingComponent extends Component {
 
 	handleSubmit(e) {
 		e.preventDefault();
-		console.log(this.props)
 		this.props.history.push("/dashboard");
 	}
 
@@ -80,23 +79,23 @@ class LandingComponent extends Component {
 							<form className="login-form" onSubmit={this.handleSubmit}>
 								<h1 className="login-title">LOGIN</h1>
 								<div className="input-container">
-									<p>Username</p>
+									<p className="input-name">Username</p>
 									<input
 										type="text"
-										className="username-field"
+										className="input-field username-field"
 										placeholder="Enter your username"
 									></input>
 								</div>
 								<div className="input-container">
-									<p>Password</p>
+									<p className="input-name">Password</p>
 									<input
 										type="text"
-										className="password-field"
+										className="input-field password-field"
 										placeholder="Enter your password"
 									></input>
 								</div>
 								<div className="password-reset">
-									<a>Forgot password?</a>
+									<a className="login-link-text">Forgot password?</a>
 								</div>
 
 								<input
@@ -111,7 +110,7 @@ class LandingComponent extends Component {
 								<div className="create-account-container">
 									<p>
 										New user?{" "}
-										<a onClick={this.newUserOnClickHandler}>
+										<a className="login-link-text" onClick={this.newUserOnClickHandler}>
 											Create a new account
 										</a>
 									</p>

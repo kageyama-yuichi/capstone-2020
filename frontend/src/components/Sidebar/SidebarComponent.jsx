@@ -7,10 +7,9 @@ import LogoutIcon from "../../assests/LogoutIcon.svg";
 import ProfileIcon from "../../assests/ProfileIcon.svg";
 // import SettingsIcon from "../../assests/SettingsIcon.svg";
 import TeamsIcon from "../../assests/TeamsIcon.svg";
+import { Link } from "react-router-dom";
 
 class SidebarComponent extends Component {
-	
-
 	render() {
 		//Do not load sidebar on landing page
 		if (window.location.pathname === `/`) {
@@ -20,38 +19,40 @@ class SidebarComponent extends Component {
 				<nav className="sidebar">
 					<ul className="sidebar-nav">
 						<li className="sidebar-item logo-item">
-							<img src={LogoIcon}></img>
+							<Link to="/dashboard" className="nav-link">
+								<img src={LogoIcon}></img>
+							</Link>
 						</li>
 						<li className="sidebar-item">
-							<div className="nav-link">
+							<Link to="/dashboard" className="nav-link">
 								<img src={ProfileIcon}></img>
 								<span className="link-text">Profile</span>
-							</div>
+							</Link>
 						</li>
 						<li className="sidebar-item">
-							<div className="nav-link">
+							<Link to="/dashboard" className="nav-link">
 								<img src={TeamsIcon}></img>
 								<span className="link-text">Orgs</span>
-							</div>
+							</Link>
 						</li>
 						<li className="sidebar-item">
-							<div className="nav-link">
+							<Link to="/dashboard" className="nav-link">
 								<img src={AgendaIcon}></img>
 								<span className="link-text">Agenda</span>
-							</div>
+							</Link>
 						</li>
 						<li className="sidebar-item">
-							<div className="nav-link">
+							<Link to="/dashboard" className="nav-link">
 								<img src={ChatIcon}></img>
 								<span className="link-text">Private</span>
-							</div>
+							</Link>
 						</li>
 
 						<li className="sidebar-item">
-							<div className="nav-link">
+							<Link to="/" className="nav-link">
 								<img src={LogoutIcon}></img>
 								<span className="link-text">Logout</span>
-							</div>
+							</Link>
 						</li>
 
 						{/* <li className="sidebar-item">

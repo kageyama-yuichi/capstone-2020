@@ -25,14 +25,14 @@ class RegisterComponent extends Component {
 						<div className="input-container">
 							<input
 								type="text"
-								className="name-field"
+								className="input-field name-field"
 								placeholder="Full name"
 							></input>
 						</div>
 						<div className="input-container">
 							<input
 								type="email"
-								className="email-field"
+								className="input-field email-field"
 								placeholder="Email"
 							></input>
 						</div>
@@ -40,7 +40,7 @@ class RegisterComponent extends Component {
 						<div className="input-container">
 							<input
 								type="text"
-								className="address-field"
+								className="input-field address-field"
 								placeholder="Address"
 							></input>
 						</div>
@@ -48,12 +48,12 @@ class RegisterComponent extends Component {
 						<div className="input-container">
 							<input
 								type="text"
-								className="username-field"
+								className="input-field username-field"
 								placeholder="Username"
 							></input>
 							<input
 								type="text"
-								className="password-field"
+								className="input-field password-field"
 								placeholder="Password"
 							></input>
 						</div>

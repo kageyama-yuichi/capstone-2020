@@ -19,9 +19,9 @@
     width: 55px;
     height: 5rem;
     padding: 10px;
-    color: white;
     opacity: 50%;
     transition: .3s;
+    
 }
 
 .sidebar-item:hover{
@@ -35,13 +35,15 @@
     
 }
 
+
 .nav-link {
 	display: flex;
     align-items: center;
     flex-direction: column;
     text-align: center;
 	height: 5rem;
-	text-decoration: none;
+    text-decoration: none !important;
+
 }
 
 
@@ -49,6 +51,11 @@
     min-width: 2rem;
 }
 
+.link-text, .link-text:hover{
+    color: white;
+    font-weight: 400;
+    font-size: 16px;
+}
 
 .logo-item{
     width: 80px;
