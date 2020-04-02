@@ -1,0 +1,101 @@
+
+
+.chat-component{
+    width: 100%;
+    background-color: white; 
+    height: 100vh;
+}
+
+.chat-room-container{
+    padding-top: 63px;
+    display: flex;
+    position: fixed;
+}
+
+.messages-container{
+    display: flex;
+    flex-direction: column;
+    flex: 5;
+}
+
+.room-name{
+    position:fixed;
+    padding: 10px;
+    background-color: gainsboro;
+    border-bottom: 3px solid var(--bg-tertiary);
+    height:40px;
+    width:100%;
+    color: var(--text-primary);
+}
+
+.message-list{
+    align-self: center;
+    width: 80%;
+    height: 100%;
+}
+
+.message{ 
+    height: fit-content;
+    width: fit-content;
+    font-size: 20px;
+    padding: 10px 0;
+}
+
+.message-sender{
+    color: var(--text-secondary);
+    text-decoration: underline;
+    padding-top: 2px;
+}
+
+.message-input-container{
+    align-self: center;
+    height:fit-content;
+    width: 70%;
+    padding: 1rem; 
+    margin-bottom: 3.5rem;
+    display:flex;
+}
+
+.message-input-container:last-child{
+    margin-top: auto;
+}
+
+.message-input{
+    height: 16px;
+    padding: 16px;
+    outline:none;
+    border: 1px solid grey;
+    border-right: none;
+    border-radius: 15px 0 0 15px;
+    font-size: 18px;;
+    flex:12;
+}
+
+.message-button{
+    flex: 1;
+    height: 50px;
+    border:1px solid black;
+    border-radius: 0 15px 15px 0;
+    background-color: var(--bg-primary);
+    color: white;
+    font-weight: 500;
+    font-size : 20px;
+    outline: none;
+}
+
+.user-container{
+    flex: 1;
+    border-left: 1px solid black;
+    background-color: var(--bg-tertiary);
+    color: white;
+    
+}
+
+.user-title{
+    padding: 15px;
+    height:fit-content;
+}
+
+.user-list{
+    padding: 5px 15px;
+}
