@@ -19,7 +19,8 @@ class ChatComponent extends Component {
 			bottom: false,
 			current_time: '',
 			open_notifications: false,
-			bell_ring: false
+			bell_ring: false,
+			is_typing: false
 		};
 	}
 	
@@ -150,7 +151,7 @@ class ChatComponent extends Component {
 				if (notification.sender === message_text.sender) {
 					if (message_text.content)
 						notification.status = "typing...";
-					else
+					if (message_text.content == "Stopped Typing")
 						notification.status = "online";
 				}
 			})
@@ -165,6 +166,7 @@ class ChatComponent extends Component {
 					notification.status = "online";
 				}
 			})
+			// Decrypt
 			this.state.broadcast_message.push({
 				message: message_text.content,
 				sender: message_text.sender,
@@ -210,9 +212,27 @@ class ChatComponent extends Component {
 	
     handle_typing = (event) => {
 		this.setState({
-            message: event.target.value,
+            message: event.target.value
         });
-        this.send_message('TYPING', event.target.value);
+
+		// Check if the Value was Empty
+		if(event.target.value == ""){
+			// Set the is_typing boolean to false
+			this.setState({
+				is_typing: false
+			})
+			// Send a Message to the Server that User Stopped
+			this.send_message("TYPING", "Stopped Typing");
+		} else {
+			// If the User was Not Typing, Set it to They Are
+			if (this.state.is_typing === false){
+				this.setState({
+					is_typing: true
+				})
+				// Send the Message off
+				this.send_message("TYPING", event.target.value);
+			}
+		}
     };
 	
 	componentDidUpdate() {
@@ -226,12 +246,6 @@ class ChatComponent extends Component {
 
 	componentDidMount() {
 		this.username = 'Michael';
-		this.state.room_notification.map((notification, i) => {
-				console.log("HERE");
-				if (notification.sender === this.username) {
-					this.username = 'Shaahin';
-				}
-			})
 		this.my_connect(this.username);
 		this.setState({
 			current_time: new Date().toLocaleString()

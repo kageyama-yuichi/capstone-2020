@@ -16,7 +16,7 @@ public class ChatController {
     @MessageMapping("/send_message")
     @SendTo("/group/public")
     public ChatMessage send_message(@Payload ChatMessage chat_message) {
-    	//chat_message.display_message(); // Displays the Chat Message for Debugging Purposes
+    	chat_message.display_message(); // Displays the Chat Message for Debugging Purposes
         return chat_message;
     }
 
