@@ -24,7 +24,7 @@ class SidebarComponent extends Component {
 							</Link>
 						</li>
 						<li className="sidebar-item">
-							<Link to="/dashboard" className="nav-link">
+							<Link to="/profile" className="nav-link">
 								<img src={ProfileIcon}></img>
 								<span className="link-text">Profile</span>
 							</Link>
