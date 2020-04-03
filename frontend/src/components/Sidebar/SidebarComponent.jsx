@@ -18,30 +18,30 @@ class SidebarComponent extends Component {
 			return (
 				<nav className="sidebar">
 					<ul className="sidebar-nav">
-						<li className="sidebar-item logo-item">
+						<li className={(window.location.pathname == `/dashboard` ? "current-window": "") + " sidebar-item logo-item"}>
 							<Link to="/dashboard" className="nav-link">
 								<img src={LogoIcon}></img>
 							</Link>
 						</li>
-						<li className="sidebar-item">
+						<li className={(window.location.pathname == `/profile` ? "current-window": "") + " sidebar-item"}>
 							<Link to="/dashboard" className="nav-link">
 								<img src={ProfileIcon}></img>
 								<span className="link-text">Profile</span>
 							</Link>
 						</li>
-						<li className="sidebar-item">
+						<li className={(window.location.pathname == `/orgs` ? "current-window": "") + " sidebar-item"}>
 							<Link to="/dashboard" className="nav-link">
 								<img src={TeamsIcon}></img>
 								<span className="link-text">Orgs</span>
 							</Link>
 						</li>
-						<li className="sidebar-item">
+						<li className={(window.location.pathname == `/agenda` ? "current-window": "") + " sidebar-item"}>
 							<Link to="/dashboard" className="nav-link">
 								<img src={AgendaIcon}></img>
 								<span className="link-text">Agenda</span>
 							</Link>
 						</li>
-						<li className="sidebar-item">
+						<li className={(window.location.pathname == `/private` ? "current-window": "") + " sidebar-item"}>
 							<Link to="/dashboard" className="nav-link">
 								<img src={ChatIcon}></img>
 								<span className="link-text">Private</span>
