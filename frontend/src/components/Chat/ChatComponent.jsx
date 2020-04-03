@@ -32,7 +32,7 @@ class ChatComponent extends Component {
 			// Create the Socket
 			const Stomp = require('stompjs')
 			var SockJS = require('sockjs-client')
-			var socket = new SockJS(API_URL+'/chat')
+			var socket = new SockJS(API_URL+'/orgs')
 			stomp_client = Stomp.over(socket);
 			console.log(stomp_client);
 			// Connect the User

@@ -14,7 +14,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override // Clients will use to Connect
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // SockJS is used to enable fallback options for browsers that don’t support WebSocket
-    	registry.addEndpoint("/chat").setAllowedOrigins(GlobalVariable.L8Z_URL).withSockJS();
+    	registry.addEndpoint("/orgs").setAllowedOrigins(GlobalVariable.L8Z_URL).withSockJS();
         
     }
 
