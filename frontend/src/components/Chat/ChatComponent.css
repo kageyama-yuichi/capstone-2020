@@ -4,10 +4,11 @@
     width: 100%;
     background-color: white; 
     height: 100vh;
+    
 }
 
 .chat-room-container{
-    padding-top: 63px;
+    padding-top: 60px;
     display: flex;
     position: fixed;
 }
@@ -21,11 +22,11 @@
 .room-name{
     position:fixed;
     padding: 10px;
-    background-color: gainsboro;
-    border-bottom: 3px solid var(--bg-tertiary);
+    background-color: var(--bg-secondary);
+    
     height:40px;
     width:100%;
-    color: var(--text-primary);
+    color: white;
 }
 
 .message-list{
@@ -40,11 +41,21 @@
     font-size: 20px;
     padding: 10px 0;
 }
+.message-details{
+    display: flex;
+    align-items: baseline;
+}
 
 .message-sender{
     color: var(--text-secondary);
-    text-decoration: underline;
+    /* text-decoration: underline; */
+    font-weight: 700;
     padding-top: 2px;
+    padding-right: 5px;
+}
+
+.message-date{
+    font-size: 15px;
 }
 
 .message-input-container{
@@ -74,7 +85,7 @@
 .message-button{
     flex: 1;
     height: 50px;
-    border:1px solid black;
+    border:1px solid transparent;
     border-radius: 0 15px 15px 0;
     background-color: var(--bg-primary);
     color: white;
@@ -92,6 +103,7 @@
 }
 
 .user-title{
+    border-bottom: 1px solid black;
     padding: 15px;
     height:fit-content;
 }
