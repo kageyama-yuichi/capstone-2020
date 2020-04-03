@@ -36,7 +36,7 @@ public class ChatController {
     public List<ChatMessage> fetch_history() {
     	List<ChatMessage> old_messages = new ArrayList<ChatMessage>();
     	ChatMessage temp = new ChatMessage();
-    	temp.set_sender("Joe");
+    	temp.set_sender("Tyler");
     	temp.set_type(ChatMessage.MessageType.CHAT);
     	temp.set_content("Hey Bois, make sure to do your work tonight mmk?");
     	old_messages.add(temp);
@@ -55,8 +55,6 @@ public class ChatController {
     public List<ChatMessage> fetch_members() {
     	List<ChatMessage> members = new ArrayList<ChatMessage>();
     	ChatMessage temp = new ChatMessage();
-    	temp.set_sender("Joe");
-    	members.add(temp);
     	temp = new ChatMessage();
     	temp.set_sender("Michael");
     	members.add(temp);

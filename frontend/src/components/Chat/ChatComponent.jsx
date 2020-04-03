@@ -20,7 +20,8 @@ class ChatComponent extends Component {
 			current_time: '',
 			open_notifications: false,
 			bell_ring: false,
-			is_typing: false
+			is_typing: false,
+			loaded_history: false
 		};
 	}
 	
@@ -80,35 +81,48 @@ class ChatComponent extends Component {
 	// Handles Chat History
 	on_history_received = (payload) => {
 		var obj = JSON.parse(payload.body);
-	
-		for(let i=0; i<obj.length; i++){
-			this.state.old_messages.push({
-				message: obj[i].content,
-				sender: obj[i].sender,
-				date_time: obj[i].date_time
-			})
-			this.setState({
-				old_messages: this.state.old_messages,
-			})
+		if(!this.state.loaded_history){
+			for(let i=0; i<obj.length; i++){
+				this.state.old_messages.push({
+					message: obj[i].content,
+					sender: obj[i].sender,
+					date_time: obj[i].date_time
+				})
+				this.setState({
+					old_messages: this.state.old_messages,
+					loaded_history: true
+				})
+			}
 		}
+		
 		
 	}
 	
 	// Handles Member Loading
 	on_members_received = (payload) => {
 		var obj = JSON.parse(payload.body);
-	
+		var does_exist = false;
+		
 		for(let i=0; i<obj.length; i++){
-			this.state.room_notification.push({
-				'sender': obj[i].sender,
-				'status': 'offline',
-				'date_time': obj[i].date_time
+			this.state.room_notification.map((notification, counter) => {
+				if (notification.sender === obj[i].sender) {
+					does_exist = true;
+				}
 			})
+			if(!does_exist){
+				this.state.room_notification.push({
+					'sender': obj[i].sender,
+					'status': 'offline',
+					'date_time': obj[i].date_time
+				})
+			} else {
+				// Reset variable
+				does_exist = false;
+			}
 			this.setState({
-				room_notification: this.state.room_notification
+				room_notification: this.state.room_notification.sort(this.sort_by_online_names)
 			})
 		}
-		
 	}
 	
 	// Handles Server Responses Accordingly
@@ -130,7 +144,7 @@ class ChatComponent extends Component {
 				this.state.room_notification.push({ 'sender': message_text.sender, 'status': 'online', 'date_time': message_text.date_time })
 			}
 			this.setState({
-				room_notification: this.state.room_notification,
+				room_notification: this.state.room_notification.sort(this.sort_by_online_names),
 				bell_ring: true
 			})
 		}
@@ -142,7 +156,7 @@ class ChatComponent extends Component {
 				}
 			})
 			this.setState({
-				room_notification: this.state.room_notification,
+				room_notification: this.state.room_notification.sort(this.sort_by_online_names),
 				bell_ring: true
 			})
 		}
@@ -210,6 +224,7 @@ class ChatComponent extends Component {
 		})
     }
 	
+	// This method handels all the "TYPING" actions
     handle_typing = (event) => {
 		this.setState({
             message: event.target.value
@@ -229,11 +244,34 @@ class ChatComponent extends Component {
 				this.setState({
 					is_typing: true
 				})
-				// Send the Message off
-				this.send_message("TYPING", event.target.value);
+				// Send the Message off and Save if not "Started Typing"
+				this.send_message("TYPING", "Started Typing");
 			}
 		}
     };
+	
+	// This function is a complementary function to .sort() where it 
+	// helps Sort by Status (Online on Top) and then Name
+	sort_by_online_names = (a, b) => {
+		const user_a_name = a.sender.toUpperCase();
+		const user_a_status = a.status;
+		const user_b_name = b.sender.toUpperCase();
+		const user_b_status = b.status;
+		
+		let comparison = 0;
+		if(user_a_status < user_b_status){
+			comparison = 1;
+		} else if (user_a_status > user_b_status) {
+			comparison = -1;
+		} else {
+			if (user_a_name > user_b_name) {
+				comparison = 1;
+			} else if (user_a_name < user_b_name) {
+				comparison = -1;
+			}
+		}
+		return comparison;
+	}
 	
 	componentDidUpdate() {
 		if (this.state.error) {
@@ -267,7 +305,7 @@ class ChatComponent extends Component {
 				<h1>Users</h1>
 				{
 					this.state.room_notification.map((rm_not, i) => (
-					<p key={i}>{rm_not.sender} ({rm_not.status})</p>
+						<p key={i}>{rm_not.sender} ({rm_not.status})</p>
 					))
 				}
 				<h1>Messages</h1>
