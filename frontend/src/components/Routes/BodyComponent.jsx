@@ -5,6 +5,7 @@ import LandingComponent from '../Landing/LandingComponent.jsx'
 import ChatComponent from '../Chat/ChatComponent.jsx'
 import DashboardComponent from '../Dashboard/DashboardComponent.jsx'
 import SidebarComponent from '../Sidebar/SidebarComponent.jsx'
+import AgendaComponent from '../Agenda/AgendaComponent.jsx'
 
 class BodyComponent extends Component {
     render() {
@@ -17,7 +18,9 @@ class BodyComponent extends Component {
                             <Route path="/" exact component={LandingComponent} />
 							<Route path="/chat" exact component={ChatComponent} />
                             <Route path="/dashboard" exact component={DashboardComponent} />
-                            <Route component={ErrorComponent}/>
+                            <Route path="/agenda" exact component={AgendaComponent} />
+
+                            <Route component={ErrorComponent} />
                         </Switch>
                         {/* <FooterComponent/> */}
                     </>

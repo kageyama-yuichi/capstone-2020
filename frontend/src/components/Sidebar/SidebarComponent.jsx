@@ -36,7 +36,7 @@ class SidebarComponent extends Component {
 							</Link>
 						</li>
 						<li className="sidebar-item">
-							<Link to="/dashboard" className="nav-link">
+							<Link to="/agenda" className="nav-link">
 								<img src={AgendaIcon}></img>
 								<span className="link-text">Agenda</span>
 							</Link>
