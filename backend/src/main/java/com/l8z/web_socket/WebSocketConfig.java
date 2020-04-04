@@ -14,7 +14,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override // Clients will use to Connect
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // SockJS is used to enable fallback options for browsers that don’t support WebSocket
-    	registry.addEndpoint("/orgs").setAllowedOrigins(GlobalVariable.L8Z_URL).withSockJS();
+    	registry.addEndpoint("/chat").setAllowedOrigins(GlobalVariable.L8Z_URL).withSockJS();
         
     }
 
@@ -26,6 +26,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     	registry.setApplicationDestinationPrefixes("/app");
         // This will be used for Group Channel Chat Instances
         // i.e., This will be "/group-id/channel/"
-        registry.enableSimpleBroker("/group/public","/group/public/history","/group/public/members","/queue"); 
+        //registry.enableSimpleBroker("/group","/group/history","/group/members","/user");
+    	registry.enableSimpleBroker("/group","/user");
+        // Enables Split Stream Routing
+        registry.setUserDestinationPrefix("/user");
     }
 }

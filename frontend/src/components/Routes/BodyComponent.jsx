@@ -15,8 +15,8 @@ class BodyComponent extends Component {
                         {<SidebarComponent/>}
                         <Switch>
                             <Route path="/" exact component={LandingComponent} />
-							<Route path="/orgs" exact component={ChatComponent} /> // Should be Replaced with List of Organisations
-							<Route path="/orgs/:room_id" exact component={ChatComponent} />
+							<Route path="/chat" exact component={ChatComponent} /> // Should be Replaced with List of Organisations
+							<Route path="/chat/:group_id" exact component={ChatComponent} />
                             <Route path="/dashboard" exact component={DashboardComponent} />
                             <Route component={ErrorComponent}/>
                         </Switch>
