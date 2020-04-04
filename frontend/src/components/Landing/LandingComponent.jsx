@@ -100,7 +100,7 @@ class LandingComponent extends Component {
 
 								<input
 									type="submit"
-									className="login-button"
+									className="login-button submit-button"
 									value="SIGN IN"
 								></input>
 							</form>

@@ -74,7 +74,9 @@
 	color: var(--text-secondary);
 }
 
-.login-button {
+
+
+.submit-button {
 	height: fit-content;
 	width: fit-content;
 	text-align: center;
@@ -87,7 +89,7 @@
 	border:none;
 }
 
-.login-button:hover {
+.submit-button:hover {
     border: 1px solid white;
     opacity: 90%;
 
@@ -130,7 +132,7 @@
 	color: var(--text-secondary);
 }
 
-.info-container {
+.homepage .info-container {
 	height: 100%;
 	width: 60%;
 	position: absolute;
@@ -172,6 +174,7 @@
 	width: 100%;
 	margin-top: 0px;
 	margin-bottom: 15px;
+	border-color: darkgray;
 	border-style: none none solid;
 	border-width: 1px;
 	outline: none;
@@ -180,7 +183,8 @@
 }
 
 .input-field:focus {
-	outline: none;
+	border-color: var(--text-secondary);
+	border-width: 2px;
 }
 .input-name{
 	text-align:left;
