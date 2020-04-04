@@ -186,3 +186,9 @@
     margin: 0 5%;
     margin-top: 1%;
 }
+
+
+.form-error{
+    color: var(--bg-primary);
+    font-weight: 600;
+}

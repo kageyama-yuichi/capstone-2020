@@ -1,20 +1,30 @@
 import React, { Component } from "react";
 import "./ProfileComponent.css";
 
+//TODO: Prevent XSS
+
 class ProfileComponent extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			firstName: "John",
-			lastName: "Doe",
+			firstname: "John",
+			lastname: "Doe",
 			address: "Somewhere",
 			bio: "Lorem ipsum",
 			picUrl: "https://picsum.photos/200",
-			imageError: ""
+			imageError: "",
+			firstnameError: "",
+			lastnameError: "",
+			addressError: ""
 		};
 		this.handleImageChange = this.handleImageChange.bind(this);
-		this.handleChange = this.handleChange.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.handleCancelClick = this.handleCancelClick.bind(this);
 	}
+
+    handleCancelClick() {
+        this.props.history.goBack();
+    }
 
 	handleImageClick = e => {
 		this.imageInputElement.click();
@@ -44,18 +54,65 @@ class ProfileComponent extends Component {
 		}
 	};
 
-	handleChange(event) {
-		const { name: fieldName, value } = event.target;
+	handleChange = e => {
+		const { name: fieldName, value } = e.target;
 		this.setState({
 			[fieldName]: value
 		});
+	};
+
+	handleValidation() {
+		let fields = this.state;
+		let formIsValid = true;
+
+		let nameRegex = new RegExp("[a-zA-Z]+");
+
+		//First name cannot be empty or contain numbers
+		if (!fields.firstname) {
+			formIsValid = false;
+			this.setState({ firstnameError: "First name cannot be empty" });
+		} else if (!nameRegex.test(fields.firstname)) {
+			formIsValid = false;
+			this.setState({
+				firstnameError: "First name can only contain letters"
+			});
+		}
+
+		//Last name cannot be empty or contain numbers
+		if (!fields.lastname) {
+			formIsValid = false;
+			this.setState({ lastnameError: "Last name Cannot be empty" });
+		} else if (!nameRegex.test(fields.lastname)) {
+			formIsValid = false;
+			this.setState({
+				lastnameError: "Last name can only contain letters"
+			});
+		}
+
+		if (!fields.address) {
+			formIsValid = false;
+			this.setState({ addressError: "Address Cannot be empty" });
+        }
+        
+        return formIsValid;
 	}
+
+	onSubmit = e => {
+		e.preventDefault();
+		if (this.handleValidation()) {
+			console.log("success");
+			this.props.history.push(`/dashboard`);
+		}
+	};
 
 	render() {
 		return (
 			<div className="app-window profile-component">
 				<header className="title-container">Profile</header>
-				<form className="profile-update-form">
+				<form
+					className="profile-update-form"
+					onSubmit={this.onSubmit.bind(this)}
+				>
 					<div className="image-upload-wrapper">
 						<div className="image-upload">
 							<img
@@ -85,7 +142,7 @@ class ProfileComponent extends Component {
 							{this.state.imageError}
 						</div>
 						<div className="cancel-button-container">
-							<button className="cancel-button submit-button">
+							<button className="cancel-button submit-button"onClick={this.handleCancelClick}>
 								CANCEL
 							</button>
 						</div>
@@ -99,21 +156,23 @@ class ProfileComponent extends Component {
 								<h3>First name</h3>
 								<input
 									className="fName-input input-field"
-									name="firstName"
+									name="firstname"
 									type="text"
-									value={this.state.firstName}
+									value={this.state.firstname}
 									onChange={this.handleChange.bind(this)}
-								></input>
+                                ></input>
+                                <p className="form-error">{this.state.firstnameError}</p>
 							</div>
 							<div className="lName-container">
 								<h3>Last name</h3>
 								<input
 									className="lName-input input-field"
-									name="lastName"
+									name="lastname"
 									type="text"
-									value={this.state.lastName}
+									value={this.state.lastname}
 									onChange={this.handleChange.bind(this)}
-								></input>
+                                ></input>
+                                <p className="form-error">{this.state.lastnameError}</p>
 							</div>
 						</div>
 						<div className="address-container">
@@ -124,7 +183,8 @@ class ProfileComponent extends Component {
 								type="text"
 								value={this.state.address}
 								onChange={this.handleChange.bind(this)}
-							></input>
+                            ></input>
+                            <p className="form-error">{this.state.addressError}</p>
 						</div>
 						<div className="bio-container">
 							<h3>Biography</h3>
