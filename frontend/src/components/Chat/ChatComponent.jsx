@@ -28,13 +28,13 @@ class ChatComponent extends Component {
 	
 	// Function to Connect the User to the Server
 	my_connect = (new_username) => {
+		group_id = "/"+this.props.match.params.group_id
 		console.log("System - Trying to Connect...");
 		if (new_username) {
 			// Create the Socket
 			const Stomp = require('stompjs')
 			var SockJS = require('sockjs-client')
 			var socket = new SockJS(API_URL+'/chat')
-			group_id = window.location.pathname.slice(5);
 			stomp_client = Stomp.over(socket);
 			console.log(stomp_client);
 			// Connect the User
@@ -51,7 +51,6 @@ class ChatComponent extends Component {
 		this.setState({
 		  channel_connected: true
 		})
-		console.log(window.location.pathname.slice(5));
 		// Subscribing to the public Group
 		stomp_client.subscribe('/group/members'+group_id, this.on_members_received, {});
 		stomp_client.subscribe('/group/history'+group_id, this.on_history_received, {});
