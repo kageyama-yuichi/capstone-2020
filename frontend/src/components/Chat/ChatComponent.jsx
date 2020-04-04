@@ -29,6 +29,10 @@ class ChatComponent extends Component {
 	// Function to Connect the User to the Server
 	my_connect = (new_username) => {
 		group_id = "/"+this.props.match.params.group_id
+		console.log(group_id);
+		if((group_id !== "/my_first_group") && (group_id !== "/my_second_group")){
+			return null; // Should Redirect to Organisation Page
+		}
 		console.log("System - Trying to Connect...");
 		if (new_username) {
 			// Create the Socket
@@ -167,7 +171,7 @@ class ChatComponent extends Component {
 				if (notification.sender === message_text.sender) {
 					if (message_text.content)
 						notification.status = "typing...";
-					if (message_text.content == "Stopped Typing")
+					if (message_text.content === "Stopped Typing")
 						notification.status = "online";
 				}
 			})
@@ -233,7 +237,7 @@ class ChatComponent extends Component {
         });
 
 		// Check if the Value was Empty
-		if(event.target.value == ""){
+		if(event.target.value === ""){
 			// Set the is_typing boolean to false
 			this.setState({
 				is_typing: false
