@@ -4,7 +4,7 @@ import "./DashboardComponent.css"
 class DashboardComponent extends Component {
     render() {
         return (
-            <div className="dashboard">dashboard</div>
+            <div className="app-window">dashboard</div>
         )
     }
 }
