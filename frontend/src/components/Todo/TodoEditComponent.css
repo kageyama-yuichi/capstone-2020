@@ -1,0 +1,40 @@
+.todo-form{
+    width: 100%;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    
+}
+
+.todo-form .group{
+    padding: 15px 0;
+}
+
+.todo-overlay{
+    width: 40%;
+}
+
+.todo-form input{
+    font-size: 16px;
+    height: fit-content;
+    padding: 15px 0;
+    width: 95%;
+}
+
+.todo-form .date-input{
+    padding: 0;
+}
+
+.todo-form .save-button{
+    width: 95%;
+    padding: 15px;
+    background-color: var(--bg-primary);
+    border: none;
+    font-size: 20px;
+    color: white;
+    font-weight: 600;
+}
+
+.group .error-label{
+    color: var(--bg-primary);
+}
