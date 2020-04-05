@@ -26,8 +26,7 @@
 
 .done-col button {
 	height: fit-content;
-	width: 50px;
-	color: white;
+	width: 55px;
 	padding: 5px;
 	font-size: 15px;
 	font-weight: 500;
@@ -35,10 +34,14 @@
 
 .done-button {
 	background-color: rgb(35, 218, 35);
+	border: 2px solid darkgray;
+	color: white;
 }
 
 .doing-button {
-	background-color: rgb(212, 65, 45);
+	background-color: white;
+	border: 3px solid rgb(35, 218, 35);
+	color: darkgray;
 }
 
 .done-col {
@@ -94,7 +97,7 @@ td button:hover {
     width: 150px;
     padding: 10px;
     font-size: 15px;
-    background-color: lightskyblue;
+    background-color: steelblue;
     color: white;
     border: none;
     opacity: 70%;

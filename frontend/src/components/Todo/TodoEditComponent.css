@@ -7,6 +7,8 @@
 }
 
 .todo-form .group{
+    display:flex;
+    flex-direction: column;
     padding: 15px 0;
 }
 
@@ -17,12 +19,8 @@
 .todo-form input{
     font-size: 16px;
     height: fit-content;
-    padding: 15px 0;
+    padding: 5px 0;
     width: 95%;
-}
-
-.todo-form .date-input{
-    padding: 0;
 }
 
 .todo-form .save-button{
