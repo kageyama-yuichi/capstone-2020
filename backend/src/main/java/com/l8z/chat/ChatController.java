@@ -4,16 +4,12 @@ package com.l8z.chat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-
-import com.l8z.GlobalVariable;
 
 @Controller
 public class ChatController {
@@ -32,7 +28,7 @@ public class ChatController {
     		SimpMessageHeaderAccessor header_accessor) {
     	System.out.println(group_id);
         // Add user in Web Socket Session
-    	//chat_message.display_message(); // Displays the Chat Message for Debugging Purposes
+    	chat_message.display_message(); // Displays the Chat Message for Debugging Purposes
     	header_accessor.getSessionAttributes().put("username", chat_message.get_sender());
         return chat_message;
     }

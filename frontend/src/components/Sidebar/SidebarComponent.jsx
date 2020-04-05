@@ -12,8 +12,7 @@ import { Link } from "react-router-dom";
 class SidebarComponent extends Component {
 	render() {
 		//Do not load sidebar on landing page
-		//if (window.location.pathname === '/') {
-		if (true) {
+		if (window.location.pathname === '/') {
 			return null;
 		} else {
 			return (
@@ -31,7 +30,7 @@ class SidebarComponent extends Component {
 							</Link>
 						</li>
 						<li className="sidebar-item">
-							<Link to="/dashboard" className="nav-link">
+							<Link to="/chat" className="nav-link">
 								<img src={TeamsIcon}></img>
 								<span className="link-text">Orgs</span>
 							</Link>

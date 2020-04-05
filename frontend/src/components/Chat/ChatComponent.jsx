@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import SockJS from 'sockjs-client'
 import StompJS from 'stompjs'
 import { API_URL } from '../../Constants'
+import  './ChatComponent.css'
 
 var stomp_client = null;
 var group_id = null;
@@ -61,6 +62,7 @@ class ChatComponent extends Component {
 		stomp_client.subscribe('/group'+group_id, this.on_message_received, {});
 		this.fetch_members();
 		this.fetch_history();
+		
 		// Registering user to server as a group chat user
 		stomp_client.send("/app/existing_user"+group_id, {}, JSON.stringify({ type: 'JOIN', sender: this.state.username }))
 	}
@@ -305,44 +307,88 @@ class ChatComponent extends Component {
 	render() {
 		console.log("System - Rendering Page...");
 		console.log("System - Connection Status: "+this.state.channel_connected);
+		
         return (
-            <div className="ChatComponent">
-				<h1>L8Z Chat Room</h1>
-				<h1>Users</h1>
-				{
-					this.state.room_notification.map((rm_not, i) => (
-						<p key={i}>{rm_not.sender} ({rm_not.status})</p>
-					))
-				}
-				<h1>Messages</h1>
-				{
-					this.state.old_messages.map((old_msg, i) => (
-						<p key={i}>{old_msg.sender}: {old_msg.message}</p>
-					))
-				}
-				{
-					this.state.broadcast_message.map((bc_msg, i) => (
-						<p key={i}>{bc_msg.sender}: {bc_msg.message}</p>
-					))
-				}
-				<input 
-					type="msg"
-					id="msg"
-					placeholder="Enter Message"
-					onChange={this.handle_typing}
-					value={this.state.message}
-					onKeyPress={event => {
-                        if (event.key === 'Enter') {
-                            this.handle_send_message();
-                        }
-                    }}
-					/>
-					{
-						this.scroll_to_bottom()
-					}
+			<div className="app-window chat-component">
+				<h1 className="room-name">L8Z Chat Room</h1>
+				<div className="chat-room-container">
+					<div className="messages-container">
+						<div className="message-list">
+							{
+								this.state.old_messages.map((old_msg, i) => (
+								<div key={i} className="message">
+									<div className="message-details">
+										<div className="message-sender">
+											{old_msg.sender}
+										</div>
+										
+										{/* <div className="message-date">
+											July 3rd 2020 at 12:30am
+										</div> */}
+									</div>
+									
+									<div className="message-body">
+										{old_msg.message}
+									</div>
+								</div>
+							))
+							}
+							{this.state.broadcast_message.map((bc_msg, i) => (
+								<div key={i} className="message">
+									<div className="message-details">
+										<div className="message-sender">
+											{bc_msg.sender}
+										</div>
+										
+										{/* <div className="message-date">
+											July 3rd 2020 at 12:30am
+										</div> */}
+									</div>
+									
+									<div className="message-body">
+										{bc_msg.message}
+									</div>
+								</div>
+							))}
+						</div>
+						<div className="message-input-container">
+							<input
+								className="message-input"
+								type="msg"
+								id="msg"
+								placeholder="Enter Message"
+								onChange={this.handle_typing}
+								value={this.state.message}
+								onKeyPress={event => {
+									if (event.key === "Enter") {
+										this.handle_send_message();
+									}
+								}}
+							/>
+							<input
+								className="message-button"
+								type="button"
+								value="SEND"
+								onClick={this.handle_send_message}
+							/>
+						</div>
+
+						{this.scroll_to_bottom()}
+					</div>
+					<div className="user-container">
+						<h1 className="user-title">Users</h1>
+						<div className="user-list">
+							{this.state.room_notification.map((rm_not, j) => (
+								<p key={j}>
+									- {rm_not.sender} ({rm_not.status})
+								</p>
+							))}
+						</div>
+					</div>
+				</div>
 			</div>
-        )
-    }
+		);
+	}
 }
 
-export default ChatComponent
+export default ChatComponent;
