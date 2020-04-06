@@ -1,21 +1,15 @@
 package com.l8z.orgs;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
-@Entity
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Member {
-	@Id
-	@GeneratedValue
-	private Long id;
 	// Users will be found in the User Table
-	private String username; 
+	@JsonProperty("username") private String username; 
 	// Role will help Limit Access
-	@Enumerated(EnumType.STRING)
-	private Role role;
+	@JsonProperty("role") private Role role;
 
 	// Enumeration Class to define Types 
     public enum Role {
@@ -25,17 +19,18 @@ public class Member {
         TEAM_MEMBER
     }
     
+    // Default Constructor
+ 	public Member() {
+ 		
+ 	}
+    
 	// Constructor
-	public Member(Long id, String username, Role role) {
-		this.id = id;
+	public Member(String username, Role role) {
 		this.username = username;
 		this.role = role;
 	}
 	
 	// Getters
-	public Long get_id() {
-		return id;
-	}
 	public String get_username() {
 		return username;
 	}
@@ -44,9 +39,6 @@ public class Member {
 	}
 	
 	// Setters
-	public void set_id(Long id) {
-		this.id = id;
-	}
 	public void set_username(String username) {
 		this.username = username;
 	}

@@ -1,10 +1,10 @@
 package com.l8z.chat;
 //Sourced from: https://www.callicoder.com/spring-boot-websocket-chat-example/
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -12,7 +12,13 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 
-import com.l8z.orgs.repository.OrgsJpaRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.l8z.orgs.Channels;
+import com.l8z.orgs.Instances;
+import com.l8z.orgs.Instances.InstanceType;
+import com.l8z.orgs.Member;
+import com.l8z.orgs.Member.Role;
+import com.l8z.orgs.Orgs;
 
 @Controller
 public class ChatController {
@@ -30,7 +36,35 @@ public class ChatController {
     		@DestinationVariable("instance_id") String instance_id,
     		@Payload ChatMessage chat_message) {
     	log_to_stdout("send_message", org_id, channel_id, instance_id);
-
+    	
+    	ObjectMapper jsonMapper = new ObjectMapper();
+        
+        Orgs jsonData = new Orgs("RMIT","RMIT University");
+        jsonData.add_member(new Member("Michael", Role.TEAM_MEMBER));
+        jsonData.add_member(new Member("Tylar", Role.TEAM_MEMBER));
+        jsonData.add_member(new Member("Yuichi", Role.TEAM_MEMBER));
+        jsonData.add_member(new Member("Matthew", Role.TEAM_MEMBER));
+        jsonData.add_member(new Member("Raimond", Role.TEAM_MEMBER));
+        jsonData.add_member(new Member("V", Role.TEAM_MEMBER));
+        
+        Channels inner_data = new Channels("Engineering", new Member("michael", Role.ORG_OWNER));
+        Instances inner_inner_data = new Instances("chat_one", InstanceType.CHAT);
+        inner_inner_data.add_message(chat_message);
+        inner_data.add_instance(inner_inner_data);
+        jsonData.add_channel(inner_data);
+        
+          // now convert to json with the following
+          try {
+            String json = jsonMapper.writeValueAsString(jsonData);
+            System.out.println(json); 
+            Orgs temp = jsonMapper.readValue(json, Orgs.class);
+            temp.display_org_structure();
+            
+          } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }       
+          
     	//orgsjpa.save(chat_message);
     	//chat_message.display_message(); // Displays the Chat Message for Debugging Purposes
         return chat_message;

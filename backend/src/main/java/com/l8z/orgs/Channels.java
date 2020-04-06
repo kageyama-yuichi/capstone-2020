@@ -3,45 +3,40 @@ package com.l8z.orgs;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
-import com.l8z.orgs.converter.JSONObjectConverter;
-
-@Entity
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Channels {
-	@Id
 	// A String used for Displaying the Channel (Unique)
-	private String channelTitle;
+	@JsonProperty("channel_title") private String channel_title;
 	// Owner of Channel is only allowed to Delete their Channel
-	@Column(length=65535)
-	@Convert(converter = JSONObjectConverter.class)
-	private Member owner;
+	@JsonProperty("owner") private Member owner;
 	// Keeps a List of Members who have access to this Channel
-	@Column(length=65535)
-	@Convert(converter = JSONObjectConverter.class)
-	private List<Member> members = new ArrayList<>();
+	@JsonProperty("members") private List<Member> members = new ArrayList<>();
 	// Keeps a List of all the Instances that are Created for this Channel
-	@Column(length=65535)
-	@Convert(converter = JSONObjectConverter.class)
-	private List<Instances> instances = new ArrayList<>();
+	@JsonProperty("instances") private List<Instances> instances = new ArrayList<>();
+	
+	// Default Constructor
+	public Channels() {
+		
+	}
 	
 	// Constructor
 	public Channels(String channel_title, Member owner) {
-		this.channelTitle = channel_title;
+		this.channel_title = channel_title;
 		this.owner = owner;
 	}
 	
 	// Getters
 	public String get_channel_title() {
-		return channelTitle;
+		return channel_title;
 	}
 	public Member get_owner() {
 		return owner;
 	}
-	public List<Member> get_channel_members() {
+	public List<Member> get_members() {
 		return members;
 	}
 	public boolean has_member(Member member) {
@@ -53,7 +48,7 @@ public class Channels {
 	
 	// Setters
 	public void set_channel_title(String channel_title) {
-		this.channelTitle = channel_title;
+		this.channel_title = channel_title;
 	}
 	public void set_owner(Member owner) {
 		this.owner = owner;
@@ -68,7 +63,7 @@ public class Channels {
 		// Removes the Old Member
 		members.remove(member);
 		// Adds the Member with Updated Role
-		members.add(new Member(member.get_id(), member.get_username(), new_role));
+		members.add(new Member(member.get_username(), new_role));
 		
 	}
 	public void add_instance(Instances new_instance) {
@@ -85,6 +80,6 @@ public class Channels {
          if (o == null || getClass() != o.getClass()) return false;
          
          Channels comp = (Channels) o;
-         return channelTitle == comp.channelTitle;
+         return channel_title == comp.channel_title;
      }
 }

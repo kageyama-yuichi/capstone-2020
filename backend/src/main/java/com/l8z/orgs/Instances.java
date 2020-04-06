@@ -3,26 +3,17 @@ package com.l8z.orgs;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.l8z.chat.ChatMessage;
-import com.l8z.orgs.converter.JSONObjectConverter;
 
-@Entity
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class Instances {
-	@Id
 	// A String used for Displaying the Instance 
-	private String instanceTitle;
-	@Enumerated(EnumType.STRING)
-	private InstanceType type;
-	@Column(length=1999999999)
-	@Convert(converter = JSONObjectConverter.class)
-	private List<ChatMessage> log = new ArrayList<>();
+	@JsonProperty("instance_title") private String instance_title;
+	@JsonProperty("type") private InstanceType type;
+	@JsonProperty("log") private List<ChatMessage> log = new ArrayList<>();
 	// private Something voice
 	
 	// Enumeration Class to define Types 
@@ -31,20 +22,25 @@ public class Instances {
         VOICE
     }
     
+    // Default Constructor
+ 	public Instances() {
+ 		
+ 	}
+    
 	// Constructor
     public Instances(String instance_title, InstanceType type) {
-    	this.instanceTitle = instance_title;
+    	this.instance_title = instance_title;
     	this.type = type;
     }
     
     // Getters
     public String get_instance_title() {
-    	return instanceTitle;
+    	return instance_title;
     }
     public InstanceType get_type() {
     	return type;
     }
-    public List<ChatMessage> get_all_log() {
+    public List<ChatMessage> get_log() {
     	return log;
     }
     // Returns the Most Recent n Logs
@@ -63,7 +59,7 @@ public class Instances {
     
     // Setters
     public void set_instance_title(String instance_title) {
-    	this.instanceTitle = instance_title;
+    	this.instance_title = instance_title;
     } 
     public void set_type(InstanceType type) {
     	this.type = type;
@@ -86,6 +82,6 @@ public class Instances {
          if (o == null || getClass() != o.getClass()) return false;
          
          Instances comp = (Instances) o;
-         return instanceTitle == comp.instanceTitle;
+         return instance_title == comp.instance_title;
      }
 }

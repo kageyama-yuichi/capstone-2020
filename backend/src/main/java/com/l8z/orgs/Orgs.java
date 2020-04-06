@@ -3,45 +3,36 @@ package com.l8z.orgs;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
-import com.l8z.orgs.converter.JSONObjectConverter;
-
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 // A Class to Hold all Organisation Related Information
-@Entity
 public class Orgs {
 	// Unique to the Organisation
-	@Id
-	@Column(name="org_id")
-	private String orgId;
+	@JsonProperty("org_id") private String org_id;
 	// Multiple Organisations can have the same Title
-	@Column(name="org_title")
-	private String org_title; 
+	@JsonProperty("org_title") private String org_title; 
 	// Stores all the Members of the Organisation
-	//@OneToMany(targetEntity=Member.class, mappedBy="orgs", fetch=FetchType.EAGER)
-    @Column(length=65535)
-	@Convert(converter = JSONObjectConverter.class)
-	private List<Member> members = new ArrayList<>();
+	@JsonProperty("members") private List<Member> members = new ArrayList<>();
 	// Stores all the Channels
-	//@OneToMany(targetEntity=Channels.class, mappedBy="orgs", fetch=FetchType.EAGER)
-    @Column(length=65535)
-    @Convert(converter = JSONObjectConverter.class)
-	private List<Channels> channels = new ArrayList<>();
+	@JsonProperty("channels")private List<Channels> channels = new ArrayList<>();
 	
+	// Default Constructor
+	public Orgs() {
+		
+	}
+	
+	// Constructor
 	public Orgs(String org_id, String org_title) {
-		this.orgId = org_id;
+		this.org_id = org_id;
 		this.org_title = org_title;
 	}
 	
 	// Getters
 	public String get_org_id() {
-		return orgId;
+		return org_id;
 	}
 	public String get_org_title() {
 		return org_title;
@@ -58,7 +49,7 @@ public class Orgs {
 	
 	// Setters
 	public void set_org_id(String org_id) {
-		this.orgId = org_id;
+		this.org_id = org_id;
 	}
 	public void set_org_title(String org_title) {
 		this.org_title = org_title;
@@ -75,7 +66,7 @@ public class Orgs {
 				// Removes the Old Member
 				members.remove(member);
 				// Adds the Member with Updated Role
-				members.add(new Member(member.get_id(), member.get_username(), new_role));
+				members.add(new Member(member.get_username(), new_role));
 				// Go through All Channels and Update that Member
 				for(int i=0; i<channels.size(); i++) {
 					// Checking if the Member Exists in that Channel
@@ -97,4 +88,18 @@ public class Orgs {
 		
 		return change_status;
 	}
+	public void add_channel(Channels new_channel) {
+		channels.add(new_channel);
+	}
+
+	// Display
+	public void display_org_structure() {
+		System.out.println("org_id: "+org_id);
+        System.out.println("org_title: "+org_title);
+        System.out.println("members: {");
+        for(int i=0; i<members.size(); i++) {
+        	System.out.println("username: "+members.get(i).get_username() +", role: "+members.get(i).get_role());
+        }
+	}
+	
 }
