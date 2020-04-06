@@ -30,17 +30,18 @@
 	padding: 5px;
 	font-size: 15px;
 	font-weight: 500;
+	border-radius: 10px;
 }
 
 .done-button {
-	background-color: rgb(35, 218, 35);
-	border: 2px solid darkgray;
+	background-color: rgb(28, 196, 28);
+	border: 1px solid darkgray;
 	color: white;
 }
 
 .doing-button {
 	background-color: white;
-	border: 3px solid rgb(35, 218, 35);
+	border: 3px solid rgb(38, 173, 38);
 	color: darkgray;
 }
 

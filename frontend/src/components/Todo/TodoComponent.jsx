@@ -25,7 +25,7 @@ class TodoComponent extends Component {
 			showOverlay: false
 		};
 
-		this.handleEditClick = this.handleEditClick.bind(this);
+		this.handleCreateClick = this.handleCreateClick.bind(this);
 	}
 
 	getTodo(key) {
@@ -37,8 +37,13 @@ class TodoComponent extends Component {
 		}
 	}
 
-	handleEditClick() {
+	handleCreateClick() {
 		this.setState({ showOverlay: !this.state.showOverlay });
+	}
+
+	//TODO: Flesh out edit on click
+	handleEditClick(todo) {
+		console.log(todo);
 	}
 
 	handleDoneClick(key) {
@@ -66,7 +71,7 @@ class TodoComponent extends Component {
 						<h1 style={{ height: "fit-content" }}>Todo List</h1>
 						<button
 							className="new-todo-button"
-							onClick={this.handleEditClick}
+							onClick={this.handleCreateClick}
 						>
 							New Todo
 						</button>
@@ -103,7 +108,7 @@ class TodoComponent extends Component {
 										</td>
 
 										<td className="update-col">
-											<button>
+											<button onClick={() => this.handleEditClick(todo)}>
 												<i className="fas fa-edit"></i>
 											</button>
 										</td>
@@ -124,7 +129,7 @@ class TodoComponent extends Component {
 							</tbody>
 						</table>
 						{this.state.showOverlay ? (
-                            <TodoEditComponent closeHandler={this.handleEditClick} />
+                            <TodoEditComponent closeHandler={this.handleCreateClick} />
 						) : null}
 					</div>
 				</div>
