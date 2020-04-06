@@ -23,13 +23,14 @@ class SidebarComponent extends Component {
 								<img src={LogoIcon}></img>
 							</Link>
 						</li>
+							
+						<li className={(window.location.pathname == `/profile` ? "current-window" : "") + " sidebar-item"}>
 							<Link to="/profile" className="nav-link">
-						<li className={(window.location.pathname == `/profile` ? "current-window": "") + " sidebar-item"}>
 								<img src={ProfileIcon}></img>
 								<span className="link-text">Profile</span>
 							</Link>
 						</li>
-						<li className={(window.location.pathname == `/orgs` ? "current-window": "") + " sidebar-item"}>
+						<li className={(window.location.pathname == `/chat` ? "current-window": "") + " sidebar-item"}>
 							<Link to="/chat" className="nav-link">
 								<img src={TeamsIcon}></img>
 								<span className="link-text">Orgs</span>
