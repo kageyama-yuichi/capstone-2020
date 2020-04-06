@@ -129,9 +129,7 @@ class LandingComponent extends Component {
 						<div className="info-container">
 							<p className="motto">THIS MOTTO.</p>
 							<p className="more-motto">
-								I'm baby 3 wolf moon sriracha bespoke shoreditch
-								butcher coloring book. Retro live-edge XOXO man
-								braid tofu scenester, umami listicle pok pok.{" "}
+									Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin quis ornare nulla. Pellentesque quis malesuada sem. Quisque elementum purus at lorem rhoncus, eu dictum purus malesuada.
 							</p>
 						</div>
 					) : null}
