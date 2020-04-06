@@ -46,18 +46,25 @@
     text-align: center;
 	height: 5rem;
     text-decoration: none !important;
-
 }
 
 
 .nav-link img{
-    min-width: 2rem;
+    min-width: 3rem;
+    width: 80%;
+    height: auto;
+
+}
+
+.nav-link .logo-img{
+    width: 100%;
 }
 
 .link-text, .link-text:hover{
     color: white;
     font-weight: 400;
     font-size: 16px;
+    text-align: center;
 }
 
 .logo-item{
