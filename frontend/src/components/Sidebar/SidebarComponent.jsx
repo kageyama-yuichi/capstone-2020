@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 class SidebarComponent extends Component {
 	render() {
 		//Do not load sidebar on landing page
-		if (window.location.pathname === `/`) {
+		if (window.location.pathname === '/') {
 			return null;
 		} else {
 			return (
@@ -23,14 +23,14 @@ class SidebarComponent extends Component {
 								<img src={LogoIcon}></img>
 							</Link>
 						</li>
+							<Link to="/profile" className="nav-link">
 						<li className={(window.location.pathname == `/profile` ? "current-window": "") + " sidebar-item"}>
-							<Link to="/dashboard" className="nav-link">
 								<img src={ProfileIcon}></img>
 								<span className="link-text">Profile</span>
 							</Link>
 						</li>
 						<li className={(window.location.pathname == `/orgs` ? "current-window": "") + " sidebar-item"}>
-							<Link to="/dashboard" className="nav-link">
+							<Link to="/chat" className="nav-link">
 								<img src={TeamsIcon}></img>
 								<span className="link-text">Orgs</span>
 							</Link>

@@ -15,10 +15,14 @@
 /* To override user agent stylesheet */
 * {
     margin:0px;
-    height: inherit;
+	height: inherit;
     width: inherit;
 }
 
+/* Should probably think of a better way to globally style */
+.app-window{
+    margin-left: 5rem;
+}
 
 a, button, input[type=button], input[type=submit]{
     cursor: pointer;
