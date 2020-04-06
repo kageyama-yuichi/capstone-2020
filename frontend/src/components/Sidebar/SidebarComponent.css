@@ -20,8 +20,11 @@
     height: 5rem;
     padding: 10px;
     opacity: 50%;
-    transition: .3s;
-    
+    transition: .3s;   
+}
+
+.current-window{
+    opacity: 100%;
 }
 
 .sidebar-item:hover{
