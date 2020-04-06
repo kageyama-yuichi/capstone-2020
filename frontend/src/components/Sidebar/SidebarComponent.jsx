@@ -20,7 +20,7 @@ class SidebarComponent extends Component {
 					<ul className="sidebar-nav">
 						<li className={(window.location.pathname == `/dashboard` ? "current-window": "") + " sidebar-item logo-item"}>
 							<Link to="/dashboard" className="nav-link">
-								<img src={LogoIcon}></img>
+								<img className="logo-img" src={LogoIcon}></img>
 							</Link>
 						</li>
 							
