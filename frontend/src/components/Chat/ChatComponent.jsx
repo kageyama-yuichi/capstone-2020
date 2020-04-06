@@ -4,7 +4,10 @@ import StompJS from 'stompjs'
 import { API_URL } from '../../Constants'
 
 var stomp_client = null;
-var group_id = null;
+var orgs_id = null;
+var channel_id = null;
+var instance_id = null;
+var extension = null;
 
 class ChatComponent extends Component {
 	constructor (props) {
@@ -28,11 +31,17 @@ class ChatComponent extends Component {
 	
 	// Function to Connect the User to the Server
 	my_connect = (new_username) => {
-		group_id = "/"+this.props.match.params.group_id
-		console.log(group_id);
-		if((group_id !== "/my_first_group") && (group_id !== "/my_second_group")){
-			return null; // Should Redirect to Organisation Page
-		}
+		console.log(this.props.match.params);
+		orgs_id = "/"+this.props.match.params.orgs_id;
+		channel_id = "/"+this.props.match.params.channel_id;
+		instance_id = "/"+this.props.match.params.instance_id;
+		extension = orgs_id+channel_id+instance_id;
+		
+		console.log(orgs_id);
+		console.log(channel_id);
+		console.log(instance_id);
+		console.log(extension);
+		
 		console.log("System - Trying to Connect...");
 		if (new_username) {
 			// Create the Socket
@@ -56,13 +65,13 @@ class ChatComponent extends Component {
 		  channel_connected: true
 		})
 		// Subscribing to the public Group
-		stomp_client.subscribe('/group/members'+group_id, this.on_members_received, {});
-		stomp_client.subscribe('/group/history'+group_id, this.on_history_received, {});
-		stomp_client.subscribe('/group'+group_id, this.on_message_received, {});
+		stomp_client.subscribe('/group/members'+extension, this.on_members_received, {});
+		stomp_client.subscribe('/group/history'+extension, this.on_history_received, {});
+		stomp_client.subscribe('/group'+extension, this.on_message_received, {});
 		this.fetch_members();
 		this.fetch_history();
 		// Registering user to server as a group chat user
-		stomp_client.send("/app/existing_user"+group_id, {}, JSON.stringify({ type: 'JOIN', sender: this.state.username }))
+		stomp_client.send("/app/existing_user"+extension, {}, JSON.stringify({ type: 'JOIN', sender: this.state.username }))
 	}
 	
 	// Send Messages to the Server
@@ -80,7 +89,7 @@ class ChatComponent extends Component {
 			}
 			// Send Public Message
 			if(valid_message)
-				stomp_client.send("/app/send_message"+group_id, {}, JSON.stringify(message));
+				stomp_client.send("/app/send_message"+extension, {}, JSON.stringify(message));
 		}
 	}
 
@@ -209,12 +218,12 @@ class ChatComponent extends Component {
 	
 	fetch_history = () => {
 		console.log("System - Retrieving Old Messages");
-		stomp_client.send("/app/fetch_history"+group_id);
+		stomp_client.send("/app/fetch_history"+extension);
 	}
 	
 	fetch_members = () => {
 		console.log("System - Retrieving Members");
-		stomp_client.send("/app/fetch_members"+group_id);
+		stomp_client.send("/app/fetch_members"+extension);
 	}
 
 	scroll_to_bottom = () => {

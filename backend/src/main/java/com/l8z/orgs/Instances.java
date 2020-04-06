@@ -3,13 +3,18 @@ package com.l8z.orgs;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import org.json.simple.JSONObject;
+
 import com.l8z.chat.ChatMessage;
+import com.l8z.orgs.converter.JSONObjectConverter;
 
 @Entity
 public class Instances {
@@ -20,6 +25,8 @@ public class Instances {
 	private String instance_title;
 	@Enumerated(EnumType.STRING)
 	private InstanceType type;
+	@Column(length=1999999999)
+	@Convert(converter = JSONObjectConverter.class)
 	private List<ChatMessage> log = new ArrayList<>();
 	// private Something voice
 	
@@ -62,7 +69,7 @@ public class Instances {
     	}
     	return temp_log;
     }
-   
+    
     // Setters
     public void set_id(Long id) {
     	this.id = id;
@@ -73,6 +80,7 @@ public class Instances {
     public void set_type(InstanceType type) {
     	this.type = type;
     }
+
     public void add_message(ChatMessage msg) {
     	log.add(msg);
     }

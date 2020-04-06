@@ -3,11 +3,13 @@ package com.l8z.orgs;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+
+import com.l8z.orgs.converter.JSONObjectConverter;
 
 @Entity
 public class Channels {
@@ -17,12 +19,16 @@ public class Channels {
 	// A String used for Displaying the Channel (Unique)
 	private String channel_title;
 	// Owner of Channel is only allowed to Delete their Channel
+	@Column(length=65535)
+	@Convert(converter = JSONObjectConverter.class)
 	private Member owner;
 	// Keeps a List of Members who have access to this Channel
-	@OneToMany(targetEntity=Member.class, mappedBy="channels", fetch=FetchType.EAGER)
+	@Column(length=65535)
+	@Convert(converter = JSONObjectConverter.class)
 	private List<Member> members = new ArrayList<>();
 	// Keeps a List of all the Instances that are Created for this Channel
-	@OneToMany(targetEntity=Instances.class, mappedBy="channels", fetch=FetchType.EAGER)
+	@Column(length=65535)
+	@Convert(converter = JSONObjectConverter.class)
 	private List<Instances> instances = new ArrayList<>();
 	
 	// Constructor

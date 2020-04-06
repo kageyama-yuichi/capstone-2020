@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+
+import com.l8z.orgs.converter.JSONObjectConverter;
 
 // A Class to Hold all Organisation Related Information
 @Entity
@@ -24,10 +27,14 @@ public class Orgs {
 	@Column(name="org_title")
 	private String org_title; 
 	// Stores all the Members of the Organisation
-	@OneToMany(targetEntity=Member.class, mappedBy="orgs", fetch=FetchType.EAGER)
+	//@OneToMany(targetEntity=Member.class, mappedBy="orgs", fetch=FetchType.EAGER)
+    @Column(length=65535)
+	@Convert(converter = JSONObjectConverter.class)
 	private List<Member> members = new ArrayList<>();
 	// Stores all the Channels
-	@OneToMany(targetEntity=Channels.class, mappedBy="orgs", fetch=FetchType.EAGER)
+	//@OneToMany(targetEntity=Channels.class, mappedBy="orgs", fetch=FetchType.EAGER)
+    @Column(length=65535)
+    @Convert(converter = JSONObjectConverter.class)
 	private List<Channels> channels = new ArrayList<>();
 	
 	public Orgs(Long id, String org_id, String org_title) {
