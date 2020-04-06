@@ -29,14 +29,14 @@
 }
 .logo-container {
     position: relative;
-    width:20%;
+    width:fit-content;
 	height: 20%;
     padding-top: 5%;
     margin: auto;
 }
 .logo {
 	height: 100%;
-	width: 100%;
+	width: auto;
 	vertical-align: middle;
 	align-items: center;
 }

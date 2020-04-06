@@ -3,7 +3,7 @@ import { Nav, NavItem, NavLink } from "reactstrap";
 import "./LandingComponent.css";
 import FooterComponent from "../Footer/FooterComponent.jsx";
 import RegisterComponent from "../Register/RegisterComponent.jsx";
-import logoSVG from "../../assests/Logo_v4.svg";
+import logoSVG from "../../assests/Logo_v4.png";
 
 class LandingComponent extends Component {
 	constructor(props) {
