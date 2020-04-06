@@ -132,7 +132,7 @@
 	color: var(--text-secondary);
 }
 
-.homepage .info-container {
+.home-page .info-container {
 	height: 100%;
 	width: 60%;
 	position: absolute;
@@ -157,6 +157,7 @@
 	margin-left: 10%;
 	font-weight: 700;
 	font-size: 25px;
+	
 }
 
  hr {
