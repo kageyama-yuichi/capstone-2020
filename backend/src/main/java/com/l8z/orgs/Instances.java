@@ -8,10 +8,7 @@ import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-
-import org.json.simple.JSONObject;
 
 import com.l8z.chat.ChatMessage;
 import com.l8z.orgs.converter.JSONObjectConverter;
@@ -19,10 +16,8 @@ import com.l8z.orgs.converter.JSONObjectConverter;
 @Entity
 public class Instances {
 	@Id
-	@GeneratedValue
-	private Long id;
 	// A String used for Displaying the Instance 
-	private String instance_title;
+	private String instanceTitle;
 	@Enumerated(EnumType.STRING)
 	private InstanceType type;
 	@Column(length=1999999999)
@@ -37,18 +32,14 @@ public class Instances {
     }
     
 	// Constructor
-    public Instances(Long id, String instance_title, InstanceType type) {
-    	this.id = id;
-    	this.instance_title = instance_title;
+    public Instances(String instance_title, InstanceType type) {
+    	this.instanceTitle = instance_title;
     	this.type = type;
     }
     
     // Getters
-    public Long get_id() {
-    	return id;
-    }
     public String get_instance_title() {
-    	return instance_title;
+    	return instanceTitle;
     }
     public InstanceType get_type() {
     	return type;
@@ -71,11 +62,8 @@ public class Instances {
     }
     
     // Setters
-    public void set_id(Long id) {
-    	this.id = id;
-    }
     public void set_instance_title(String instance_title) {
-    	this.instance_title = instance_title;
+    	this.instanceTitle = instance_title;
     } 
     public void set_type(InstanceType type) {
     	this.type = type;
@@ -98,6 +86,6 @@ public class Instances {
          if (o == null || getClass() != o.getClass()) return false;
          
          Instances comp = (Instances) o;
-         return instance_title == comp.instance_title;
+         return instanceTitle == comp.instanceTitle;
      }
 }

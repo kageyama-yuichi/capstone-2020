@@ -6,7 +6,6 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import com.l8z.orgs.converter.JSONObjectConverter;
@@ -14,10 +13,8 @@ import com.l8z.orgs.converter.JSONObjectConverter;
 @Entity
 public class Channels {
 	@Id
-	@GeneratedValue
-	private Long id;
 	// A String used for Displaying the Channel (Unique)
-	private String channel_title;
+	private String channelTitle;
 	// Owner of Channel is only allowed to Delete their Channel
 	@Column(length=65535)
 	@Convert(converter = JSONObjectConverter.class)
@@ -32,18 +29,14 @@ public class Channels {
 	private List<Instances> instances = new ArrayList<>();
 	
 	// Constructor
-	public Channels(Long id, String channel_title, Member owner) {
-		this.id = id;
-		this.channel_title = channel_title;
+	public Channels(String channel_title, Member owner) {
+		this.channelTitle = channel_title;
 		this.owner = owner;
 	}
 	
 	// Getters
-	public Long get_id() {
-		return id;
-	}
 	public String get_channel_title() {
-		return channel_title;
+		return channelTitle;
 	}
 	public Member get_owner() {
 		return owner;
@@ -59,11 +52,8 @@ public class Channels {
 	}
 	
 	// Setters
-	public void set_id(Long id) {
-		this.id = id;
-	}
 	public void set_channel_title(String channel_title) {
-		this.channel_title = channel_title;
+		this.channelTitle = channel_title;
 	}
 	public void set_owner(Member owner) {
 		this.owner = owner;
@@ -95,6 +85,6 @@ public class Channels {
          if (o == null || getClass() != o.getClass()) return false;
          
          Channels comp = (Channels) o;
-         return channel_title == comp.channel_title;
+         return channelTitle == comp.channelTitle;
      }
 }

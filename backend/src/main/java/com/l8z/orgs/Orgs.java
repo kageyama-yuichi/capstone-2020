@@ -16,13 +16,10 @@ import com.l8z.orgs.converter.JSONObjectConverter;
 // A Class to Hold all Organisation Related Information
 @Entity
 public class Orgs {
+	// Unique to the Organisation
 	@Id
-	@GeneratedValue
-	// Unique to Organisation
-	@Column(name="id")
-	private Long id;
 	@Column(name="org_id")
-	private String org_id;
+	private String orgId;
 	// Multiple Organisations can have the same Title
 	@Column(name="org_title")
 	private String org_title; 
@@ -37,18 +34,14 @@ public class Orgs {
     @Convert(converter = JSONObjectConverter.class)
 	private List<Channels> channels = new ArrayList<>();
 	
-	public Orgs(Long id, String org_id, String org_title) {
-		this.id = id;
-		this.org_id = org_id;
+	public Orgs(String org_id, String org_title) {
+		this.orgId = org_id;
 		this.org_title = org_title;
 	}
 	
 	// Getters
-	public Long get_id() {
-		return id;
-	}
 	public String get_org_id() {
-		return org_id;
+		return orgId;
 	}
 	public String get_org_title() {
 		return org_title;
@@ -64,11 +57,8 @@ public class Orgs {
 	}
 	
 	// Setters
-	public void set_id(Long id) {
-		this.id = id;
-	}
 	public void set_org_id(String org_id) {
-		this.org_id = org_id;
+		this.orgId = org_id;
 	}
 	public void set_org_title(String org_title) {
 		this.org_title = org_title;

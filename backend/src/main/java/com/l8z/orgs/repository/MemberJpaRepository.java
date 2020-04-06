@@ -5,10 +5,10 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.l8z.orgs.Orgs;
+import com.l8z.orgs.Member;
 
 @Repository
-public interface OrgsJpaRepository extends JpaRepository<Orgs, String>{
-	List<Orgs> findByOrgId(String org_id);
-	List<Orgs> findAll();
+public interface MemberJpaRepository extends JpaRepository<Member, Long>{
+	List<Member> findById(String username);
+	List<Member> findAll();
 }

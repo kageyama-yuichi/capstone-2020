@@ -16,8 +16,10 @@ import com.l8z.orgs.repository.OrgsJpaRepository;
 
 @Controller
 public class ChatController {
+	/*
 	@Autowired
 	private OrgsJpaRepository orgsjpa;
+	*/
 	
 	// Group Chatting
     @MessageMapping("/send_message/{org_id}/{channel_id}/{instance_id}")
