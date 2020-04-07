@@ -6,6 +6,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.l8z.chat.ChatMessage;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 // A Class to Hold all Organisation Related Information
@@ -45,6 +46,16 @@ public class Orgs {
 	}
 	public List<Channels> get_channels() {
 		return channels;
+	}
+	public Channels retrieve_channel(String channel_title) {
+		Channels temp = null;
+		for(int i=0; i<channels.size(); i++) {
+			if(channels.get(i).get_channel_title().equals(channel_title)) {
+				temp = channels.get(i);
+				break;
+			}
+		}
+		return temp;
 	}
 	
 	// Setters
@@ -91,15 +102,48 @@ public class Orgs {
 	public void add_channel(Channels new_channel) {
 		channels.add(new_channel);
 	}
-
+	public void remove_channel(Channels old_channel) {
+		channels.remove(old_channel);
+	}
+	
 	// Display
 	public void display_org_structure() {
 		System.out.println("org_id: "+org_id);
         System.out.println("org_title: "+org_title);
         System.out.println("members: {");
         for(int i=0; i<members.size(); i++) {
-        	System.out.println("username: "+members.get(i).get_username() +", role: "+members.get(i).get_role());
+        	Member temp = members.get(i);
+        	System.out.println("   username: "+temp.get_username() +", role: "+temp.get_role());
         }
+        System.out.println("}");
+        System.out.println("channels: {");
+        for(int i=0; i<channels.size(); i++) {
+        	Channels temp = channels.get(i);
+        	System.out.println("    channel_title: "+temp.get_channel_title());
+        	System.out.println("    owner: "+temp.get_owner().get_username() +", role: "+temp.get_owner().get_role());
+        	System.out.println("    members: {");
+        	for(int j=0; j<temp.get_members().size(); j++) {
+            	Member inner_temp = temp.get_members().get(j);
+            	System.out.println("        username: "+inner_temp.get_username() +", role: "+inner_temp.get_role());
+        	}
+        	System.out.println("    }");
+        	System.out.println("    instances: {");
+        	for(int j=0; j<temp.get_instances().size(); j++) {
+        		Instances inner_temp = temp.get_instances().get(j);
+        		System.out.println("        instance_title: "+inner_temp.get_instance_title());
+        		System.out.println("        instance_type: "+inner_temp.get_type());
+        		System.out.println("        log: {");
+        		for(int k=0; k<inner_temp.get_log().size(); k++) {
+        			ChatMessage inner_inner_temp = inner_temp.get_log().get(k);
+        			System.out.println("            sender: "+inner_inner_temp.get_sender());
+        			System.out.println("            receiver: "+inner_inner_temp.get_receiver());
+        			System.out.println("            content: "+inner_inner_temp.get_content());
+        			System.out.println("            date_time: "+inner_inner_temp.get_date_time());
+        		}
+        		System.out.println("        }");
+        	}
+        }
+        System.out.println("}");
 	}
 	
 }

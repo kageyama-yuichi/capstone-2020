@@ -5,8 +5,8 @@ import { API_URL } from '../../Constants'
 
 var stomp_client = null;
 var orgs_id = null;
-var channel_id = null;
-var instance_id = null;
+var channel_title = null;
+var instance_title = null;
 var extension = null;
 
 class ChatComponent extends Component {
@@ -33,13 +33,13 @@ class ChatComponent extends Component {
 	my_connect = (new_username) => {
 		console.log(this.props.match.params);
 		orgs_id = "/"+this.props.match.params.orgs_id;
-		channel_id = "/"+this.props.match.params.channel_id;
-		instance_id = "/"+this.props.match.params.instance_id;
-		extension = orgs_id+channel_id+instance_id;
+		channel_title = "/"+this.props.match.params.channel_title;
+		instance_title = "/"+this.props.match.params.instance_title;
+		extension = orgs_id+channel_title+instance_title;
 		
 		console.log(orgs_id);
-		console.log(channel_id);
-		console.log(instance_id);
+		console.log(channel_title);
+		console.log(instance_title);
 		console.log(extension);
 		
 		console.log("System - Trying to Connect...");
@@ -120,15 +120,15 @@ class ChatComponent extends Component {
 		
 		for(let i=0; i<obj.length; i++){
 			this.state.room_notification.map((notification, counter) => {
-				if (notification.sender === obj[i].sender) {
+				if (notification.sender === obj[i].username) {
 					does_exist = true;
 				}
 			})
 			if(!does_exist){
 				this.state.room_notification.push({
-					'sender': obj[i].sender,
+					'sender': obj[i].username,
 					'status': 'offline',
-					'date_time': obj[i].date_time
+					'date_time': ''
 				})
 			} else {
 				// Reset variable

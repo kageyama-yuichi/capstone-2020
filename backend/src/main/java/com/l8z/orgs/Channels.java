@@ -45,7 +45,16 @@ public class Channels {
 	public List<Instances> get_instances() {
 		return instances;
 	}
-	
+	public Instances retrieve_instance(String instance_title) {
+		Instances temp = null;
+		for(int i=0; i<instances.size(); i++) {
+			if(instances.get(i).get_instance_title().equals(instance_title)) {
+				temp = instances.get(i);
+				break;
+			}
+		}
+		return temp;
+	}
 	// Setters
 	public void set_channel_title(String channel_title) {
 		this.channel_title = channel_title;

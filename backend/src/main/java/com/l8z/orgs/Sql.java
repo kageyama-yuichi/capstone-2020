@@ -1,32 +1,40 @@
 package com.l8z.orgs;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "orgs")
 public class Sql {
 	@Id
-	@GeneratedValue
-	Long id;
+	String orgId;
+	@Column(length = 1999999999)
 	String data;
 	
+	// Default Constructor
+	public Sql() {
+		
+	}
+	// Constructor
+	public Sql(String orgId, String data) {
+		this.orgId = orgId;
+		this.data = data;
+	}
+	
 	// Getters
-	public Long get_id() {
-		return id;
+	public String get_id() {
+		return orgId;
 	}
 	public String get_data() {
 		return data;
 	}
-	/*
-	public Orgs get_object() {
-		
-	}
-	*/
 	// Setters
-	public void set_id(Long id) {
-		this.id = id;
+	public void set_id(String orgId) {
+		this.orgId = orgId;
 	}
-
-	
+	public void set_data(String data) {
+		this.data = data;
+	}	
 }

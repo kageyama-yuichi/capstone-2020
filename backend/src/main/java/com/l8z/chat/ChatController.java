@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -12,6 +14,8 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.l8z.orgs.Channels;
 import com.l8z.orgs.Instances;
@@ -19,67 +23,79 @@ import com.l8z.orgs.Instances.InstanceType;
 import com.l8z.orgs.Member;
 import com.l8z.orgs.Member.Role;
 import com.l8z.orgs.Orgs;
+import com.l8z.orgs.Sql;
+import com.l8z.orgs.jparepository.OrgsJpaRepository;
 
 @Controller
 public class ChatController {
-	/*
 	@Autowired
 	private OrgsJpaRepository orgsjpa;
-	*/
 	
 	// Group Chatting
-    @MessageMapping("/send_message/{org_id}/{channel_id}/{instance_id}")
-    @SendTo("/group/{org_id}/{channel_id}/{instance_id}")
+    @MessageMapping("/send_message/{org_id}/{channel_title}/{instance_title}")
+    @SendTo("/group/{org_id}/{channel_title}/{instance_title}")
     public ChatMessage send_message(
     		@DestinationVariable("org_id") String org_id,
-    		@DestinationVariable("channel_id") String channel_id,
-    		@DestinationVariable("instance_id") String instance_id,
-    		@Payload ChatMessage chat_message) {
-    	log_to_stdout("send_message", org_id, channel_id, instance_id);
+    		@DestinationVariable("channel_title") String channel_title,
+    		@DestinationVariable("instance_title") String instance_title,
+    		@Payload ChatMessage chat_message
+    	) {
+    	// Log the Message with the URL
+    	log_to_stdout("send_message", org_id, channel_title, instance_title);
+
+    	// If the Message Received WAS a CHAT Message, Save it
+    	if(chat_message.get_type() == ChatMessage.MessageType.CHAT) {
+    		// Used to Read a JSON Document and Convert to Object
+    		ObjectMapper json_mapper = new ObjectMapper();
+        	try {
+        		// Convert to Orgs Object
+    			Orgs temp_org = json_mapper.readValue(orgsjpa.getByOrgId(org_id).get_data(), Orgs.class);
+    			// Retrieve the Channel that's being Modified
+    			Channels temp_channel = temp_org.retrieve_channel(channel_title);
+    			// Retrieve the Instance that's being Modified
+    			Instances temp_instance = temp_channel.retrieve_instance(instance_title);
+    			
+    			// Remove the Channel from Orgs
+    			temp_org.remove_channel(temp_channel);
+    			// Remove the Instance from the Channel
+    			temp_channel.remove_instance(temp_instance);
+    			
+    			// Add the New Message to the Instance
+    			temp_instance.add_message(chat_message);
+    			// Add the Instance Back to the Channel
+    			temp_channel.add_instance(temp_instance);
+    			
+    			// Add the Channel Back to the Orgs
+    			temp_org.add_channel(temp_channel);
+    			
+    			// Save to Database
+    			Sql sql = new Sql(org_id, json_mapper.writeValueAsString(temp_org));
+    			orgsjpa.save(sql);
+    		} catch (JsonMappingException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		} catch (JsonProcessingException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		}
+    	}
     	
-    	ObjectMapper jsonMapper = new ObjectMapper();
-        
-        Orgs jsonData = new Orgs("RMIT","RMIT University");
-        jsonData.add_member(new Member("Michael", Role.TEAM_MEMBER));
-        jsonData.add_member(new Member("Tylar", Role.TEAM_MEMBER));
-        jsonData.add_member(new Member("Yuichi", Role.TEAM_MEMBER));
-        jsonData.add_member(new Member("Matthew", Role.TEAM_MEMBER));
-        jsonData.add_member(new Member("Raimond", Role.TEAM_MEMBER));
-        jsonData.add_member(new Member("V", Role.TEAM_MEMBER));
-        
-        Channels inner_data = new Channels("Engineering", new Member("michael", Role.ORG_OWNER));
-        Instances inner_inner_data = new Instances("chat_one", InstanceType.CHAT);
-        inner_inner_data.add_message(chat_message);
-        inner_data.add_instance(inner_inner_data);
-        jsonData.add_channel(inner_data);
-        
-          // now convert to json with the following
-          try {
-            String json = jsonMapper.writeValueAsString(jsonData);
-            System.out.println(json); 
-            Orgs temp = jsonMapper.readValue(json, Orgs.class);
-            temp.display_org_structure();
-            
-          } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-          }       
-          
-    	//orgsjpa.save(chat_message);
     	//chat_message.display_message(); // Displays the Chat Message for Debugging Purposes
         return chat_message;
     }
 
-    @MessageMapping("/existing_user/{org_id}/{channel_id}/{instance_id}")
-    @SendTo("/group/{org_id}/{channel_id}/{instance_id}")
+    @MessageMapping("/existing_user/{org_id}/{channel_title}/{instance_title}")
+    @SendTo("/group/{org_id}/{channel_title}/{instance_title}")
     public ChatMessage existing_user(
     		@DestinationVariable("org_id") String org_id,
-    		@DestinationVariable("channel_id") String channel_id,
-    		@DestinationVariable("instance_id") String instance_id,    		
+    		@DestinationVariable("channel_title") String channel_title,
+    		@DestinationVariable("instance_title") String instance_title,    		
     		@Payload ChatMessage chat_message, 
-    		SimpMessageHeaderAccessor header_accessor) {
-    	log_to_stdout("existing_user", org_id, channel_id, instance_id);
-
+    		SimpMessageHeaderAccessor header_accessor
+    	) {
+    	// Log the Message with the URL
+    	log_to_stdout("existing_user", org_id, channel_title, instance_title);
+    	
     	// Add user in Web Socket Session
     	//chat_message.display_message(); // Displays the Chat Message for Debugging Purposes
     	header_accessor.getSessionAttributes().put("username", chat_message.get_sender());
@@ -87,60 +103,61 @@ public class ChatController {
     }
     
     // Group History Loading
-    @MessageMapping("/fetch_history/{org_id}/{channel_id}/{instance_id}")
-    @SendTo("/group/history/{org_id}/{channel_id}/{instance_id}")
+    @MessageMapping("/fetch_history/{org_id}/{channel_title}/{instance_title}")
+    @SendTo("/group/history/{org_id}/{channel_title}/{instance_title}")
     public List<ChatMessage> fetch_history(
     		@DestinationVariable("org_id") String org_id,
-    		@DestinationVariable("channel_id") String channel_id,
-    		@DestinationVariable("instance_id") String instance_id
+    		@DestinationVariable("channel_title") String channel_title,
+    		@DestinationVariable("instance_title") String instance_title
     	) {
-    	log_to_stdout("fetch_history", org_id, channel_id, instance_id);
-
-    	List<ChatMessage> old_messages = new ArrayList<ChatMessage>();
-    	ChatMessage temp = new ChatMessage();
-    	temp.set_sender("Tyler");
-    	temp.set_type(ChatMessage.MessageType.CHAT);
-    	temp.set_content("Hey Bois, make sure to do your work tonight mmk?");
-    	old_messages.add(temp);
-    	temp = new ChatMessage();
-    	temp.set_sender("Michael");
-    	temp.set_type(ChatMessage.MessageType.CHAT);
-    	temp.set_content("Hey Joe, sorry I'm quite busy with React");
-    	old_messages.add(temp);
+    	// Log the Message with the URL
+    	log_to_stdout("fetch_history", org_id, channel_title, instance_title);
+    	List<ChatMessage> old_messages = null;
+    	
+		// Used to Read a JSON Document and Convert to Object
+		ObjectMapper json_mapper = new ObjectMapper();
+    	try {
+    		// Convert to Orgs Object
+			Orgs temp_org = json_mapper.readValue(orgsjpa.getByOrgId(org_id).get_data(), Orgs.class);
+			// Retrieve the Channel -> Instance -> Chat Logs
+			old_messages =  temp_org.retrieve_channel(channel_title).retrieve_instance(instance_title).get_log();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
     	return old_messages;
     }
 
     // Group Member Loading
-    @MessageMapping("/fetch_members/{org_id}/{channel_id}/{instance_id}")
-    @SendTo("/group/members/{org_id}/{channel_id}/{instance_id}")
-    public List<ChatMessage> fetch_members(
+    @MessageMapping("/fetch_members/{org_id}/{channel_title}/{instance_title}")
+    @SendTo("/group/members/{org_id}/{channel_title}/{instance_title}")
+    public List<Member> fetch_members(
     		@DestinationVariable("org_id") String org_id,
-    		@DestinationVariable("channel_id") String channel_id,
-    		@DestinationVariable("instance_id") String instance_id    	
-    		) {
-    	log_to_stdout("fetch_members", org_id, channel_id, instance_id);
+    		@DestinationVariable("channel_title") String channel_title,
+    		@DestinationVariable("instance_title") String instance_title    	
+    	) {
+    	// Log the Message with the URL
+    	log_to_stdout("fetch_members", org_id, channel_title, instance_title);
     	
-    	List<ChatMessage> members = new ArrayList<ChatMessage>();
-    	ChatMessage temp = new ChatMessage();
-    	temp = new ChatMessage();
-    	temp.set_sender("Michael");
-    	members.add(temp);
-    	temp = new ChatMessage();
-    	temp.set_sender("Tyler");
-    	members.add(temp);
-    	temp = new ChatMessage();
-    	temp.set_sender("Yuichi");
-    	members.add(temp);
-    	temp = new ChatMessage();
-    	temp.set_sender("Matthew");
-    	members.add(temp);
-    	temp = new ChatMessage();
-    	temp.set_sender("Raimond");
-    	members.add(temp);
-    	temp = new ChatMessage();
-    	temp.set_sender("Hung");
-    	members.add(temp);
+    	List<Member> members = null;
+    	// Used to Read a JSON Document and Convert to Object
+		ObjectMapper json_mapper = new ObjectMapper();
+    	try {
+    		// Convert to Orgs Object
+			Orgs temp_org = json_mapper.readValue(orgsjpa.getByOrgId(org_id).get_data(), Orgs.class);
+			// Retrieve the Channel -> Members
+			members =  temp_org.retrieve_channel(channel_title).get_members();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
     	return members;
     }
@@ -165,13 +182,13 @@ public class ChatController {
 		return chat_message;
 	}
 */
-    public void log_to_stdout(String method, String one, String two, String three) {
+    public void log_to_stdout(String method, String org_id, String channel_title, String instance_title) {
     	System.out.println("-------------------------------------------------------------------------------------");
     	System.out.println("System - Method Called: "+method+"()");
     	System.out.println("System - Incoming Identifiers:");
-    	System.out.println("System - Organisation ID: "+one);
-    	System.out.println("System - Channel ID: "+two);
-    	System.out.println("System - Instance ID: "+three);
+    	System.out.println("System - Organisation ID: "+org_id);
+    	System.out.println("System - Channel Title: "+channel_title);
+    	System.out.println("System - Instance Title: "+instance_title);
     	System.out.println("-------------------------------------------------------------------------------------");
     }
 }
