@@ -6,6 +6,7 @@ import ChatComponent from '../Chat/ChatComponent.jsx'
 import OrgsComponent from '../Orgs/OrgsComponent.jsx'
 import DashboardComponent from '../Dashboard/DashboardComponent.jsx'
 import SidebarComponent from '../Sidebar/SidebarComponent.jsx'
+import ProfileComponent from '../Profile/ProfileComponent.jsx'
 
 class BodyComponent extends Component {
     render() {
@@ -19,6 +20,7 @@ class BodyComponent extends Component {
 							<Route path="/orgs/:username" exact component={OrgsComponent} />
 							<Route path="/chat/:orgs_id/:channel_title/:instance_title" exact component={ChatComponent} />
                             <Route path="/dashboard" exact component={DashboardComponent} />
+                            <Route path="/profile" exact component={ProfileComponent} />
                             <Route component={ErrorComponent}/>
                         </Switch>
                         {/* <FooterComponent/> */}
