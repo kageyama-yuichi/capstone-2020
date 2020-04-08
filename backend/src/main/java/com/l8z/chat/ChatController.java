@@ -5,19 +5,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-<<<<<<< HEAD
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-=======
->>>>>>> 9d8d9d49a5726760c653ffddc509e81a35025540
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
-
-<<<<<<< HEAD
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,8 +25,7 @@ import com.l8z.orgs.Orgs;
 import com.l8z.orgs.Sql;
 import com.l8z.orgs.jparepository.OrgsJpaRepository;
 
-=======
->>>>>>> 9d8d9d49a5726760c653ffddc509e81a35025540
+
 @Controller
 public class ChatController {
 	@Autowired
@@ -88,7 +82,6 @@ public class ChatController {
         return chat_message;
     }
 
-<<<<<<< HEAD
     @MessageMapping("/existing_user/{org_id}/{channel_title}/{instance_title}")
     @SendTo("/group/{org_id}/{channel_title}/{instance_title}")
     public ChatMessage existing_user(
@@ -103,15 +96,6 @@ public class ChatController {
     	
     	// Add user in Web Socket Session
     	//chat_message.display_message(); // Displays the Chat Message for Debugging Purposes
-=======
-    @MessageMapping("/existing_user/{group_id}")
-    @SendTo("/group/{group_id}")
-    public ChatMessage existing_user(@DestinationVariable("group_id") String group_id, @Payload ChatMessage chat_message, 
-    		SimpMessageHeaderAccessor header_accessor) {
-    	System.out.println(group_id);
-        // Add user in Web Socket Session
-    	chat_message.display_message(); // Displays the Chat Message for Debugging Purposes
->>>>>>> 9d8d9d49a5726760c653ffddc509e81a35025540
     	header_accessor.getSessionAttributes().put("username", chat_message.get_sender());
         return chat_message;
     }
