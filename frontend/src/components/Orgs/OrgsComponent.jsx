@@ -42,6 +42,7 @@ class OrgsComponent extends Component {
         return (
             <div className="OrgComponent">
 				<h1>L8Z Organisations</h1>
+				
 				<h2>Your Organisations</h2>
 				{this.state.orgs.map(org =>
 					<div>

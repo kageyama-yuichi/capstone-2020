@@ -12,8 +12,7 @@ import { Link } from "react-router-dom";
 class SidebarComponent extends Component {
 	render() {
 		//Do not load sidebar on landing page
-		//if (window.location.pathname === '/') {
-		if (true) {
+		if (window.location.pathname === '/') {
 			return null;
 		} else {
 			return (

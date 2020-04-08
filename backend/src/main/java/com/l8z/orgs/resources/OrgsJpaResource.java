@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +29,7 @@ public class OrgsJpaResource {
 	private ObjectMapper json_mapper = new ObjectMapper();
 	
 	@GetMapping("jpa/orgs/{username}")
-	public List<Orgs> retrieve_orgs(@PathVariable String username){
+	public List<Orgs> retrieve_orgs(@PathVariable String username) {
 		System.out.println("System - Retrieving Orgs");
 		List<Orgs> users_orgs = new ArrayList<Orgs>();
 		
@@ -51,5 +52,23 @@ public class OrgsJpaResource {
 		}
 		
 		return users_orgs;
+	}
+	
+	@GetMapping("jpa/orgs/{username}")
+	public ResponseEntity<Void> create_org(@PathVariable String username, @RequestBody Orgs org) {
+		System.out.println("System - Creating Org");
+		
+		// Assign the ORG_OWNER to the Creator
+		org.add_member(new Members(username, Members.Role.ORG_OWNER));
+		// Save the Org
+		Sql sql = null;
+		try {
+			sql = new Sql(org.get_org_id(), json_mapper.writeValueAsString(org));
+		} catch (JsonProcessingException e) {
+			System.out.println("System - Error Creating Org");
+		}
+		orgsjpa.save(sql);
+		
+		return ResponseEntity.noContent().build();
 	}
 }

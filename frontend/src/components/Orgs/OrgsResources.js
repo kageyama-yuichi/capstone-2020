@@ -6,10 +6,10 @@ class OrgsResources {
     retrieve_orgs(username) {
 	return axios.get(`${JPA_URL}/orgs/${username}`);
     }
-	/*
 	create_org(username, org) {
         return axios.post(`${JPA_URL}/orgs/${username}`, org);
     }
+	/*
     delete_org(username, org_id) {
         return axios.delete(`${JPA_URL}/orgs/${username}/${org_id}`);
     }
