@@ -16,7 +16,7 @@ public class Orgs {
 	// Multiple Organisations can have the same Title
 	@JsonProperty("org_title") private String org_title; 
 	// Stores all the Members of the Organisation
-	@JsonProperty("members") private List<Member> members = new ArrayList<>();
+	@JsonProperty("members") private List<Members> members = new ArrayList<>();
 	// Stores all the Channels
 	@JsonProperty("channels")private List<Channels> channels = new ArrayList<>();
 	
@@ -38,10 +38,10 @@ public class Orgs {
 	public String get_org_title() {
 		return org_title;
 	}
-	public List<Member> get_members(){
+	public List<Members> get_members(){
 		return members;
 	}
-	public boolean has_member(Member member) {
+	public boolean has_member(Members member) {
 		return members.contains(member);
 	}
 	public List<Channels> get_channels() {
@@ -65,19 +65,31 @@ public class Orgs {
 	public void set_org_title(String org_title) {
 		this.org_title = org_title;
 	}
-	public void add_member(Member new_member) {
+	
+	// Additional Functionality
+	public void add_member(Members new_member) {
 		members.add(new_member);
 	}
-	public boolean manage_member(Member auth, Member member, Member.Role new_role) {
+	public void add_channel(Channels new_channel) {
+		channels.add(new_channel);
+	}
+	public void remove_channel(Channels old_channel) {
+		channels.remove(old_channel);
+	}
+	public void clear_channel() {
+		channels.clear();
+	}
+	
+	public boolean manage_member(Members auth, Members member, Members.Role new_role) {
 		boolean change_status = false;
 		// ORG_OWNER cannot have their Role adjusted and ORG_OWNER cannot be Given Here
-		if(member.get_role() != Member.Role.ORG_OWNER && new_role != Member.Role.ORG_OWNER) {
+		if(member.get_role() != Members.Role.ORG_OWNER && new_role != Members.Role.ORG_OWNER) {
 			// Check the "auth" Member for User Heirarchy: ORG_OWNER > ADMIN > TEAM_LEADER > TEAM_MEMBER
-			if(auth.get_role() == Member.Role.ORG_OWNER || auth.get_role() == Member.Role.ADMIN) {
+			if(auth.get_role() == Members.Role.ORG_OWNER || auth.get_role() == Members.Role.ADMIN) {
 				// Removes the Old Member
 				members.remove(member);
 				// Adds the Member with Updated Role
-				members.add(new Member(member.get_username(), new_role));
+				members.add(new Members(member.get_username(), new_role));
 				// Go through All Channels and Update that Member
 				for(int i=0; i<channels.size(); i++) {
 					// Checking if the Member Exists in that Channel
@@ -99,12 +111,6 @@ public class Orgs {
 		
 		return change_status;
 	}
-	public void add_channel(Channels new_channel) {
-		channels.add(new_channel);
-	}
-	public void remove_channel(Channels old_channel) {
-		channels.remove(old_channel);
-	}
 	
 	// Display
 	public void display_org_structure() {
@@ -112,7 +118,7 @@ public class Orgs {
         System.out.println("org_title: "+org_title);
         System.out.println("members: {");
         for(int i=0; i<members.size(); i++) {
-        	Member temp = members.get(i);
+        	Members temp = members.get(i);
         	System.out.println("   username: "+temp.get_username() +", role: "+temp.get_role());
         }
         System.out.println("}");
@@ -123,7 +129,7 @@ public class Orgs {
         	System.out.println("    owner: "+temp.get_owner().get_username() +", role: "+temp.get_owner().get_role());
         	System.out.println("    members: {");
         	for(int j=0; j<temp.get_members().size(); j++) {
-            	Member inner_temp = temp.get_members().get(j);
+            	Members inner_temp = temp.get_members().get(j);
             	System.out.println("        username: "+inner_temp.get_username() +", role: "+inner_temp.get_role());
         	}
         	System.out.println("    }");

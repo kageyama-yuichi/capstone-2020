@@ -3,6 +3,7 @@ import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
 import ErrorComponent from '../Error/ErrorComponent.jsx'
 import LandingComponent from '../Landing/LandingComponent.jsx'
 import ChatComponent from '../Chat/ChatComponent.jsx'
+import OrgsComponent from '../Orgs/OrgsComponent.jsx'
 import DashboardComponent from '../Dashboard/DashboardComponent.jsx'
 import SidebarComponent from '../Sidebar/SidebarComponent.jsx'
 
@@ -15,7 +16,7 @@ class BodyComponent extends Component {
                         {<SidebarComponent/>}
                         <Switch>
                             <Route path="/" exact component={LandingComponent} />
-							<Route path="/chat" exact component={ChatComponent} /> {/* Should be Replaced with List of Organisations */} 
+							<Route path="/orgs/:username" exact component={OrgsComponent} />
 							<Route path="/chat/:orgs_id/:channel_title/:instance_title" exact component={ChatComponent} />
                             <Route path="/dashboard" exact component={DashboardComponent} />
                             <Route component={ErrorComponent}/>

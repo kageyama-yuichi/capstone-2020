@@ -20,8 +20,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.l8z.orgs.Channels;
 import com.l8z.orgs.Instances;
 import com.l8z.orgs.Instances.InstanceType;
-import com.l8z.orgs.Member;
-import com.l8z.orgs.Member.Role;
+import com.l8z.orgs.Members;
+import com.l8z.orgs.Members.Role;
 import com.l8z.orgs.Orgs;
 import com.l8z.orgs.Sql;
 import com.l8z.orgs.jparepository.OrgsJpaRepository;
@@ -30,6 +30,8 @@ import com.l8z.orgs.jparepository.OrgsJpaRepository;
 public class ChatController {
 	@Autowired
 	private OrgsJpaRepository orgsjpa;
+	// Used to Read a JSON Document and Convert to Object
+	private ObjectMapper json_mapper = new ObjectMapper();
 	
 	// Group Chatting
     @MessageMapping("/send_message/{org_id}/{channel_title}/{instance_title}")
@@ -45,8 +47,6 @@ public class ChatController {
 
     	// If the Message Received WAS a CHAT Message, Save it
     	if(chat_message.get_type() == ChatMessage.MessageType.CHAT) {
-    		// Used to Read a JSON Document and Convert to Object
-    		ObjectMapper json_mapper = new ObjectMapper();
         	try {
         		// Convert to Orgs Object
     			Orgs temp_org = json_mapper.readValue(orgsjpa.getByOrgId(org_id).get_data(), Orgs.class);
@@ -72,11 +72,9 @@ public class ChatController {
     			Sql sql = new Sql(org_id, json_mapper.writeValueAsString(temp_org));
     			orgsjpa.save(sql);
     		} catch (JsonMappingException e) {
-    			// TODO Auto-generated catch block
-    			e.printStackTrace();
+    			System.out.println("System - Error Updating Database");
     		} catch (JsonProcessingException e) {
-    			// TODO Auto-generated catch block
-    			e.printStackTrace();
+    			System.out.println("System - Error Updating Database");
     		}
     	}
     	
@@ -113,20 +111,16 @@ public class ChatController {
     	// Log the Message with the URL
     	log_to_stdout("fetch_history", org_id, channel_title, instance_title);
     	List<ChatMessage> old_messages = null;
-    	
-		// Used to Read a JSON Document and Convert to Object
-		ObjectMapper json_mapper = new ObjectMapper();
+
     	try {
     		// Convert to Orgs Object
 			Orgs temp_org = json_mapper.readValue(orgsjpa.getByOrgId(org_id).get_data(), Orgs.class);
 			// Retrieve the Channel -> Instance -> Chat Logs
 			old_messages =  temp_org.retrieve_channel(channel_title).retrieve_instance(instance_title).get_log();
 		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("System - Error Fetching Chat History");
 		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("System - Error Fetching Chat History");
 		}
 
     	return old_messages;
@@ -135,7 +129,7 @@ public class ChatController {
     // Group Member Loading
     @MessageMapping("/fetch_members/{org_id}/{channel_title}/{instance_title}")
     @SendTo("/group/members/{org_id}/{channel_title}/{instance_title}")
-    public List<Member> fetch_members(
+    public List<Members> fetch_members(
     		@DestinationVariable("org_id") String org_id,
     		@DestinationVariable("channel_title") String channel_title,
     		@DestinationVariable("instance_title") String instance_title    	
@@ -143,20 +137,17 @@ public class ChatController {
     	// Log the Message with the URL
     	log_to_stdout("fetch_members", org_id, channel_title, instance_title);
     	
-    	List<Member> members = null;
-    	// Used to Read a JSON Document and Convert to Object
-		ObjectMapper json_mapper = new ObjectMapper();
+    	List<Members> members = null;
+    	
     	try {
     		// Convert to Orgs Object
 			Orgs temp_org = json_mapper.readValue(orgsjpa.getByOrgId(org_id).get_data(), Orgs.class);
 			// Retrieve the Channel -> Members
 			members =  temp_org.retrieve_channel(channel_title).get_members();
 		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("System - Error Fetching Members");
 		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("System - Error Fetching Members");
 		}
 
     	return members;

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class Member {
+public class Members {
 	// Users will be found in the User Table
 	@JsonProperty("username") private String username; 
 	// Role will help Limit Access
@@ -20,12 +20,12 @@ public class Member {
     }
     
     // Default Constructor
- 	public Member() {
+ 	public Members() {
  		
  	}
     
 	// Constructor
-	public Member(String username, Role role) {
+	public Members(String username, Role role) {
 		this.username = username;
 		this.role = role;
 	}
@@ -52,8 +52,8 @@ public class Member {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         
-        Member comp = (Member) o;
-        return username == comp.username;
+        Members comp = (Members) o;
+        return username.equals(comp.username);
     }
 	
 }

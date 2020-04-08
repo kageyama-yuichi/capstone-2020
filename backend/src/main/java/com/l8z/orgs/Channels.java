@@ -12,9 +12,9 @@ public class Channels {
 	// A String used for Displaying the Channel (Unique)
 	@JsonProperty("channel_title") private String channel_title;
 	// Owner of Channel is only allowed to Delete their Channel
-	@JsonProperty("owner") private Member owner;
+	@JsonProperty("owner") private Members owner;
 	// Keeps a List of Members who have access to this Channel
-	@JsonProperty("members") private List<Member> members = new ArrayList<>();
+	@JsonProperty("members") private List<Members> members = new ArrayList<>();
 	// Keeps a List of all the Instances that are Created for this Channel
 	@JsonProperty("instances") private List<Instances> instances = new ArrayList<>();
 	
@@ -24,7 +24,7 @@ public class Channels {
 	}
 	
 	// Constructor
-	public Channels(String channel_title, Member owner) {
+	public Channels(String channel_title, Members owner) {
 		this.channel_title = channel_title;
 		this.owner = owner;
 	}
@@ -33,13 +33,13 @@ public class Channels {
 	public String get_channel_title() {
 		return channel_title;
 	}
-	public Member get_owner() {
+	public Members get_owner() {
 		return owner;
 	}
-	public List<Member> get_members() {
+	public List<Members> get_members() {
 		return members;
 	}
-	public boolean has_member(Member member) {
+	public boolean has_member(Members member) {
 		return members.contains(member);
 	}
 	public List<Instances> get_instances() {
@@ -59,20 +59,20 @@ public class Channels {
 	public void set_channel_title(String channel_title) {
 		this.channel_title = channel_title;
 	}
-	public void set_owner(Member owner) {
+	public void set_owner(Members owner) {
 		this.owner = owner;
 	}
-	public void add_member(Member new_member) {
+	public void add_member(Members new_member) {
 		members.add(new_member);
 	} 
-	public void remove_member(Member old_member) {
+	public void remove_member(Members old_member) {
 		members.remove(old_member);
 	} 
-	public void manage_member(Member member, Member.Role new_role) {
+	public void manage_member(Members member, Members.Role new_role) {
 		// Removes the Old Member
 		members.remove(member);
 		// Adds the Member with Updated Role
-		members.add(new Member(member.get_username(), new_role));
+		members.add(new Members(member.get_username(), new_role));
 		
 	}
 	public void add_instance(Instances new_instance) {
