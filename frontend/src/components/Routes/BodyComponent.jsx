@@ -4,6 +4,8 @@ import ErrorComponent from '../Error/ErrorComponent.jsx'
 import LandingComponent from '../Landing/LandingComponent.jsx'
 import ChatComponent from '../Chat/ChatComponent.jsx'
 import OrgsComponent from '../Orgs/OrgsComponent.jsx'
+import AddOrgsComponent from '../Orgs/AddOrgsComponent.jsx'
+import UpdateOrgsComponent from '../Orgs/UpdateOrgsComponent.jsx'
 import DashboardComponent from '../Dashboard/DashboardComponent.jsx'
 import SidebarComponent from '../Sidebar/SidebarComponent.jsx'
 import ProfileComponent from '../Profile/ProfileComponent.jsx'
@@ -18,6 +20,8 @@ class BodyComponent extends Component {
                         <Switch>
                             <Route path="/" exact component={LandingComponent} />
 							<Route path="/orgs/:username" exact component={OrgsComponent} />
+							<Route path="/orgs/:username/new" exact component={AddOrgsComponent} />
+							<Route path="/orgs/:username/:org_id" exact component={UpdateOrgsComponent} />
 							<Route path="/chat/:orgs_id/:channel_title/:instance_title" exact component={ChatComponent} />
                             <Route path="/dashboard" exact component={DashboardComponent} />
                             <Route path="/profile" exact component={ProfileComponent} />

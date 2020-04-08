@@ -1,5 +1,7 @@
 import React, {Component} from 'react'
 import OrgsResources from './OrgsResources.js'
+import { API_URL } from '../../Constants'
+import './OrgsComponent.css'
 
 class OrgsComponent extends Component {
 	constructor (props) {
@@ -8,16 +10,33 @@ class OrgsComponent extends Component {
 			username: this.props.match.params.username,
 			orgs: []
 		};
+		this.handle_create_org = this.handle_create_org.bind(this);
+		this.handle_delete_org = this.handle_delete_org.bind(this);
+	}
+
+	handle_create_org = () => {
+		var url = this.state.username+'/new';
+		this.props.history.push(url);
+	}
+	handle_delete_org = (org_id) => {
+		OrgsResources.delete_org(this.state.username, org_id);
+		// Reset using this.refresh_orgs in Callback to Force
+		this.setState({
+			orgs: []
+		}, () => {
+			this.refresh_orgs();
+		})
+	}
+	handle_update_org = (org_id) => {
+		var url = this.state.username+"/"+org_id;
+		this.props.history.push(url);
 	}
 	
 	componentDidUpdate() {
-		if (this.state.error) {
-			throw new Error('Unable to connect to chat room server.');
-		}
 		console.log(this.state.orgs);
 	}
-
-	componentDidMount() {
+	
+	refresh_orgs = () => {
 		// Retrieves the Organisations of the User from the Server
 		OrgsResources.retrieve_orgs(this.state.username)
 		.then(response => 
@@ -33,8 +52,11 @@ class OrgsComponent extends Component {
 					orgs: this.state.orgs
 				})
 			}
-		}
-		);
+		});
+	}
+	
+	componentDidMount() {
+		this.refresh_orgs();
 	}
 	
 	render() {
@@ -42,14 +64,31 @@ class OrgsComponent extends Component {
         return (
             <div className="OrgComponent">
 				<h1>L8Z Organisations</h1>
-				
+				<input
+					className="new_organisation"
+					type="button"
+					value="+"
+					onClick={this.handle_create_org}
+				/>
 				<h2>Your Organisations</h2>
 				{this.state.orgs.map(org =>
-					<div>
+					<div key={org.org_id}>
+						<input
+							className="delete_organisation"
+							type="button"
+							value="-"
+							onClick={() => this.handle_delete_org(org.org_id)}
+						/>
+						<input
+							className="update_organisation"
+							type="button"
+							value="#"
+							onClick={() => this.handle_update_org(org.org_id)}
+						/>
 						<h3 key={org.org_id}>{org.org_title}</h3>
 						<div>
 							{org.members.map(member =>
-								<p>{member.username}</p>
+								<p key={member.username}>{member.username}</p>
 							)}
 						</div>
 					</div>

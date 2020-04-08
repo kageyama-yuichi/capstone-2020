@@ -31,7 +31,7 @@ class SidebarComponent extends Component {
 							</Link>
 						</li>
 						<li className={(window.location.pathname == `/orgs` ? "current-window": "") + " sidebar-item"}>
-							<Link to="/chat" className="nav-link">
+							<Link to="/orgs" className="nav-link">
 								<img src={TeamsIcon}></img>
 								<span className="link-text">Orgs</span>
 							</Link>
