@@ -4,19 +4,20 @@ import './OrgsComponent.css'
 
 /*
 	Left to do:
-	Use the OrgsResources.retrieve_org to load in the Orgs Old Data
-	Save all the Relevant data in the States
-	Figure out How to Properly display Members and Shit
 	Work out how to Delete Members
 	Work out how to Delete Channels
-	Post it Baby
+	Work out how to Invite Members Here
+	Work out how to Update a Member Role
+	Fix all the this.on_submit() validation
 */
+
 class OrgsComponent extends Component {
 	constructor (props) {
 		super(props);
 		this.state = {
 			username: this.props.match.params.username,
 			org_id: this.props.match.params.org_id,
+			old_org_id: this.props.match.params.org_id,
 			org_title: '',
 			channels: [],
 			members: [],
@@ -76,12 +77,12 @@ class OrgsComponent extends Component {
 				console.log(org_push);
 				var url = '/orgs/'+this.state.username;
 				OrgsResources.update_org(
-					this.state.username, this.state.org_id, org_push
+					this.state.username, this.state.old_org_id, org_push
 				).then(()=> this.props.history.push(url));
 			}
 		}
 	} 
-	
+		
     handle_typing_org_id = (event) => {
 		// Organisation ID Must Be Lowercase and have NO SPACES and Special Characters
 		this.setState({
@@ -97,6 +98,10 @@ class OrgsComponent extends Component {
 	}
 	
 	componentDidUpdate() {
+		console.log(this.state.org_id);
+		console.log(this.state.org_title);
+		console.log(this.state.channels);
+		console.log(this.state.members);
 	}
 
 	componentDidMount() {
@@ -104,7 +109,6 @@ class OrgsComponent extends Component {
 		OrgsResources.retrieve_all_orgs(this.state.username)
 		.then(response => 
 		{
-			console.log(response.data);
 			for(let i=0; i<response.data.length; i++){
 				// They Can Claim the Same ID
 				if(this.state.org_id != response.data[i]){
@@ -118,10 +122,15 @@ class OrgsComponent extends Component {
 			}
 		});
 		// Retrieves All the Current Organisations IDs
-		OrgsResources.retrieve_org(this.state.username, this.state.org_id)
+		OrgsResources.retrieve_org(this.state.username, this.state.old_org_id)
 		.then(response => 
 		{
-			console.log(response);
+			this.setState({
+				org_id: response.data.org_id,
+				org_title: response.data.org_title,
+				channels: response.data.channels,
+				members: response.data.members
+			});
 		});
 	}
 	
@@ -130,6 +139,7 @@ class OrgsComponent extends Component {
         return (
             <div className="FormOrgComponent">
 				<h1>Register an Organisations</h1>
+				<h2>Organisation ID</h2>
 				<input 
 					type="text"
 					name="org_id"
@@ -138,6 +148,7 @@ class OrgsComponent extends Component {
 					onChange={this.handle_typing_org_id}
 					placeholder="Organisation ID"
 				/>
+				<h2>Organisation Title</h2>
 				<input 
 					type="text" 
 					name="org_title"
@@ -146,6 +157,45 @@ class OrgsComponent extends Component {
 					onChange={this.handle_typing_org_title}
 					placeholder="Organisation Title"
 				/>
+				<h2>{this.state.org_title} Member List</h2>
+				{this.state.members.map(member =>
+					{
+						if(member.role === "ORG_OWNER"){
+							return(<p key={member.username} className='org_owner'>{member.username}</p>)
+						} else if(member.role === "ADMIN"){
+							return(<p key={member.username} className='admin'>{member.username}</p>)
+						}else if(member.role === "TEAM_LEADER"){
+							return(<p key={member.username} className='team_leader'>{member.username}</p>)
+						} else {
+							if(member.role === "TEAM_MEMBER"){
+								return(<p key={member.username} className='team_member'>{member.username}</p>)
+							}
+						}
+					}
+				)}
+				<h2>{this.state.org_title} Channels</h2>
+				{this.state.channels.map(ch =>
+					<div key={ch.channel_title} className='channels'>
+						<h3 key={ch.channel_title}>{ch.channel_title}</h3>
+						<div>
+							{ch.members.map(member =>
+								{
+									if(member.role === "ORG_OWNER"){
+										return(<p key={member.username} className='org_owner'>{member.username}</p>)
+									} else if(member.role === "ADMIN"){
+										return(<p key={member.username} className='admin'>{member.username}</p>)
+									}else if(member.role === "TEAM_LEADER"){
+										return(<p key={member.username} className='team_leader'>{member.username}</p>)
+									} else {
+										if(member.role === "TEAM_MEMBER"){
+											return(<p key={member.username} className='team_member'>{member.username}</p>)
+										}
+									}
+								}
+							)}
+						</div>
+					</div>
+				)}
 				<input
 					id="org_update"
 					type="button"

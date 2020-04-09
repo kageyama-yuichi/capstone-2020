@@ -3,6 +3,12 @@ import OrgsResources from './OrgsResources.js'
 import { API_URL } from '../../Constants'
 import './OrgsComponent.css'
 
+/*
+	Left to do:
+	Display the Delete Button Only for ORG_OWNER
+	Display the Update Button Only for ORG_OWNER and ADMIN
+*/
+
 class OrgsComponent extends Component {
 	constructor (props) {
 		super(props);
@@ -43,9 +49,18 @@ class OrgsComponent extends Component {
 		{
 			// Maps the Response Data (Orgs.class) to JSObject
 			for(let i=0; i<response.data.length; i++){
+				var user_role_temp = '';
+				// Find the User's Role
+				for(let j=0; j<response.data[i].members.length; j++){
+					if(response.data[i].members[j].username === this.state.username){
+						user_role_temp = response.data[i].members[j].role;
+						break;
+					}
+				}
 				this.state.orgs.push({
 					org_id: response.data[i].org_id,
 					org_title: response.data[i].org_title,
+					user_role: user_role_temp,
 					members: response.data[i].members
 				})
 				this.setState({
@@ -72,7 +87,7 @@ class OrgsComponent extends Component {
 				/>
 				<h2>Your Organisations</h2>
 				{this.state.orgs.map(org =>
-					<div key={org.org_id}>
+					<div key={org.org_id} className='orgs'>
 						<input
 							className="delete_organisation"
 							type="button"

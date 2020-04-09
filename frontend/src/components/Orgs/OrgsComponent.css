@@ -39,6 +39,24 @@ p {
 	font-size: 20px;
 	background-color: orange;
 }
+.orgs {
+	height: auto !important;
+}
+.channels {
+	height: auto !important;
+}
+.org_owner {
+	color: brown;
+}
+.admin {
+	color: FireBrick;
+}
+.team_leader {
+	color: blue;
+}
+.team_member {
+	color: green;
+}
 
 #org_id, #org_title {
 	height: 25px;

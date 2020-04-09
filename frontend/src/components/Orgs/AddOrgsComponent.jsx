@@ -89,7 +89,6 @@ class OrgsComponent extends Component {
 		OrgsResources.retrieve_all_orgs(this.state.username)
 		.then(response => 
 		{
-			console.log(response.data);
 			for(let i=0; i<response.data.length; i++){
 				this.state.owned_ids.push({
 					org_id: response.data[i],
@@ -106,6 +105,7 @@ class OrgsComponent extends Component {
         return (
             <div className="FormOrgComponent">
 				<h1>Register an Organisations</h1>
+				<h2>Organisation ID</h2>
 				<input 
 					type="text"
 					name="org_id"
@@ -114,6 +114,7 @@ class OrgsComponent extends Component {
 					onChange={this.handle_typing_org_id}
 					placeholder="Organisation ID"
 				/>
+				<h2>Organisation Title</h2>
 				<input 
 					type="text" 
 					name="org_title"

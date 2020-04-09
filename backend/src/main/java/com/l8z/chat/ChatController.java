@@ -1,11 +1,8 @@
 package com.l8z.chat;
 //Sourced from: https://www.callicoder.com/spring-boot-websocket-chat-example/
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -13,14 +10,13 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.l8z.orgs.Channels;
 import com.l8z.orgs.Instances;
-import com.l8z.orgs.Instances.InstanceType;
 import com.l8z.orgs.Members;
-import com.l8z.orgs.Members.Role;
 import com.l8z.orgs.Orgs;
 import com.l8z.orgs.Sql;
 import com.l8z.orgs.jparepository.OrgsJpaRepository;
