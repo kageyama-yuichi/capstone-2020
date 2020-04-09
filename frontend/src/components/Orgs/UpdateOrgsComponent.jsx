@@ -11,7 +11,7 @@ import './OrgsComponent.css'
 	Fix all the this.on_submit() validation
 */
 
-class OrgsComponent extends Component {
+class UpdateOrgsComponent extends Component {
 	constructor (props) {
 		super(props);
 		this.state = {
@@ -207,4 +207,4 @@ class OrgsComponent extends Component {
     }
 }
 
-export default OrgsComponent
+export default UpdateOrgsComponent

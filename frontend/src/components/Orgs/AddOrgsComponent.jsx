@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import OrgsResources from './OrgsResources.js'
 import './OrgsComponent.css'
 
-class OrgsComponent extends Component {
+class AddOrgsComponent extends Component {
 	constructor (props) {
 		super(props);
 		this.state = {
@@ -134,4 +134,4 @@ class OrgsComponent extends Component {
     }
 }
 
-export default OrgsComponent
+export default AddOrgsComponent

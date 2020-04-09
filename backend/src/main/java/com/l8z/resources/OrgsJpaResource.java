@@ -121,7 +121,7 @@ public class OrgsJpaResource {
 	}
 	
 	@PostMapping(value="/jpa/orgs/{username}/{org_id}")
-	public ResponseEntity<Void> updateItem(
+	public ResponseEntity<Void> update_org(
 			@PathVariable String username,
 			@PathVariable String org_id, 
 			@RequestBody Orgs org
@@ -144,7 +144,7 @@ public class OrgsJpaResource {
 	}
 	
 	@DeleteMapping("jpa/orgs/{username}/{org_id}")
-	public ResponseEntity<Void> deleteItem(@PathVariable String username, @PathVariable String org_id) {
+	public ResponseEntity<Void> delete_org(@PathVariable String username, @PathVariable String org_id) {
 		System.out.println("System - Delete Org");
 		// First Get the Organisation
 		Sql temp_sql = orgsjpa.getByOrgId(org_id);

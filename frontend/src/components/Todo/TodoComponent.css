@@ -1,0 +1,56 @@
+h1 {
+	height: 40px !important;
+	padding-left: 100px !important;
+}
+h2 {
+	height: 30px !important;
+	padding-left: 100px !important;
+}
+h3 {
+	height: 30px !important;
+	padding-left: 100px !important;
+}
+p {
+	height: 20px !important;
+	padding-left: 100px !important;
+}
+.new_todo {
+	height: 25px;
+	width: 25px;
+	margin-left: 100px !important;
+	color: black;
+	font-size: 20px;
+	background-color: lightgreen;
+}
+
+.delete_todo {
+	height: 25px;
+	width: 25px;
+	margin-left: 100px !important;
+	color: black;
+	font-size: 20px;
+	background-color: red;
+}
+.update_todo {
+	height: 25px;
+	width: 25px;
+	margin-left: 100px !important;
+	color: black;
+	font-size: 20px;
+	background-color: orange;
+}
+.todos {
+	height: auto !important;
+}
+
+#desc, #due_date{
+	height: 25px;
+	width: 500px;
+	margin-left: 100px;
+	padding-left: 10px;
+}
+#todo_create, #todo_update {
+	height:25px;
+	width: 514px;
+	margin-left: 100px;
+}
