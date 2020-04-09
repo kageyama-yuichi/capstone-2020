@@ -1,4 +1,4 @@
-package com.l8z.orgs.resources;
+package com.l8z.resources;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,11 +17,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.l8z.GlobalVariable;
+import com.l8z.jparepository.OrgsJpaRepository;
 import com.l8z.orgs.Channels;
 import com.l8z.orgs.Members;
 import com.l8z.orgs.Orgs;
 import com.l8z.orgs.Sql;
-import com.l8z.orgs.jparepository.OrgsJpaRepository;
 
 @CrossOrigin(origins=GlobalVariable.L8Z_URL)
 @RestController

@@ -14,12 +14,12 @@ import org.springframework.stereotype.Controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.l8z.jparepository.OrgsJpaRepository;
 import com.l8z.orgs.Channels;
 import com.l8z.orgs.Instances;
 import com.l8z.orgs.Members;
 import com.l8z.orgs.Orgs;
 import com.l8z.orgs.Sql;
-import com.l8z.orgs.jparepository.OrgsJpaRepository;
 
 
 @Controller

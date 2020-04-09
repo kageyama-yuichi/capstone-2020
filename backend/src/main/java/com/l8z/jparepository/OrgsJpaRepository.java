@@ -1,4 +1,4 @@
-package com.l8z.orgs.jparepository;
+package com.l8z.jparepository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
