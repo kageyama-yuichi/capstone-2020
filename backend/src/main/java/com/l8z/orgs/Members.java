@@ -37,7 +37,7 @@ public class Members {
 	public Role get_role() {
 		return role;
 	}
-	
+
 	// Setters
 	public void set_username(String username) {
 		this.username = username;

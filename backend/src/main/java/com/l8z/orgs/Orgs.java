@@ -44,6 +44,16 @@ public class Orgs {
 	public boolean has_member(Members member) {
 		return members.contains(member);
 	}
+	public Members retrieve_member(String username) {
+		Members member = null;
+		for(int i=0; i<members.size(); i++) {
+			if(members.get(i).equals(new Members(username, Members.Role.ORG_OWNER))) {
+				member = members.get(i);
+				break;
+			}
+		}
+		return member;
+	}
 	public List<Channels> get_channels() {
 		return channels;
 	}

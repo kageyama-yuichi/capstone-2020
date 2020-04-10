@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
+import com.l8z.chat.ChatController;
 import com.l8z.chat.ChatMessage; // Importing our ChatMessage class
 
 @Component
@@ -24,28 +25,29 @@ public class WebSocketEventListener {
     // Log when someone joins the Application
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {
-        logger.info("Received a New Web Socket Connection");
+        logger.info("System - Received a New Web Socket Connection");
     }
-
 
     // Log when someone disconnects from the Application
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         StompHeaderAccessor header_accessor = StompHeaderAccessor.wrap(event.getMessage());
         String username = (String) header_accessor.getSessionAttributes().get("username");
+        String extension = (String) header_accessor.getSessionAttributes().get("url");
         //String private_username = (String) header_accessor.getSessionAttributes().get("private-username");
         logger.info(username);
-
         // Group Users
         if(username != null) {
-            logger.info("User Disconnected : " + username);
+            logger.info("System - User Disconnected : " + username);
             // Create the ChatMessage Object
             ChatMessage chat_dc = new ChatMessage();
             chat_dc.set_type(ChatMessage.MessageType.LEAVE);
             chat_dc.set_sender(username);
+            
+            // Make Sure They Are Offline
+            ChatController.online_users.remove(username);
             // Send the Message
-            messaging_template.convertAndSend("/group/public", chat_dc);
-            //messaging_template.convertAndSend("/chat", chat_dc);
+            messaging_template.convertAndSend("/group/"+extension, chat_dc);
         }
         
         /*

@@ -1,6 +1,8 @@
 package com.l8z.chat;
 //Sourced from: https://www.callicoder.com/spring-boot-websocket-chat-example/
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import com.l8z.jparepository.OrgsJpaRepository;
 import com.l8z.orgs.Channels;
 import com.l8z.orgs.Instances;
 import com.l8z.orgs.Members;
+import com.l8z.orgs.MembersStatus;
 import com.l8z.orgs.Orgs;
 import com.l8z.orgs.Sql;
 
@@ -28,6 +31,8 @@ public class ChatController {
 	private OrgsJpaRepository orgsjpa;
 	// Used to Read a JSON Document and Convert to Object
 	private ObjectMapper json_mapper = new ObjectMapper();
+	// Static Map to Keep Status of Users
+	public static HashMap<String, String> online_users = new HashMap<String, String>();
 	
 	// Group Chatting
     @MessageMapping("/send_message/{org_id}/{channel_title}/{instance_title}")
@@ -93,6 +98,10 @@ public class ChatController {
     	// Add user in Web Socket Session
     	//chat_message.display_message(); // Displays the Chat Message for Debugging Purposes
     	header_accessor.getSessionAttributes().put("username", chat_message.get_sender());
+    	header_accessor.getSessionAttributes().put("url", org_id+"/"+channel_title+"/"+instance_title);
+    	
+    	online_users.put(chat_message.get_sender(), "online");
+    	
         return chat_message;
     }
     
@@ -125,7 +134,7 @@ public class ChatController {
     // Group Member Loading
     @MessageMapping("/fetch_members/{org_id}/{channel_title}/{instance_title}")
     @SendTo("/group/members/{org_id}/{channel_title}/{instance_title}")
-    public List<Members> fetch_members(
+    public List<MembersStatus> fetch_members(
     		@DestinationVariable("org_id") String org_id,
     		@DestinationVariable("channel_title") String channel_title,
     		@DestinationVariable("instance_title") String instance_title    	
@@ -133,20 +142,34 @@ public class ChatController {
     	// Log the Message with the URL
     	log_to_stdout("fetch_members", org_id, channel_title, instance_title);
     	
-    	List<Members> members = null;
+    	List<Members> temp = null;
+    	List<MembersStatus> members = new ArrayList<MembersStatus>();
     	
     	try {
     		// Convert to Orgs Object
 			Orgs temp_org = json_mapper.readValue(orgsjpa.getByOrgId(org_id).get_data(), Orgs.class);
 			// Retrieve the Channel -> Members
-			members =  temp_org.retrieve_channel(channel_title).get_members();
+			temp =  temp_org.retrieve_channel(channel_title).get_members();
+			
+			// Modify the Status of the Online Users
+			for(int i=0; i<temp.size(); i++) {
+				if(online_users.containsKey(temp.get(i).get_username())) {
+					members.add(new MembersStatus(temp.get(i), online_users.get(temp.get(i).get_username())));
+				} else {
+					members.add(new MembersStatus(temp.get(i)));
+				}
+			}
 		} catch (JsonMappingException e) {
 			System.out.println("System - Error Fetching Members");
 		} catch (JsonProcessingException e) {
 			System.out.println("System - Error Fetching Members");
 		}
-
-    	return members;
+    	
+    	if(members.size() > 0) {
+    		return members;
+    	} else {
+    		return null;
+    	}
     }
 
 /*

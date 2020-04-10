@@ -25,7 +25,7 @@ class BodyComponent extends Component {
 							<Route path="/orgs/:username" exact component={OrgsComponent} />
 							<Route path="/orgs/:username/new" exact component={AddOrgsComponent} />
 							<Route path="/orgs/:username/:org_id" exact component={UpdateOrgsComponent} />
-							<Route path="/chat/:orgs_id/:channel_title/:instance_title" exact component={ChatComponent} />
+							<Route path="/chat/:orgs_id/:channel_title/:instance_title/:username" exact component={ChatComponent} />
                             <Route path="/dashboard" exact component={DashboardComponent} />
                             <Route path="/dashboard/:username" exact component={TodoComponent} />
                             <Route path="/dashboard/:username/:id" exact component={AddUpdateTodoComponent} />

@@ -14,7 +14,7 @@ class ChatComponent extends Component {
 	constructor (props) {
 		super(props);
 		this.state = {
-			username: '',
+			username: this.props.match.params.username,
 			channel_connected: false,
 			message: '',
 			room_notification: [],
@@ -129,7 +129,7 @@ class ChatComponent extends Component {
 			if(!does_exist){
 				this.state.room_notification.push({
 					'sender': obj[i].username,
-					'status': 'offline',
+					'status': obj[i].status,
 					'date_time': ''
 				})
 			} else {
@@ -187,7 +187,7 @@ class ChatComponent extends Component {
 				}
 			})
 			this.setState({
-				room_notification: this.state.room_notification
+				room_notification: this.state.room_notification.sort(this.sort_by_online_names)
 			})
 		}
 		else if (message_text.type === 'CHAT') {
@@ -300,8 +300,8 @@ class ChatComponent extends Component {
 	}
 
 	componentDidMount() {
-		this.username = 'Michael';
-		this.my_connect(this.username);
+		//this.username = 'Michael';
+		this.my_connect(this.state.username);
 		this.setState({
 			current_time: new Date().toLocaleString()
 		})
