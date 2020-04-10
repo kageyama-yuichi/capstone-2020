@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import "./ProfileComponent.css";
+import ProfileResources from "./ProfileResources.js";
 
 //TODO: Prevent XSS
 
@@ -7,6 +8,7 @@ class ProfileComponent extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			username: "Larrad.Tyler",
 			firstname: "",
 			lastname: "",
 			address: "",
@@ -100,11 +102,41 @@ class ProfileComponent extends Component {
 	onSubmit = e => {
 		e.preventDefault();
 		if (this.handleValidation()) {
+			let prof = {
+				username: this.state.username,
+				fname: this.state.firstname,
+				lname: this.state.lastname,
+				address: this.state.address,
+				bio: this.state.bio,
+				imagePath: this.state.picUrl
+			}
+			// Retrieve the User's Profile Information from the Server
+			ProfileResources.updateUserProfile(this.state.username, prof)
 			console.log("success");
 			this.props.history.push(`/dashboard`);
 		}
 	};
 
+	refreshUserProfile = () => {
+		// Retrieve the User's Profile Information from the Server
+		ProfileResources.receiveUserProfile(this.state.username)
+		.then(response => 
+		{
+			console.log(response.data);
+			this.setState({
+				firstname: response.data.fname,
+				lastname: response.data.lname,
+				address: response.data.address,
+				bio: response.data.bio,
+				picUrl: response.data.imagePath
+			})
+		});
+	}
+	
+	componentDidMount() {
+		this.refreshUserProfile();
+	}
+	
 	render() {
 		return (
 			<div className="app-window profile-component">

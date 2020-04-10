@@ -1,8 +1,12 @@
 package com.l8z.resources;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.l8z.GlobalVariable;
@@ -16,20 +20,19 @@ public class UserProfileResource {
 	@Autowired
 	private UserProfileJpaRepository repo;
 
-	@GetMapping("jpa/profile") 
-	public UserProfile receiveUserProfile(String username){
+	@GetMapping("/jpa/profile/{username}") 
+	public UserProfile receiveUserProfile(@PathVariable String username){
 		return repo.findByUsername(username);
 	}
 	
-	/*public List<UserProfile> listAll(){
-	//	return repo.findAll();
+	@PostMapping("/jpa/profile/{username}")
+	public ResponseEntity<Void> updateUserProfile(
+			@PathVariable String username, 
+			@RequestBody UserProfile prof
+		){
+		prof.setUsername(username);
+		// Update Profile
+		repo.save(prof);
+		return ResponseEntity.noContent().build();
 	}
-	
-	public void save (UserProfile userprofile){
-	//	repo.save(userprofile);
-	}
-	
-	public void delete(Long id){
-		//repo.deleteById(id);
-	}*/
 }

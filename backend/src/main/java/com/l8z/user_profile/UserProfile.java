@@ -1,8 +1,7 @@
 package com.l8z.user_profile;
 
-
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -11,13 +10,13 @@ import javax.persistence.Table;
 public class UserProfile {
 	// Members
 	@Id
-	@GeneratedValue
-	private Long id;
 	private String username;
 	private String fname;
 	private String lname;
 	private String address;
+	@Column(length = 2000)
 	private String bio;
+	@Column(length = 100000)
 	private String imagePath;
 	
 	// Default Constructor
@@ -35,9 +34,6 @@ public class UserProfile {
 		this.imagePath = imagePath;
 	}
 
-	public Long getId() {
-		return id;
-	}
 	public String getUsername() {
 		return username;
 	}
@@ -58,9 +54,6 @@ public class UserProfile {
 	}
 	
 	// Setters
-	public void setId(Long id) {
-		this.id = id;
-	}
 	public void setUsername(String username) {
 		this.username = username;
 	}
