@@ -23,7 +23,7 @@ class AddOrgsComponent extends Component {
 		var str2 = new String(this.state.org_id);
 		
 		// Ensure Length is 3 or Greater
-		if(this.state.org_id.length < 3 || this.state.org_id === "new") { 
+		if(this.state.org_id.length < 3 || this.state.org_id === "new" || this.state.org_id === "channels") { 
 			this.setState({
 				org_id_error: true
 			})
@@ -61,8 +61,7 @@ class AddOrgsComponent extends Component {
 					members: []
 				}
 				console.log(org);
-				var url = '/orgs/'+this.state.username;
-				OrgsResources.create_org(this.state.username, org).then(() => this.props.history.push(url));
+				OrgsResources.create_org(this.state.username, org).then(() => this.props.history.goBack());
 			}
 		}
 	} 

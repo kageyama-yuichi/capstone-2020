@@ -32,18 +32,17 @@ class AddUpdateTodoComponent extends Component {
 		if(!internal_error) {
 			var t_date = this.state.date;
 			var modified_date = t_date.slice(8,10)+"/"+t_date.slice(5,7)+"/"+t_date.slice(0,4);
-			console.log("System - Creating New Organisation");
+			console.log("System - Creating New Todo List");
 			let todo = {
 				username: this.state.username,
 				desc: this.state.desc,
 				date: modified_date,
 				status: false
 			}
-			var url = '/dashboard/'+this.state.username;
 			if(this.state.old_id === "new"){
-				TodoResources.create_todo(this.state.username, todo).then(() => this.props.history.push(url));
+				TodoResources.create_todo(this.state.username, todo).then(() => this.props.history.toBack());
 			} else {
-				TodoResources.update_todo(this.state.username, this.state.old_id, todo).then(() => this.props.history.push(url));
+				TodoResources.update_todo(this.state.username, this.state.old_id, todo).then(() => this.props.history.toBack());
 			}
 		}
 	} 

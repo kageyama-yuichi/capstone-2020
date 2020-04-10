@@ -15,7 +15,7 @@ class TodoComponent extends Component {
 	}
 
 	handle_create_todo = () => {
-		var url = this.state.username+'/new';
+		var url = this.props.history.location.pathname+'/new';
 		this.props.history.push(url);
 	}
 	handle_delete_todo = (id) => {
