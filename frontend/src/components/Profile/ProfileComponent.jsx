@@ -7,11 +7,11 @@ class ProfileComponent extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			firstname: "John",
-			lastname: "Doe",
-			address: "Somewhere",
-			bio: "Lorem ipsum",
-			picUrl: "https://picsum.photos/200",
+			firstname: "",
+			lastname: "",
+			address: "",
+			bio: "",
+			picUrl: "",
 			imageError: "",
 			firstnameError: "",
 			lastnameError: "",
