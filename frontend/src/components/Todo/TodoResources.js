@@ -20,9 +20,14 @@ class TodoResources {
 	update_todo(username, id, todo) {
         return axios.post(`${JPA_URL}/dashboard/${username}/${id}`, todo);
     }
+    update_todo_status(username, id) {
+        return axios.post(`${JPA_URL}/dashboard/${username}/${id}/status`)
+    }
     delete_todo(username, id) {
         return axios.delete(`${JPA_URL}/dashboard/${username}/${id}`);
     }
+    
+
 }
 
 export default new TodoResources()

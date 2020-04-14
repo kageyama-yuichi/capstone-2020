@@ -48,17 +48,26 @@ public class TodoJpaResource {
 		return ResponseEntity.noContent().build();
 	}
 	
+	@PostMapping("/jpa/dashboard/{username}/{id}/status")
+	public ResponseEntity<Void> update_todo_status(@PathVariable String username, @PathVariable long id) {
+		Todo todoToUpdate = todojpa.getOne(id);
+		todoToUpdate.set_status(!todoToUpdate.get_status());
+		todojpa.save(todoToUpdate);
+		return ResponseEntity.noContent().build();
+	}
+	
+	
 	@PostMapping("/jpa/dashboard/{username}/{id}")
 	public ResponseEntity<Void> update_todo(
 			@PathVariable String username,
 			@PathVariable long id, 
 			@RequestBody Todo todo
 		){
-		todo.set_username(username);
-		// Delete the Old One
-		todojpa.deleteById(id);
-		// Make the New One
-		todojpa.save(todo);
+		Todo todoToUpdate = todojpa.getOne(id);
+		todoToUpdate.set_date(todo.get_date());
+		todoToUpdate.set_desc(todo.get_desc());
+
+		todojpa.save(todoToUpdate);
 		return ResponseEntity.noContent().build();
 	}
 }
