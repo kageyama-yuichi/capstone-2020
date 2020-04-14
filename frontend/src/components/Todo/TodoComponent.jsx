@@ -61,20 +61,19 @@ class TodoComponent extends Component {
 		// Retrieves the Todos for the User from the Server
 		TodoResources.retrieve_todos(this.state.username).then((response) => {
 			console.log(response.data);
+			let todos = [];
 			// Maps the Response Data (Todo.class) to JSObject
 			for (let i = 0; i < response.data.length; i++) {
-				this.state.todos.push({
+				todos.push({
 					id: response.data[i].id,
 					username: response.data[i].username,
 					desc: response.data[i].desc,
 					date: response.data[i].date,
 					status: response.data[i].status,
 				});
-				this.setState({
-					todos: this.state.todos,
-				});
 			}
-			
+			todos.sort((a, b) => new moment(a.date) - new moment(b.date));
+			this.setState({ todos: todos });
 		});
 		this.forceUpdate();
 	};
@@ -110,7 +109,8 @@ class TodoComponent extends Component {
 										</td>
 										<td className="desc-col">{todo.desc}</td>
 										<td className="date-col">
-											{moment(todo.date).format("ll")}
+											
+											{moment().isSame(todo.date,'date') ? "Today" : moment(todo.date).format("ll")}
 										</td>
 
 										<td className="update-col">

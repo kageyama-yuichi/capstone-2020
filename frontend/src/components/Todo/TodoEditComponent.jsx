@@ -50,7 +50,7 @@ class TodoEditComponent extends Component {
         if (!fields.date) {
             formIsValid = false;
             this.setState({dateError: "Date cannot be empty"})
-        } else if (moment(moment.now()).isAfter(this.state.date)) {
+        } else if (moment().isAfter(this.state.date,'date')) {
             formIsValid = false;
             this.setState({dateError: "Date cannot be in the past"})            
         }
