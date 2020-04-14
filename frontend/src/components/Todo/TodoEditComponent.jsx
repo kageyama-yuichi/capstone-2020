@@ -1,26 +1,48 @@
 import React, { Component } from "react";
 import "./TodoEditComponent.css";
 import moment from "moment";
+import TodoResources from './TodoResources.js'
+
 
 class TodoEditComponent extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            description: "",
-            date: "",
-            descError: "",
-            dateError: ""
+
+        let todo = this.props.editTodo;
+        if (todo.length == 0) {
+            
+            this.state = {
+                id: "",
+                username: localStorage.getItem("username"),
+                desc: "",
+                date: "",
+                descError: "",
+                dateError: "",
+                status: false
+            }
+        } else {
+            this.state = {
+                id: todo.id,
+                username: localStorage.getItem("username"),
+                desc: todo.desc,
+                date: todo.date,
+                descError: "",
+                dateError: "",
+                status: todo.status
+            }
         }
+        
     }
 
     validateForm() {
+
         const fields = this.state;
 
         let formIsValid = true;
         this.setState({ dateError: "", descError: "" });
 
-        if (!fields.description) {
+        if (!fields.desc) {
             formIsValid = false;
             this.setState({descError: "Description cannot be empty"})
         }
@@ -41,11 +63,21 @@ class TodoEditComponent extends Component {
     handleSubmit(e) {
         e.preventDefault();
 
-        if (this.validateForm()) {
-            this.props.closeHandler();
-        } else {
-            console.log("error");
+        let todo = {
+            username: this.state.username,
+            desc: this.state.desc,
+            date: this.state.date,
+            status: this.state.status
         }
+
+        if (this.validateForm()) {
+
+            if (this.state.id) {
+                TodoResources.update_todo(this.state.username, this.state.id, todo).then(() => this.props.saveCallback());
+            } else {
+                TodoResources.create_todo(this.state.username, todo).then(() => this.props.saveCallback());
+            }
+        } 
     }
 
     handleChange(event) {
@@ -76,10 +108,10 @@ class TodoEditComponent extends Component {
 							<input
 								className="desc-input"
 								type="text"
-								name="description"
+								name="desc"
                                 placeholder="Enter a description"
                                 onChange={this.handleChange.bind(this)}
-                                value={this.state.description}
+                                value={this.state.desc}
                             />
                             <label className="error-label">{this.state.descError}</label> 
                         </div>
