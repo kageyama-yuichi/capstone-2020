@@ -1,141 +1,104 @@
-import React, { Component } from "react";
-import "./TodoComponent.css";
-import moment from "moment";
-import TodoEditComponent from "./TodoEditComponent.jsx";
+import React, {Component} from 'react'
+import TodoResources from './TodoResources.js'
+import './TodoComponent.css'
 
 class TodoComponent extends Component {
-	constructor(props) {
+	constructor (props) {
 		super(props);
-
-		//Mock data
-		let todo1 = {
-			id: 1,
-			description: "this is todo 1",
-			targetDate: moment.now(),
-			done: false
-		};
-		let todo2 = {
-			id: 2,
-			description: "this is todo 2",
-			targetDate: moment.now(),
-			done: true
-		};
 		this.state = {
-			todos: [todo1, todo2],
-			showOverlay: false
+			username: this.props.match.params.username,
+			todos: []
 		};
-
-		this.handleCreateClick = this.handleCreateClick.bind(this);
+		this.handle_create_todo = this.handle_create_todo.bind(this);
+		this.handle_delete_todo = this.handle_delete_todo.bind(this);
+		this.handle_update_todo = this.handle_update_todo.bind(this);
 	}
 
-	getTodo(key) {
-		const todos = this.state.todos;
-		for (let i = 0; i < todos.length; i++) {
-			if (todos[i].id == key) {
-				return i;
+	handle_create_todo = () => {
+		var url = this.state.username+'/new';
+		this.props.history.push(url);
+	}
+	handle_delete_todo = (id) => {
+		TodoResources.delete_todo(this.state.username, id).then(
+			response => {
+				// Reset using this.refresh_todos in Callback to Force
+				this.setState({
+					todos: []
+				}, () => {
+					this.refresh_todos();
+				})
 			}
-		}
-	}
-
-	handleCreateClick() {
-		this.setState({ showOverlay: !this.state.showOverlay });
-	}
-
-	//TODO: Flesh out edit on click
-	handleEditClick(todo) {
-		console.log(todo);
-	}
-
-	handleDoneClick(key) {
-		const index = this.getTodo(key);
-		this.state.todos[index].done = !this.state.todos[index].done;
-		this.forceUpdate();
-	}
-
-
-	//TODO: Add confirmation
-	handleDeleteClick(key) {
-		if (window.confirm("Delete todo?")) {
-			const index = this.getTodo(key);
-			const todos = this.state.todos;
-			todos.splice(index, 1);
-			this.setState({ todos: todos });
-		}
-	}
-
-	render() {
-		return (
-			<div className="todo-component">
-				<div>
-					<div className="todo-header">
-						<h1 style={{ height: "fit-content" }}>Todo List</h1>
-						<button
-							className="new-todo-button"
-							onClick={this.handleCreateClick}
-						>
-							New Todo
-						</button>
-					</div>
-
-					<div className="todo-container">
-						<table cellSpacing="0" className="todo-table">
-							<tbody>
-								{this.state.todos.map(todo => (
-									<tr key={todo.id}>
-										<td className="done-col">
-											<button
-												className={
-													todo.done
-														? "done-button"
-														: "doing-button"
-												}
-												onClick={() =>
-													this.handleDoneClick(
-														todo.id
-													)
-												}
-											>
-												{todo.done ? "Done" : "Doing"}
-											</button>
-										</td>
-										<td className="desc-col">
-											{todo.description}
-										</td>
-										<td className="date-col">
-											{moment(todo.targetDate).format(
-												"ll"
-											)}
-										</td>
-
-										<td className="update-col">
-											<button onClick={() => this.handleEditClick(todo)}>
-												<i className="fas fa-edit"></i>
-											</button>
-										</td>
-
-										<td className="delete-col">
-											<button
-												onClick={() =>
-													this.handleDeleteClick(
-														todo.id
-													)
-												}
-											>
-												<i className="fas fa-minus-circle"></i>
-											</button>
-										</td>
-									</tr>
-								))}
-							</tbody>
-						</table>
-						{this.state.showOverlay ? (
-                            <TodoEditComponent closeHandler={this.handleCreateClick} />
-						) : null}
-					</div>
-				</div>
-			</div>
 		);
 	}
+	handle_update_todo = (id) => {
+		var url = this.state.username+"/"+id;
+		this.props.history.push(url);
+	}
+	
+	componentDidUpdate() {
+		console.log(this.state.todos);
+	}
+	
+	refresh_todos = () => {
+		this.setState({
+			todos: []
+		})
+		// Retrieves the Todos for the User from the Server
+		TodoResources.retrieve_todos(this.state.username)
+		.then(response => 
+		{
+			console.log(response.data);
+			// Maps the Response Data (Todo.class) to JSObject
+			for(let i=0; i<response.data.length; i++){
+				this.state.todos.push({
+					id: response.data[i].id,
+					username: response.data[i].username,
+					desc: response.data[i].desc,
+					date: response.data[i].date,
+					status: response.data[i].status
+				})
+				this.setState({
+					todos: this.state.todos
+				})
+			}
+		});
+	}
+	
+	componentDidMount() {
+		this.refresh_todos();
+	}
+	
+	render() {
+		console.log("System - Rendering Page...");
+        return (
+            <div className="TodoComponent">
+				<h1>{this.state.username}'s Todos</h1>
+				<input
+					className="new_todo"
+					type="button"
+					value="+"
+					onClick={this.handle_create_todo}
+				/>
+				{this.state.todos.map(todo =>
+					<div key={todo.id} className='todos'>
+						<input
+							className="delete_todo"
+							type="button"
+							value="-"
+							onClick={() => this.handle_delete_todo(todo.id)}
+						/>
+						<input
+							className="update_todo"
+							type="button"
+							value="#"
+							onClick={() => this.handle_update_todo(todo.id)}
+						/>
+						<p key={todo.id}>{todo.desc}, {todo.status.toString()}, {todo.date}</p>
+					</div>
+				)}
+			</div>
+        )
+    }
 }
 
-export default TodoComponent;
+export default TodoComponent

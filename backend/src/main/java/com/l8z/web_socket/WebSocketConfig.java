@@ -26,6 +26,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     	registry.setApplicationDestinationPrefixes("/app");
         // This will be used for Group Channel Chat Instances
         // i.e., This will be "/group-id/channel/"
-        registry.enableSimpleBroker("/group/public","/queue"); 
+        //registry.enableSimpleBroker("/group","/group/history","/group/members","/user");
+    	registry.enableSimpleBroker("/group","/user");
+        // Enables Split Stream Routing
+        registry.setUserDestinationPrefix("/user");
     }
 }

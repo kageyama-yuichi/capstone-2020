@@ -206,7 +206,7 @@ class RegisterComponent extends Component {
 						</p>
 						<input
 							type="submit"
-							className="signup-button"
+							className="signup-button submit-button"
 							value="SIGN UP"
 						></input>
 						

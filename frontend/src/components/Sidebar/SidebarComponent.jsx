@@ -12,25 +12,26 @@ import { Link } from "react-router-dom";
 class SidebarComponent extends Component {
 	render() {
 		//Do not load sidebar on landing page
-		if (window.location.pathname === `/`) {
+		if (window.location.pathname === '/') {
 			return null;
 		} else {
 			return (
 				<nav className="sidebar">
 					<ul className="sidebar-nav">
-						<li className="sidebar-item logo-item">
+						<li className={(window.location.pathname == `/dashboard` ? "current-window": "") + " sidebar-item logo-item"}>
 							<Link to="/dashboard" className="nav-link">
-								<img src={LogoIcon}></img>
+								<img className="logo-img" src={LogoIcon}></img>
 							</Link>
 						</li>
-						<li className="sidebar-item">
-							<Link to="/dashboard" className="nav-link">
+							
+						<li className={(window.location.pathname == `/profile` ? "current-window" : "") + " sidebar-item"}>
+							<Link to="/profile" className="nav-link">
 								<img src={ProfileIcon}></img>
 								<span className="link-text">Profile</span>
 							</Link>
 						</li>
-						<li className="sidebar-item">
-							<Link to="/chat" className="nav-link">
+						<li className={(window.location.pathname == `/orgs` ? "current-window": "") + " sidebar-item"}>
+							<Link to="/orgs" className="nav-link">
 								<img src={TeamsIcon}></img>
 								<span className="link-text">Orgs</span>
 							</Link>
@@ -41,7 +42,7 @@ class SidebarComponent extends Component {
 								<span className="link-text">Agenda</span>
 							</Link>
 						</li>
-						<li className="sidebar-item">
+						<li className={(window.location.pathname == `/private` ? "current-window": "") + " sidebar-item"}>
 							<Link to="/dashboard" className="nav-link">
 								<img src={ChatIcon}></img>
 								<span className="link-text">Private</span>
