@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import RegisterResources from './RegisterResources.js';
 import "./RegisterComponent.css";
 
 class RegisterComponent extends Component {
@@ -104,9 +105,25 @@ class RegisterComponent extends Component {
 		e.preventDefault();
 		let err = this.handleValidation();
 		this.setState({ errors: err });
-
-		if (!this.state.errors) {
+		console.log("State Errors");
+		console.log(this.state.errors);
+		
+		console.log("Err");
+		console.log(err);
+		console.log(err.length);
+		
+		
+		if (err.length === 0) {
 			console.log("success");
+			let user = {
+				username: this.state.username,
+				fname: this.state.firstname,
+				lname: this.state.lastname,
+				email: this.state.email,
+				address: this.state.address,
+				password: this.state.password
+			}
+			RegisterResources.registerUser(this.state.username, user);
 
 		} else {
 			console.log("fail");
