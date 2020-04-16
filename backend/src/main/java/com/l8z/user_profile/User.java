@@ -1,12 +1,16 @@
 package com.l8z.user_profile;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
 public class User {
 	// Members of Table
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 	private String username;
 	private String fname;
 	private String lname;
@@ -30,6 +34,9 @@ public class User {
 	}
 	
 	// Getters
+	public Long getID() {
+		return id;
+	}
 	public String getUsername() {
 		return username;
 	}
@@ -50,6 +57,9 @@ public class User {
 	}
 	
 	// Setters
+	public void setID(Long id) {
+		this.id = id;
+	}
 	public void setUsername(String username) {
 		this.username = username;
 	}

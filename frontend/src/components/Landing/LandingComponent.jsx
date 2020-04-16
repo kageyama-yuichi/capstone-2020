@@ -4,11 +4,15 @@ import "./LandingComponent.css";
 import FooterComponent from "../Footer/FooterComponent.jsx";
 import RegisterComponent from "../Register/RegisterComponent.jsx";
 import logoSVG from "../../assests/Logo_v4.png";
+import AuthenticationService from '../Authentication/AuthenticationService.js'
+
 
 class LandingComponent extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			username: "",
+			password: "",
 			showRegister: false,
 			windowSize: ""
 		};
@@ -62,9 +66,32 @@ class LandingComponent extends Component {
 		return document.getElementsByTagName("body")[0].offsetWidth;
 	}
 
+	handle_typing_username = (event) => {
+		this.setState({
+            username: event.target.value,
+        });
+	}
+	handle_typing_password = (event) => {
+		this.setState({
+            password: event.target.value,
+        });
+	}
+	
 	handleSubmit(e) {
 		e.preventDefault();
-		this.props.history.push("/dashboard");
+		console.log(this.state.username);
+		console.log(this.state.password);
+		
+		AuthenticationService
+			.executeJwtAuthenticationService(this.state.username, this.state.password)
+			.then((response) => {
+				console.log("Inner Authetnication");
+				AuthenticationService.registerSuccessfulLoginForJwt(this.state.username, response.data.token)
+				let url = '/dashboard/'+this.state.username;
+				this.props.history.push(url);
+			})
+		
+		//this.props.history.push("/dashboard");
 	}
 
 	render() {
@@ -84,6 +111,8 @@ class LandingComponent extends Component {
 										type="text"
 										className="input-field username-field"
 										placeholder="Enter your username"
+										value={this.state.username}
+										onChange={this.handle_typing_username}
 									></input>
 								</div>
 								<div className="input-container">
@@ -92,6 +121,8 @@ class LandingComponent extends Component {
 										type="text"
 										className="input-field password-field"
 										placeholder="Enter your password"
+										value={this.state.password}
+										onChange={this.handle_typing_password}
 									></input>
 								</div>
 								<div className="password-reset">
