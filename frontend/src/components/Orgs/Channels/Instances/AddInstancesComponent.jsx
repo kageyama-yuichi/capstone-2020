@@ -48,7 +48,6 @@ class AddInstancesComponent extends Component {
 				console.log("System - Creating New Instance");
 				let instance = {
 					instance_title: this.state.instance_title,
-					members: [],
 					instances: []
 				}
 				console.log(instance);

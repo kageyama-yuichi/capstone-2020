@@ -19,6 +19,8 @@ public class Orgs {
 	@JsonProperty("members") private List<Members> members = new ArrayList<>();
 	// Stores all the Channels
 	@JsonProperty("channels")private List<Channels> channels = new ArrayList<>();
+	// Stores all the Instances
+	@JsonProperty("instances")private List<Instances> instances = new ArrayList<>();
 	
 	// Default Constructor
 	public Orgs() {
@@ -68,6 +70,20 @@ public class Orgs {
 		return temp;
 	}
 	
+	public List<Instances> get_instance() {
+		return instances;
+	}
+	public Instances retrieve_instance(String instance_title) {
+		Instances temp = null;
+		for(int i=0; i<instances.size(); i++) {
+			if(instances.get(i).get_instance_title().equals(instance_title)) {
+				temp = instances.get(i);
+				break;
+			}
+		}
+		return temp;
+	}
+	
 	// Setters
 	public void set_org_id(String org_id) {
 		this.org_id = org_id;
@@ -88,6 +104,12 @@ public class Orgs {
 	}
 	public void clear_channel() {
 		channels.clear();
+	}
+	public void add_instance(Instances new_instance) {
+		instances.add(new_instance);
+	}
+	public void remove_instance(Instances old_instance) {
+		instances.remove(old_instance);
 	}
 	
 	public boolean manage_member(Members auth, Members member, Members.Role new_role) {

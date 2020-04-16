@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.l8z.GlobalVariable;
 import com.l8z.jparepository.OrgsJpaRepository;
 import com.l8z.orgs.Channels;
+import com.l8z.orgs.Instances;
 import com.l8z.orgs.Members;
 import com.l8z.orgs.Orgs;
 import com.l8z.orgs.Sql;
@@ -314,4 +315,132 @@ public class OrgsJpaResource {
 		orgsjpa.save(sql);
 		return ResponseEntity.noContent().build();
 	}
+	
+	@GetMapping("jpa/orgs/{username}/{org_id}/{channel_title}/new")
+	public List<String> retrieve_all_instance_titles(@PathVariable String username, @PathVariable String org_id,  @PathVariable String channel_title) {
+		System.out.println("System - Retrieving All Instances in the Org");
+
+		Orgs users_org = null;
+		List<Instances> instance_list = new ArrayList<Instances>();
+		List<String> instance_title_namespace = new ArrayList<String>();
+		
+		try {
+    		// Convert to Sql Object
+			Sql temp_sql = orgsjpa.getByOrgId(org_id); 
+			Orgs temp_org = json_mapper.readValue(temp_sql.get_data(), Orgs.class);
+			// Get the Channel List
+			instance_list = temp_org.get_instance();
+		} catch (JsonMappingException e) {
+			System.out.println("System - Error Retrieving Organisations");
+		} catch (JsonProcessingException e) {
+			System.out.println("System - Error Retrieving Organisations");
+		}
+		
+		// Get the Namespace
+		for(int i=0; i<instance_list.size(); i++) {
+			instance_title_namespace.add(instance_list.get(i).get_instance_title());
+		}
+		
+		return instance_title_namespace;
+	}
+	
+	@PostMapping("jpa/orgs/{username}/{org_id}/{channel_title}/new")
+	public ResponseEntity<Void> create_instance(
+			@PathVariable String username,
+			@PathVariable String org_id,
+			@PathVariable String channel_title,
+			@RequestBody Instances instance
+		) {
+		System.out.println("System - Creating Instance");
+		
+		Sql sql = null;
+		Orgs temp_org = null;
+		try {
+			// Convert to Sql Object
+			sql = orgsjpa.getByOrgId(org_id); 
+			temp_org = json_mapper.readValue(sql.get_data(), Orgs.class);
+			
+			// Add the Instance
+			temp_org.add_instance(instance);
+			
+			sql = new Sql(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org));
+			
+		} catch (JsonProcessingException e) {
+			System.out.println("System - Error Creating Instance");
+		}
+		// Save the Org
+		orgsjpa.save(sql);
+		
+		return ResponseEntity.noContent().build();
+	}
+	
+	@PostMapping(value="/jpa/orgs/{username}/{org_id}/{channel_title}/{instance_title}")
+	public ResponseEntity<Void> update_instance(
+			@PathVariable String username,
+			@PathVariable String org_id,
+			@PathVariable String channel_title,
+			@PathVariable String instance_title,
+			@RequestBody Instances instance
+		){
+		
+		Sql sql = null;
+		Orgs temp_org = null;
+
+		try {
+			sql = orgsjpa.getByOrgId(org_id); 
+			temp_org = json_mapper.readValue(sql.get_data(), Orgs.class);
+			
+			// Check if instance_title Changes
+			if(!temp_org.retrieve_instance(instance_title).equals(instance.get_instance_title())) {
+				// Remove the Old Instance
+				temp_org.remove_instance(temp_org.retrieve_instance(instance_title));
+				// Add the New Instance
+				temp_org.add_instance(instance);
+			}
+			
+			// Convert to Sql Object
+			sql = new Sql(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org));
+		} catch (JsonProcessingException e) {
+			System.out.println("System - Error Updating Instance");
+		}
+		
+		// Save the Org
+		orgsjpa.save(sql);
+		return ResponseEntity.noContent().build();
+	}
+	
+	@DeleteMapping("jpa/orgs/{username}/{org_id}/{channel_title}/{instance_title}")
+	public ResponseEntity<Void> delete_instance(
+			@PathVariable String username, 
+			@PathVariable String org_id,
+			@PathVariable String channel_title,
+			@PathVariable String instance_title
+		) {
+		System.out.println("System - Delete Instance");
+		// First Get the Organisation
+		Sql sql = null;
+		Orgs temp_org = null;
+		
+		Sql temp_sql = orgsjpa.getByOrgId(org_id);
+		
+		// Check if the Requestor is the ORG_OWNER And OWNER of Channel
+		boolean org_owner = false;
+		try {
+    		// Convert to Orgs Object
+			temp_org = json_mapper.readValue(temp_sql.get_data(), Orgs.class);
+			temp_org.remove_instance(temp_org.retrieve_instance(instance_title));
+			
+			// Convert to Sql Object
+			sql = new Sql(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org));
+		} catch (JsonMappingException e) {
+			System.out.println("System - Error Retrieving Organisations");
+		} catch (JsonProcessingException e) {
+			System.out.println("System - Error Retrieving Organisations");
+		}
+		
+		// Update the Organisation
+		orgsjpa.save(sql);
+		return ResponseEntity.noContent().build();
+	}
+	
 }

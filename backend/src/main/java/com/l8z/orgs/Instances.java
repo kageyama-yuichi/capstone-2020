@@ -12,7 +12,9 @@ import com.l8z.chat.ChatMessage;
 public class Instances {
 	// A String used for Displaying the Instance 
 	@JsonProperty("instance_title") private String instance_title;
+	// A InstanceType used for allocating a type of instance (VOICE/TEXT)
 	@JsonProperty("type") private InstanceType type;
+	// A List used for storing messages in an instance
 	@JsonProperty("log") private List<ChatMessage> log = new ArrayList<>();
 	// private Something voice
 	
