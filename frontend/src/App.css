@@ -19,6 +19,14 @@
     width: inherit;
 }
 
+label{
+    height: auto;
+}
+
+.form-row{
+    height: auto;
+}
+
 /* Should probably think of a better way to globally style */
 .app-window{
     margin-left: 5rem;

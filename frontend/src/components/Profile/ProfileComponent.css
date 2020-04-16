@@ -40,7 +40,8 @@
 	border-radius: 50%;
 	width: 200px;
 	height: 200px;
-	transition: 0.3s;
+    transition: 0.3s;
+    object-fit: cover;
 }
 
 .image-upload-input {
@@ -166,17 +167,6 @@
     flex: 7;
 }
 
-.bio-container textarea{
-    height: 80%;
-    width: 100%;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 18px;
-    outline: none;
-}
-
-.bio-container textarea:focus{
-    border: 2px solid var(--text-secondary);
-}
 
 .info-container .submit-container{
     flex: 1;
