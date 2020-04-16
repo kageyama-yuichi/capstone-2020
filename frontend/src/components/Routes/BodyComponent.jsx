@@ -13,6 +13,10 @@ import ChannelsComponent from '../Orgs/Channels/ChannelsComponent.jsx'
 import AddChannelsComponent from '../Orgs/Channels/AddChannelsComponent.jsx'
 import UpdateChannelsComponent from '../Orgs/Channels/UpdateChannelsComponent.jsx'
 
+import InstancesComponent from '../Orgs/Channels/Instances/InstancesComponent.jsx'
+import AddInstancesComponent from '../Orgs/Channels/Instances/AddInstancesComponent.jsx'
+import UpdateInstancesComponent from '../Orgs/Channels/Instances/UpdateInstancesComponent.jsx'
+
 import DashboardComponent from '../Dashboard/DashboardComponent.jsx'
 import SidebarComponent from '../Sidebar/SidebarComponent.jsx'
 import ProfileComponent from '../Profile/ProfileComponent.jsx'
@@ -36,6 +40,9 @@ class BodyComponent extends Component {
 							<Route path="/orgs/:username/:org_id/channels" exact component={ChannelsComponent} />
 							<Route path="/orgs/:username/:org_id/new" exact component={AddChannelsComponent} />
 							<Route path="/orgs/:username/:org_id/:channel_title" exact component={UpdateChannelsComponent} />
+							<Route path="/orgs/:username/:org_id/:channel_title/instances" exact component={InstancesComponent} />
+							<Route path="/orgs/:username/:org_id/:channel_title/new" exact component={AddInstancesComponent} />
+							<Route path="/orgs/:username/:org_id/:channel_title/:instance_title/" exact component={UpdateInstancesComponent} />
 							<Route path="/chat/:orgs_id/:channel_title/:instance_title/:username" exact component={ChatComponent} />
                             <Route path="/dashboard" exact component={DashboardComponent} />
                             <Route path="/dashboard/:username" exact component={TodoComponent} />

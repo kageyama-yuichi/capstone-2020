@@ -34,6 +34,19 @@ class OrgsResources {
 	delete_channel(username, org_id, channel_title) {
         return axios.delete(`${JPA_URL}/orgs/${username}/${org_id}/${channel_title}`);
     }
+	// Instance Related
+	retrieve_all_instance_titles(username, org_id, channel_title) {
+		return axios.get(`${JPA_URL}/orgs/${username}/${org_id}/$(channel_title)/new`);
+	}
+	create_instance(username, org_id, channel_title, instance) {
+		return axios.post(`${JPA_URL}/orgs/${username}/${org_id}/$(channel_title)/new`, instance);
+	}
+	update_instance(username, org_id, channel_title, instance_title, instance) {
+        return axios.post(`${JPA_URL}/orgs/${username}/${org_id}/${channel_title}/$(instance_title)`, instance);
+    }
+	delete_instance(username, org_id, channel_title, instance_title) {
+        return axios.delete(`${JPA_URL}/orgs/${username}/${org_id}/${channel_title}/$(instance_title)`);
+    }
 }
 
 export default new OrgsResources()
