@@ -84,6 +84,6 @@ public class Instances {
          if (o == null || getClass() != o.getClass()) return false;
          
          Instances comp = (Instances) o;
-         return instance_title == comp.instance_title;
+         return instance_title.equals(comp.instance_title);
      }
 }

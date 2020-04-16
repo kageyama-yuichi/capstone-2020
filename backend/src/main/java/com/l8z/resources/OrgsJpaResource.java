@@ -328,17 +328,17 @@ public class OrgsJpaResource {
     		// Convert to Sql Object
 			Sql temp_sql = orgsjpa.getByOrgId(org_id); 
 			Orgs temp_org = json_mapper.readValue(temp_sql.get_data(), Orgs.class);
-			// Get the Channel List
-			instance_list = temp_org.get_instance();
+			// Get the Instance List
+			instance_list = temp_org.retrieve_channel(channel_title).get_instances();
+			
+			// Get the Namespace
+			for(int i=0; i<instance_list.size(); i++) {
+				instance_title_namespace.add(instance_list.get(i).get_instance_title());
+			}
 		} catch (JsonMappingException e) {
 			System.out.println("System - Error Retrieving Organisations");
 		} catch (JsonProcessingException e) {
 			System.out.println("System - Error Retrieving Organisations");
-		}
-		
-		// Get the Namespace
-		for(int i=0; i<instance_list.size(); i++) {
-			instance_title_namespace.add(instance_list.get(i).get_instance_title());
 		}
 		
 		return instance_title_namespace;
@@ -361,7 +361,7 @@ public class OrgsJpaResource {
 			temp_org = json_mapper.readValue(sql.get_data(), Orgs.class);
 			
 			// Add the Instance
-			temp_org.add_instance(instance);
+			temp_org.add_instance(channel_title, instance);
 			
 			sql = new Sql(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org));
 			
@@ -389,14 +389,11 @@ public class OrgsJpaResource {
 		try {
 			sql = orgsjpa.getByOrgId(org_id); 
 			temp_org = json_mapper.readValue(sql.get_data(), Orgs.class);
-			
-			// Check if instance_title Changes
-			if(!temp_org.retrieve_instance(instance_title).equals(instance.get_instance_title())) {
-				// Remove the Old Instance
-				temp_org.remove_instance(temp_org.retrieve_instance(instance_title));
-				// Add the New Instance
-				temp_org.add_instance(instance);
-			}
+
+			// Remove the Old Instance
+			temp_org.remove_instance(channel_title, instance_title);
+			// Add the New Instance
+			temp_org.add_instance(channel_title, instance);
 			
 			// Convert to Sql Object
 			sql = new Sql(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org));
@@ -428,7 +425,7 @@ public class OrgsJpaResource {
 		try {
     		// Convert to Orgs Object
 			temp_org = json_mapper.readValue(temp_sql.get_data(), Orgs.class);
-			temp_org.remove_instance(temp_org.retrieve_instance(instance_title));
+			temp_org.remove_instance(channel_title, instance_title);
 			
 			// Convert to Sql Object
 			sql = new Sql(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org));
