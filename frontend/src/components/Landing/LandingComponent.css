@@ -3,7 +3,7 @@
 	background-repeat: no-repeat;
 	background-position: center;
     background-size: cover;
-
+	height: 100%;
 }
 
 .login-container {
@@ -170,7 +170,7 @@
 	font-size: 20px;
 	font-weight: 300;
 	white-space: nowrap;
-	height: 1em;
+	height: auto;
 	text-align: left;
 	width: 100%;
 	margin-top: 0px;
@@ -180,11 +180,12 @@
 	border-width: 1px;
 	outline: none;
 	padding-top: 10px;
-	padding-bottom: 5px;
+	padding-bottom: 6px;
 }
 
 .input-field:focus {
 	border-color: var(--text-secondary);
+	padding-bottom: 5px;
 	border-width: 2px;
 }
 .input-name{

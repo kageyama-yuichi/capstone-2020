@@ -82,7 +82,7 @@ class LandingComponent extends Component {
 	render() {
 		return (
 			<div className="home-page">
-				<div>
+				
 					<div className="login-container">
 						<div className="cont">
 							<div className="logo-container">
@@ -141,7 +141,7 @@ class LandingComponent extends Component {
 							) : null}
 						</div>
 						<FooterComponent />
-					</div>
+					
 					{window.innerHeight < window.innerWidth &&
 					this.getBodyWidth() > 1200 ? (
 						<div className="info-container">
