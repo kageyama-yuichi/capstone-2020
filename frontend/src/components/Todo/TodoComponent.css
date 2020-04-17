@@ -1,56 +1,109 @@
-h1 {
-	height: 40px !important;
-	padding-left: 100px !important;
-}
-h2 {
-	height: 30px !important;
-	padding-left: 100px !important;
-}
-h3 {
-	height: 30px !important;
-	padding-left: 100px !important;
-}
-p {
-	height: 20px !important;
-	padding-left: 100px !important;
-}
-.new_todo {
-	height: 25px;
-	width: 25px;
-	margin-left: 100px !important;
-	color: black;
-	font-size: 20px;
-	background-color: lightgreen;
+.todo-component {
+	width: 100%;
 }
 
-.delete_todo {
-	height: 25px;
-	width: 25px;
-	margin-left: 100px !important;
-	color: black;
-	font-size: 20px;
-	background-color: red;
-}
-.update_todo {
-	height: 25px;
-	width: 25px;
-	margin-left: 100px !important;
-	color: black;
-	font-size: 20px;
-	background-color: orange;
-}
-.todos {
-	height: auto !important;
+.todo-container {
+	height: 100%;
 }
 
-#desc, #due_date{
-	height: 25px;
-	width: 500px;
-	margin-left: 100px;
-	padding-left: 10px;
+.table {
+	height: fit-content;
 }
-#todo_create, #todo_update {
-	height:25px;
-	width: 514px;
-	margin-left: 100px;
+
+.todo-table {
+	height: fit-content;
+	width: 100%;
+}
+
+.todo-table tr:hover {
+	background-color: #f5f5f5;
+}
+
+.todo-table td {
+	font-size: 18px;
+	border-bottom: 1px solid #ddd;
+}
+
+.done-col button {
+	height: fit-content;
+	width: 55px;
+	padding: 5px;
+	font-size: 15px;
+	font-weight: 500;
+	border-radius: 15px;
+}
+
+.done-button {
+	background-color: rgb(28, 196, 28);
+	border: 1px solid darkgray;
+	color: white;
+}
+
+.doing-button {
+	background-color: white;
+	border: 3px solid rgb(255, 162, 162);
+	color: darkgray;
+}
+
+.done-col {
+	width: fit-content;
+}
+
+.desc-col {
+	width: 60%;
+}
+
+.date-col {
+	width: 20%;
+}
+
+.update-col {
+	width: 5%;
+}
+
+.delete-col {
+	width: 5%;
+}
+
+td button {
+	width: auto;
+	height: auto;
+	padding: 8px 14px;
+	margin: 5px 0;
+	cursor: pointer;
+	border: none;
+	font-size: 16px;
+	background-color: transparent;
+	font-size: 20px;
+	opacity: 70%;
+	outline: none;
+}
+
+td button:hover {
+	opacity: 100%;
+}
+
+.delete-col button {
+	color: red;
+}
+
+.todo-header{
+    height: fit-content;
+    display: flex;
+}
+
+.new-todo-button{
+    margin-top: 5px;
+    height: fit-content;
+    width: 150px;
+    padding: 10px;
+    font-size: 15px;
+    background-color: steelblue;
+    color: white;
+    border: none;
+    opacity: 70%;
+}
+
+.new-todo-button:hover{
+    opacity: 100%;
 }

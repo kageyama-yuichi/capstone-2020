@@ -19,6 +19,7 @@ import UpdateInstancesComponent from '../Orgs/Channels/Instances/UpdateInstances
 
 import DashboardComponent from '../Dashboard/DashboardComponent.jsx'
 import SidebarComponent from '../Sidebar/SidebarComponent.jsx'
+import AgendaComponent from '../Agenda/AgendaComponent.jsx'
 import ProfileComponent from '../Profile/ProfileComponent.jsx'
 
 import TodoComponent from '../Todo/TodoComponent.jsx'
@@ -48,7 +49,9 @@ class BodyComponent extends Component {
                             <Route path="/dashboard/:username" exact component={TodoComponent} />
                             <Route path="/dashboard/:username/:id" exact component={AddUpdateTodoComponent} />
                             <Route path="/profile" exact component={ProfileComponent} />
-                            <Route component={ErrorComponent}/>
+                            <Route path="/agenda" exact component={AgendaComponent} />
+
+                            <Route component={ErrorComponent} />
                         </Switch>
                         {/* <FooterComponent/> */}
                     </>

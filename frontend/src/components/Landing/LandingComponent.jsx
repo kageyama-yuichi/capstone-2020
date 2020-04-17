@@ -14,7 +14,9 @@ class LandingComponent extends Component {
 			username: "",
 			password: "",
 			showRegister: false,
-			windowSize: ""
+			windowSize: "",
+			username: "",
+			password: ""
 		};
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.newUserOnClickHandler = this.newUserOnClickHandler.bind(this);
@@ -24,6 +26,7 @@ class LandingComponent extends Component {
 		this.setState({ showRegister: !this.state.showRegister });
 	}
 
+	//Handles dynamic styling for login form
 	calcFormSize() {
 		let h =
 			document.getElementsByClassName("register-container")[0]
@@ -38,7 +41,7 @@ class LandingComponent extends Component {
 			cont.style.height = "fit-content";
 		}
 	}
-
+	//Called on resize
 	handleResize = e => {
 		const windowSize = window.innerWidth;
 
@@ -48,6 +51,13 @@ class LandingComponent extends Component {
 			return { windowSize };
 		});
 	};
+	
+	handleChange(event) {
+		const { name: fieldName, value } = event.target;
+		this.setState({
+			[fieldName]: value
+		});
+	}
 
 	componentDidMount() {
 		window.addEventListener("resize", this.handleResize);
@@ -109,20 +119,32 @@ class LandingComponent extends Component {
 									<p className="input-name">Username</p>
 									<input
 										type="text"
+										name="username"
 										className="input-field username-field"
 										placeholder="Enter your username"
+<<<<<<< HEAD
 										value={this.state.username}
 										onChange={this.handle_typing_username}
+=======
+										onChange={this.handleChange.bind(this)}
+										value={this.state.username}
+>>>>>>> d960f87757ecc6a3246d91dc02e8eaecabce604f
 									></input>
 								</div>
 								<div className="input-container">
 									<p className="input-name">Password</p>
 									<input
 										type="text"
+										name="password"
 										className="input-field password-field"
 										placeholder="Enter your password"
+<<<<<<< HEAD
 										value={this.state.password}
 										onChange={this.handle_typing_password}
+=======
+										onChange={this.handleChange.bind(this)}
+										value={this.state.password}
+>>>>>>> d960f87757ecc6a3246d91dc02e8eaecabce604f
 									></input>
 								</div>
 								<div className="password-reset">
