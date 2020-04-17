@@ -73,10 +73,8 @@ class RegisterComponent extends Component {
 		let passwordRegex = new RegExp("((?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{6,}))");
 		if (!fields.password) {
 			errors.password = "Password Cannot be empty";
-			form.querySelector(".password-control").setCustomValidity("invalid");
 		} else if (!passwordRegex.test(fields.password)) {
 			errors.password = "Password is invalid";
-			form.querySelector(".password-control").setCustomValidity("invalid");
 		}
 
 		var formControl = Array.prototype.slice.call(form.querySelectorAll(".form-control"));
@@ -84,7 +82,6 @@ class RegisterComponent extends Component {
 		//Iterate over input fields and get corresponding error
 		//Flag form as invalid if there is an error
 		formControl.forEach((ele) => {
-			console.log(ele.name);
 			if (errors[ele.name]) {
 				formIsValid = false;
 				ele.setCustomValidity("invalid");
@@ -98,6 +95,8 @@ class RegisterComponent extends Component {
 		return formIsValid;
 	}
 
+
+	
 	handleChange(event) {
 		const {name: fieldName, value} = event.target;
 		this.setState({
@@ -106,14 +105,14 @@ class RegisterComponent extends Component {
 	}
 
 	onSubmit(e) {
+		e.preventDefault();
+
 		if (this.handleValidation(e)) {
 			console.log("success");
-		} else {
-			e.preventDefault();
-		}
+			this.props.push('/dashboard');
+		} 
 
 		this.setState({validated: true});
-		console.log(this.state);
 	}
 
 	render() {

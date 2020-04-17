@@ -30,6 +30,7 @@ label{
 /* Should probably think of a better way to globally style */
 .app-window{
     margin-left: 5rem;
+    width: calc(100% - 5rem);
 }
 
 a, button, input[type=button], input[type=submit]{
