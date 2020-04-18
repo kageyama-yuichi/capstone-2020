@@ -19,7 +19,7 @@ class RegisterComponent extends Component {
 			address: "",
 			username: "",
 			password: "",
-			errors: [],
+			errors: []
 		};
 	}
 
@@ -156,10 +156,11 @@ class RegisterComponent extends Component {
 				}
 			})
 
-		if (this.handleValidation(e)) {
-			console.log("success");
-			this.props.push('/dashboard');
-		} 
+			if (this.handleValidation(e)) {
+				console.log("success");
+				this.props.push('/dashboard');
+			}
+		}
 
 		this.setState({validated: true});
 	}

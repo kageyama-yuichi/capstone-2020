@@ -129,7 +129,7 @@ class TodoEditComponent extends Component {
 								value={this.state.desc}
 							/>
 							<Form.Control.Feedback type="invalid">
-								{this.state.errors.desc}
+								{this.state.descError}
 							</Form.Control.Feedback>
 						</Form.Group>
 
@@ -143,7 +143,7 @@ class TodoEditComponent extends Component {
 								value={this.state.date}
 							/>
 							<Form.Control.Feedback type="invalid">
-								{this.state.errors.date}
+								{this.state.dateError}
 							</Form.Control.Feedback>
 						</Form.Group>
 
