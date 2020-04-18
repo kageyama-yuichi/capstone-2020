@@ -18,12 +18,21 @@ class LandingComponent extends Component {
 			password: "",
 		};
 		this.handleSubmit = this.handleSubmit.bind(this);
+		this.registerSubmitHandler = this.registerSubmitHandler.bind(this);
+
 		this.newUserOnClickHandler = this.newUserOnClickHandler.bind(this);
 	}
 
 	newUserOnClickHandler() {
 		this.setState({showRegister: !this.state.showRegister});
 	}
+
+	
+	registerSubmitHandler() {
+		this.props.history.push('/dashboard');
+	}
+
+	//Ha
 
 	//Handles dynamic styling for login form
 	calcFormSize() {
@@ -152,7 +161,7 @@ class LandingComponent extends Component {
 							</div>
 						</div>
 						{this.state.showRegister ? (
-							<RegisterComponent handler={this.newUserOnClickHandler} />
+							<RegisterComponent  submitHandler={this.registerSubmitHandler} handler={this.newUserOnClickHandler} />
 						) : null}
 					</Container>
 					<FooterComponent />

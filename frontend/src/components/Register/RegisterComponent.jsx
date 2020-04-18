@@ -110,10 +110,8 @@ class RegisterComponent extends Component {
 
 	onSubmit(e) {
 		e.preventDefault();
-		let err = this.handleValidation();
-		this.setState({ errors: err });	
-		
-		if (err.length === 0) {
+	
+		if (this.handleValidation(e)) {
 			console.log("success");
 			let user = {
 				username: this.state.username,
@@ -154,10 +152,9 @@ class RegisterComponent extends Component {
 				}
 			})
 
-			if (this.handleValidation(e)) {
-				console.log("success");
-				this.props.push('/dashboard');
-			}
+
+			this.props.submitHandler();
+
 		}
 
 		this.setState({validated: true});
