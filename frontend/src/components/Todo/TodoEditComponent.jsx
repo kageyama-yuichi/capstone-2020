@@ -8,10 +8,10 @@ class TodoEditComponent extends Component {
 	constructor(props) {
 		super(props);
 
-		let todo = this.props.editTodo;
+        let todo = this.props.editTodo;
 		if (todo.length == 0) {
-            this.state = {
-                validated: false,
+			this.state = {
+				validated: false,
 				id: "",
 				username: localStorage.getItem("username"),
 				desc: "",
@@ -25,11 +25,10 @@ class TodoEditComponent extends Component {
 				username: localStorage.getItem("username"),
 				desc: todo.desc,
 				date: todo.date,
-				descError: "",
-				dateError: "",
+				errors: [],
 				status: todo.status,
 			};
-		}
+        }
 	}
 
 	validateForm(e) {
@@ -66,13 +65,12 @@ class TodoEditComponent extends Component {
 		});
 
 		this.setState({errors: errors});
-        
+
 		return formIsValid;
 	}
-
 	//TEMP: Submit currently closes overlay
-    handleSubmit(e) {
-        e.preventDefault();
+	handleSubmit(e) {
+		e.preventDefault();
 		let todo = {
 			username: this.state.username,
 			desc: this.state.desc,
@@ -90,8 +88,8 @@ class TodoEditComponent extends Component {
 					this.props.saveCallback()
 				);
 			}
-        } 
-        this.setState({validated: true});
+		}
+		this.setState({validated: true});
 	}
 
 	handleChange(event) {
@@ -141,7 +139,9 @@ class TodoEditComponent extends Component {
 								onChange={this.handleChange.bind(this)}
 								value={this.state.date}
 							/>
-							<Form.Control.Feedback type="invalid">{this.state.errors.date}</Form.Control.Feedback>
+							<Form.Control.Feedback type="invalid">
+								{this.state.errors.date}
+							</Form.Control.Feedback>
 						</Form.Group>
 
 						<Button variant="secondary" className="save-button" type="submit">
