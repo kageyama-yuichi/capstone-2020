@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import "./TodoEditComponent.css";
 import moment from "moment";
 import TodoResources from './TodoResources.js'
+import AuthenticationService from '../Authentication/AuthenticationService.js'
+
 
 
 class TodoEditComponent extends Component {
@@ -14,7 +16,7 @@ class TodoEditComponent extends Component {
             
             this.state = {
                 id: "",
-                username: localStorage.getItem("username"),
+                username: AuthenticationService.getLoggedInUserName(),
                 desc: "",
                 date: "",
                 descError: "",
@@ -24,7 +26,7 @@ class TodoEditComponent extends Component {
         } else {
             this.state = {
                 id: todo.id,
-                username: localStorage.getItem("username"),
+                username: AuthenticationService.getLoggedInUserName(),
                 desc: todo.desc,
                 date: todo.date,
                 descError: "",

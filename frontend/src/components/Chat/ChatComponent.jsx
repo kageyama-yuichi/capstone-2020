@@ -15,7 +15,6 @@ class ChatComponent extends Component {
 	constructor (props) {
 		super(props);
 		this.state = {
-			//username: this.props.match.params.username,
 			username: AuthenticationService.getLoggedInUserName(),
 			channel_connected: false,
 			message: '',
@@ -302,7 +301,6 @@ class ChatComponent extends Component {
 	}
 
 	componentDidMount() {
-		//this.username = 'Michael';
 		this.my_connect(this.state.username);
 		this.setState({
 			current_time: new Date().toLocaleString()

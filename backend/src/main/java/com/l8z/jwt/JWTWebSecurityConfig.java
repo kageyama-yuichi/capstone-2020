@@ -54,8 +54,8 @@ public class JWTWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	@Override
-	protected void configure(HttpSecurity httpSecurity) throws Exception {
-		httpSecurity
+	protected void configure(HttpSecurity http) throws Exception {
+		http
 		// Disable CSRF (cross site request forgery)
 		.csrf().disable().exceptionHandling().authenticationEntryPoint(jwtUnAuth)
 		.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -65,10 +65,10 @@ public class JWTWebSecurityConfig extends WebSecurityConfigurerAdapter {
 		.anyRequest().authenticated().and().cors()
 		.and().requestMatchers().antMatchers("/jpa/**");
 
-		httpSecurity
+		http
 		.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
-		httpSecurity
+		http
 		.headers()
 		.frameOptions().sameOrigin()  //H2 Console Needs this setting
 		.cacheControl(); //disable caching

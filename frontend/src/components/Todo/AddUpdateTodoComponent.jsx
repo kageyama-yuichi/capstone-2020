@@ -1,12 +1,14 @@
 import React, {Component} from 'react'
 import TodoResources from './TodoResources.js'
+import AuthenticationService from '../Authentication/AuthenticationService.js'
+
 
 class AddUpdateTodoComponent extends Component {
 	constructor (props) {
 		super(props);
 		this.state = {
 			old_id: this.props.match.params.id,
-			username: this.props.match.params.username,
+			username: AuthenticationService.getLoggedInUserName(),
 			desc: '',
 			date: (new Date().toISOString().slice(0,10)).toString(),
 			desc_error: false,

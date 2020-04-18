@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import OrgsResources from '../OrgsResources.js'
+import AuthenticationService from '../../Authentication/AuthenticationService.js'
 import '../OrgsComponent.css'
 
 /*
@@ -12,7 +13,7 @@ class ChannelsComponent extends Component {
 	constructor (props) {
 		super(props);
 		this.state = {
-			username: this.props.match.params.username,
+			username: AuthenticationService.getLoggedInUserName(),
 			org_id: this.props.match.params.org_id,
 			channels: []
 		};

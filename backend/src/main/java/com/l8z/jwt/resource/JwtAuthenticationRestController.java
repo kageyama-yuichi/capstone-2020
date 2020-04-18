@@ -25,7 +25,7 @@ import com.l8z.GlobalVariable;
 import com.l8z.jwt.JwtInMemoryUserDetailsService;
 import com.l8z.jwt.JwtTokenUtil;
 import com.l8z.jwt.JwtUserDetails;
-import com.l8z.user_profile.User;
+import com.l8z.user.User;
 
 @RestController
 @CrossOrigin(origins=GlobalVariable.L8Z_URL)

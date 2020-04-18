@@ -3,12 +3,14 @@ import TodoResources from "./TodoResources.js";
 import "./TodoComponent.css";
 import moment from "moment";
 import TodoEditComponent from "./TodoEditComponent.jsx";
+import AuthenticationService from '../Authentication/AuthenticationService.js'
+
 
 class TodoComponent extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			username: localStorage.getItem("username"),
+			username: AuthenticationService.getLoggedInUserName(),
 			todos: [],
 			showOverlay: false,
 			editTodo: "",

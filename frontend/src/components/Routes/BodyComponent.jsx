@@ -35,19 +35,19 @@ class BodyComponent extends Component {
                         {<SidebarComponent/>}
                         <Switch>
                             <Route path="/" exact component={LandingComponent} />
-							<Route path="/orgs/:username" exact component={OrgsComponent} />
-							<Route path="/orgs/:username/new" exact component={AddOrgsComponent} />
-							<Route path="/orgs/:username/:org_id" exact component={UpdateOrgsComponent} />
-							<Route path="/orgs/:username/:org_id/channels" exact component={ChannelsComponent} />
-							<Route path="/orgs/:username/:org_id/new" exact component={AddChannelsComponent} />
-							<Route path="/orgs/:username/:org_id/:channel_title" exact component={UpdateChannelsComponent} />
-							<Route path="/orgs/:username/:org_id/:channel_title/instances" exact component={InstancesComponent} />
-							<Route path="/orgs/:username/:org_id/:channel_title/new" exact component={AddInstancesComponent} />
-							<Route path="/orgs/:username/:org_id/:channel_title/:instance_title/" exact component={UpdateInstancesComponent} />
-							<Route path="/chat/:orgs_id/:channel_title/:instance_title/:username" exact component={ChatComponent} />
+							<Route path="/orgs/" exact component={OrgsComponent} />
+							<Route path="/orgs/new" exact component={AddOrgsComponent} />
+							<Route path="/orgs/:org_id" exact component={UpdateOrgsComponent} />
+							<Route path="/orgs/:org_id/channels" exact component={ChannelsComponent} />
+							<Route path="/orgs/:org_id/new" exact component={AddChannelsComponent} />
+							<Route path="/orgs/:org_id/:channel_title" exact component={UpdateChannelsComponent} />
+							<Route path="/orgs/:org_id/:channel_title/instances" exact component={InstancesComponent} />
+							<Route path="/orgs/:org_id/:channel_title/new" exact component={AddInstancesComponent} />
+							<Route path="/orgs/:org_id/:channel_title/:instance_title/" exact component={UpdateInstancesComponent} />
+							<Route path="/chat/:orgs_id/:channel_title/:instance_title/" exact component={ChatComponent} />
                             <Route path="/dashboard" exact component={DashboardComponent} />
-                            <Route path="/dashboard/:username" exact component={TodoComponent} />
-                            <Route path="/dashboard/:username/:id" exact component={AddUpdateTodoComponent} />
+                            //<Route path="/dashboard/" exact component={TodoComponent} />
+                            <Route path="/dashboard/:id" exact component={AddUpdateTodoComponent} />
                             <Route path="/profile" exact component={ProfileComponent} />
                             <Route path="/agenda" exact component={AgendaComponent} />
 

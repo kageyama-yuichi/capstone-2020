@@ -13,7 +13,6 @@ class OrgsComponent extends Component {
 	constructor (props) {
 		super(props);
 		this.state = {
-			//username: this.props.match.params.username,
 			username: AuthenticationService.getLoggedInUserName(),
 			orgs: []
 		};

@@ -89,15 +89,13 @@ class LandingComponent extends Component {
 	
 	handleSubmit(e) {
 		e.preventDefault();
-		console.log(this.state.username);
-		console.log(this.state.password);
 		
 		AuthenticationService
 			.executeJwtAuthenticationService(this.state.username, this.state.password)
 			.then((response) => {
 				console.log("Inner Authetnication");
 				AuthenticationService.registerSuccessfulLoginForJwt(this.state.username, response.data.token)
-				let url = '/dashboard/'+this.state.username;
+				let url = '/dashboard';
 				this.props.history.push(url);
 			})
 		

@@ -8,7 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.l8z.jparepository.UserJpaRepository;
-import com.l8z.user_profile.User;
+import com.l8z.user.User;
 
 @Service
 public class JwtInMemoryUserDetailsService implements UserDetailsService {

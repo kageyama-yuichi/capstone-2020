@@ -1,12 +1,13 @@
 import React, {Component} from 'react'
 import OrgsResources from './OrgsResources.js'
+import AuthenticationService from '../Authentication/AuthenticationService.js'
 import './OrgsComponent.css'
 
 class AddOrgsComponent extends Component {
 	constructor (props) {
 		super(props);
 		this.state = {
-			username: this.props.match.params.username,
+			username: AuthenticationService.getLoggedInUserName(),
 			org_id: '',
 			org_title: '',
 			owned_ids: [],

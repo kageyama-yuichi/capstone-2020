@@ -120,7 +120,9 @@ class RegisterComponent extends Component {
 				lname: this.state.lastname,
 				email: this.state.email,
 				address: this.state.address,
-				password: this.state.password
+				password: this.state.password,
+				bio: '',
+				imagePath: ''
 			}
 			//RegisterResources.registerUser(this.state.username, user);
 			AuthenticationService.checkForUser(this.state.username)
