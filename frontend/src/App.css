@@ -15,8 +15,8 @@
 /* To override user agent stylesheet */
 * {
     margin:0px;
-	height: inherit;
-    width: inherit;
+	/* height: inherit;
+    width: inherit; */
 }
 
 label{

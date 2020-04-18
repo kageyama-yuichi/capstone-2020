@@ -9,6 +9,7 @@
 .login-container {
 	width: 800px;
 	min-height: 100vh;
+	height: 100%;
 	background-color: white;
 }
 
@@ -28,14 +29,14 @@
 }
 .logo-container {
 	position: relative;
-	width: fit-content;
+	width: 20%;
 	height: 20%;
 	padding-top: 5%;
 	margin: auto;
 }
 .logo {
 	height: 100%;
-	width: auto;
+
 	vertical-align: middle;
 	align-items: center;
 }
@@ -100,6 +101,8 @@
 	padding: 30px;
 	margin: auto;
 }
+
+
 
 .create-account-container p {
 	text-align: center;
