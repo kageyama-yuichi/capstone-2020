@@ -37,9 +37,4 @@ public class PrivateChatSQL {
 	public void set_data(String data) {
 		this.data = data;
 	}
-	
-	// If User One is Less Than User Two's Username, Make U1.U2 Else U2.U1
-	public String create_id(String user_one, String user_two) {
-		return user_one.compareTo(user_two) < 0 ? user_one+"."+user_two : user_two+"."+user_one;
-	}
 }

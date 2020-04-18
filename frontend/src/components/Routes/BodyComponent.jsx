@@ -4,6 +4,7 @@ import ErrorComponent from '../Error/ErrorComponent.jsx'
 import LandingComponent from '../Landing/LandingComponent.jsx'
 
 import ChatComponent from '../Chat/ChatComponent.jsx'
+import PrivateChatComponent from '../Chat/PrivateChatComponent.jsx'
 
 import OrgsComponent from '../Orgs/OrgsComponent.jsx'
 import AddOrgsComponent from '../Orgs/AddOrgsComponent.jsx'
@@ -35,6 +36,7 @@ class BodyComponent extends Component {
                         {<SidebarComponent/>}
                         <Switch>
                             <Route path="/" exact component={LandingComponent} />
+							
 							<Route path="/orgs/" exact component={OrgsComponent} />
 							<Route path="/orgs/new" exact component={AddOrgsComponent} />
 							<Route path="/orgs/:org_id" exact component={UpdateOrgsComponent} />
@@ -43,13 +45,18 @@ class BodyComponent extends Component {
 							<Route path="/orgs/:org_id/:channel_title" exact component={UpdateChannelsComponent} />
 							<Route path="/orgs/:org_id/:channel_title/instances" exact component={InstancesComponent} />
 							<Route path="/orgs/:org_id/:channel_title/new" exact component={AddInstancesComponent} />
-							<Route path="/orgs/:org_id/:channel_title/:instance_title/" exact component={UpdateInstancesComponent} />
-							<Route path="/chat/:orgs_id/:channel_title/:instance_title/" exact component={ChatComponent} />
-                            <Route path="/dashboard" exact component={DashboardComponent} />
+							<Route path="/orgs/:org_id/:channel_title/:instance_title" exact component={UpdateInstancesComponent} />
+							
+							<Route path="/chat/:orgs_id/:channel_title/:instance_title" exact component={ChatComponent} />
+							<Route path="/private/:receiver" exact component={PrivateChatComponent} />
+                            
+							<Route path="/dashboard" exact component={DashboardComponent} />
                             //<Route path="/dashboard/" exact component={TodoComponent} />
                             <Route path="/dashboard/:id" exact component={AddUpdateTodoComponent} />
-                            <Route path="/profile" exact component={ProfileComponent} />
-                            <Route path="/agenda" exact component={AgendaComponent} />
+                           
+						   <Route path="/profile" exact component={ProfileComponent} />
+
+						   <Route path="/agenda" exact component={AgendaComponent} />
 
                             <Route component={ErrorComponent} />
                         </Switch>

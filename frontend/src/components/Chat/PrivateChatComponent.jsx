@@ -3,28 +3,23 @@ import SockJS from 'sockjs-client'
 import StompJS from 'stompjs'
 import { API_URL } from '../../Constants'
 import AuthenticationService from '../Authentication/AuthenticationService.js'
-import  './ChatComponent.css'
+import  './PrivateChatComponent.css'
 
 var stomp_client = null;
-var orgs_id = null;
-var channel_title = null;
-var instance_title = null;
-var extension = null;
 
-class ChatComponent extends Component {
+class PrivateChatComponent extends Component {
 	constructor (props) {
 		super(props);
 		this.state = {
 			username: AuthenticationService.getLoggedInUserName(),
+			receiver: this.props.match.params.receiver,
 			channel_connected: false,
 			message: '',
 			room_notification: [],
-			broadcast_message: [],
-			old_messages: [],
+			messages: [],
 			error: '',
 			bottom: false,
 			current_time: '',
-			open_notifications: false,
 			bell_ring: false,
 			is_typing: false,
 			loaded_history: false,
@@ -32,20 +27,8 @@ class ChatComponent extends Component {
 	}
 	
 	// Function to Connect the User to the Server
-	my_connect = () => {
-		console.log(this.props.match.params);
-		orgs_id = "/"+this.props.match.params.orgs_id;
-		channel_title = "/"+this.props.match.params.channel_title;
-		instance_title = "/"+this.props.match.params.instance_title;
-		extension = orgs_id+channel_title+instance_title;
-		
-		console.log(orgs_id);
-		console.log(channel_title);
-		console.log(instance_title);
-		console.log(extension);
-		
+	my_connect = () => {		
 		console.log("System - Trying to Connect...");
-	
 		// Create the Socket
 		const Stomp = require('stompjs')
 		var SockJS = require('sockjs-client')
@@ -53,24 +36,31 @@ class ChatComponent extends Component {
 		stomp_client = Stomp.over(socket);
 		console.log(stomp_client);
 		// Connect the User
-		stomp_client.connect({}, this.on_connected, this.on_error);
+		stomp_client.connect({}, this.on_connected, this.on_error);		
 	}
 	
-	// Subscribe the User to the Groups and Send the Server Notification of User
+	// Subscribe the User to the Private Chat and Send the Server Notification of User
 	on_connected = () => {
 		console.log("System - Session is Connected.");
 		this.setState({
 		  channel_connected: true
 		})
-		// Subscribing to the public Group
-		stomp_client.subscribe('/group/members'+extension, this.on_members_received, {});
-		stomp_client.subscribe('/group/history'+extension, this.on_history_received, {});
-		stomp_client.subscribe('/group'+extension, this.on_message_received, {});
-		this.fetch_members();
-		this.fetch_history();
+		
+		stomp_client.subscribe('/queue/reply', this.on_message_received, {});
+		// Just for Consistency
+		if(this.state.username < this.state.receiver){ 
+			// Subscribing to the a Private Chat
+			stomp_client.subscribe('/user/reply/'+this.state.username+'/'+this.props.match.params.receiver, this.on_message_received, {});
+			stomp_client.subscribe('/queue/'+this.state.username+'/'+this.props.match.params.receiver+'/reply', this.on_history_received, {});
+		} else {
+			// Subscribing to the a Private Chat
+			stomp_client.subscribe('/user/reply/'+this.props.match.params.receiver+'/'+this.state.username, this.on_message_received, {});
+			stomp_client.subscribe('/queue/'+this.props.match.params.receiver+'/'+this.state.username+'/reply', this.on_history_received, {});
+		}
+		this.fetch_private_history();
 		
 		// Registering user to server as a group chat user
-		stomp_client.send("/app/existing_user"+extension, {}, JSON.stringify({ type: 'JOIN', sender: this.state.username }))
+		stomp_client.send("/app/existing_private_user", {}, JSON.stringify({ type: 'JOIN', sender: this.state.username }))
 	}
 	
 	// Send Messages to the Server
@@ -82,13 +72,22 @@ class ChatComponent extends Component {
 			else {
 				var message = {
 					sender: this.state.username,
+					receiver: this.state.receiver,
 					content: type === 'TYPING' ? value : value,
 					type: type
 				};
 			}
 			// Send Public Message
-			if(valid_message)
-				stomp_client.send("/app/send_message"+extension, {}, JSON.stringify(message));
+			if(valid_message){
+				let url = "";
+				// Just for Consistency
+				if(this.state.username < this.state.receiver){ 
+					url = "/app/send_private_message/"+this.state.username+"/"+this.state.receiver;
+				} else {
+					url = "/app/send_private_message/"+this.state.receiver+"/"+this.state.username;
+				}
+				stomp_client.send(url, {}, JSON.stringify(message));
+			}
 		}
 	}
 
@@ -97,46 +96,19 @@ class ChatComponent extends Component {
 		var obj = JSON.parse(payload.body);
 		if(!this.state.loaded_history){
 			for(let i=0; i<obj.length; i++){
-				this.state.old_messages.push({
+				this.state.messages.push({
 					message: obj[i].content,
 					sender: obj[i].sender,
 					date_time: obj[i].date_time
 				})
 				this.setState({
-					old_messages: this.state.old_messages,
+					messages: this.state.messages,
 					loaded_history: true
 				})
 			}
 		}
 		
 		
-	}
-	
-	// Handles Member Loading
-	on_members_received = (payload) => {
-		var obj = JSON.parse(payload.body);
-		var does_exist = false;
-		
-		for(let i=0; i<obj.length; i++){
-			this.state.room_notification.map((notification, counter) => {
-				if (notification.sender === obj[i].username) {
-					does_exist = true;
-				}
-			})
-			if(!does_exist){
-				this.state.room_notification.push({
-					'sender': obj[i].username,
-					'status': obj[i].status,
-					'date_time': ''
-				})
-			} else {
-				// Reset variable
-				does_exist = false;
-			}
-			this.setState({
-				room_notification: this.state.room_notification.sort(this.sort_by_online_names)
-			})
-		}
 	}
 	
 	// Handles Server Responses Accordingly
@@ -184,7 +156,7 @@ class ChatComponent extends Component {
 				}
 			})
 			this.setState({
-				room_notification: this.state.room_notification.sort(this.sort_by_online_names)
+				room_notification: this.state.room_notification
 			})
 		}
 		else if (message_text.type === 'CHAT') {
@@ -195,13 +167,13 @@ class ChatComponent extends Component {
 				}
 			})
 			// Decrypt
-			this.state.broadcast_message.push({
+			this.state.messages.push({
 				message: message_text.content,
 				sender: message_text.sender,
 				date_time: message_text.date_time
 			})
 			this.setState({
-				broadcast_message: this.state.broadcast_message,
+				messages: this.state.messages,
 			})
 		}
 		else {
@@ -215,16 +187,18 @@ class ChatComponent extends Component {
 		})
 	}
 	
-	fetch_history = () => {
+	fetch_private_history = () => {
 		console.log("System - Retrieving Old Messages");
-		stomp_client.send("/app/fetch_history"+extension);
+		let url = "";
+		// Just for Consistency
+		if(this.state.username < this.state.receiver){ 
+			url = "/app/fetch_private_history/"+this.state.username+"/"+this.state.receiver;
+		} else {
+			url = "/app/fetch_private_history/"+this.state.receiver+"/"+this.state.username;
+		}
+		stomp_client.send(url);
 	}
 	
-	fetch_members = () => {
-		console.log("System - Retrieving Members");
-		stomp_client.send("/app/fetch_members"+extension);
-	}
-
 	scroll_to_bottom = () => {
 		var object = this.refs.messageBox;
 		if (object)
@@ -264,29 +238,6 @@ class ChatComponent extends Component {
 		}
     };
 	
-	// This function is a complementary function to .sort() where it 
-	// helps Sort by Status (Online on Top) and then Name
-	sort_by_online_names = (a, b) => {
-		const user_a_name = a.sender.toUpperCase();
-		const user_a_status = a.status;
-		const user_b_name = b.sender.toUpperCase();
-		const user_b_status = b.status;
-		
-		let comparison = 0;
-		if(user_a_status < user_b_status){
-			comparison = 1;
-		} else if (user_a_status > user_b_status) {
-			comparison = -1;
-		} else {
-			if (user_a_name > user_b_name) {
-				comparison = 1;
-			} else if (user_a_name < user_b_name) {
-				comparison = -1;
-			}
-		}
-		return comparison;
-	}
-	
 	componentDidUpdate() {
 		if (this.state.error) {
 			throw new Error('Unable to connect to chat room server.');
@@ -312,7 +263,7 @@ class ChatComponent extends Component {
 	render() {
 		console.log("System - Rendering Page...");
 		console.log("System - Connection Status: "+this.state.channel_connected);
-		
+
         return (
 			<div className="app-window chat-component">
 				<h1 className="room-name">L8Z Chat Room</h1>
@@ -320,11 +271,11 @@ class ChatComponent extends Component {
 					<div className="messages-container">
 						<div className="message-list">
 							{
-								this.state.old_messages.map((old_msg, i) => (
+								this.state.messages.map((msg, i) => (
 								<div key={i} className="message">
 									<div className="message-details">
 										<div className="message-sender">
-											{old_msg.sender}
+											{msg.sender}
 										</div>
 										
 										{/* <div className="message-date">
@@ -333,28 +284,11 @@ class ChatComponent extends Component {
 									</div>
 									
 									<div className="message-body">
-										{old_msg.message}
+										{msg.message}
 									</div>
 								</div>
 							))
 							}
-							{this.state.broadcast_message.map((bc_msg, i) => (
-								<div key={i} className="message">
-									<div className="message-details">
-										<div className="message-sender">
-											{bc_msg.sender}
-										</div>
-										
-										{/* <div className="message-date">
-											July 3rd 2020 at 12:30am
-										</div> */}
-									</div>
-									
-									<div className="message-body">
-										{bc_msg.message}
-									</div>
-								</div>
-							))}
 						</div>
 						<div className="message-input-container">
 							<input
@@ -380,20 +314,10 @@ class ChatComponent extends Component {
 
 						{this.scroll_to_bottom()}
 					</div>
-					<div className="user-container">
-						<h1 className="user-title">Users</h1>
-						<div className="user-list">
-							{this.state.room_notification.map((rm_not, j) => (
-								<p key={j}>
-									- {rm_not.sender} ({rm_not.status})
-								</p>
-							))}
-						</div>
-					</div>
 				</div>
 			</div>
 		);
 	}
 }
 
-export default ChatComponent;
+export default PrivateChatComponent;
