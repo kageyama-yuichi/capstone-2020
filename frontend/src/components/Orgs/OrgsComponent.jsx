@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import OrgsResources from './OrgsResources.js'
+import AuthenticationService from '../Authentication/AuthenticationService.js'
 import './OrgsComponent.css'
 
 /*
@@ -12,7 +13,8 @@ class OrgsComponent extends Component {
 	constructor (props) {
 		super(props);
 		this.state = {
-			username: this.props.match.params.username,
+			//username: this.props.match.params.username,
+			username: AuthenticationService.getLoggedInUserName(),
 			orgs: []
 		};
 		this.handle_create_org = this.handle_create_org.bind(this);

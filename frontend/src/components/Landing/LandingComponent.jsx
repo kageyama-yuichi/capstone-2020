@@ -122,13 +122,8 @@ class LandingComponent extends Component {
 										name="username"
 										className="input-field username-field"
 										placeholder="Enter your username"
-<<<<<<< HEAD
-										value={this.state.username}
-										onChange={this.handle_typing_username}
-=======
 										onChange={this.handleChange.bind(this)}
 										value={this.state.username}
->>>>>>> d960f87757ecc6a3246d91dc02e8eaecabce604f
 									></input>
 								</div>
 								<div className="input-container">
@@ -138,13 +133,8 @@ class LandingComponent extends Component {
 										name="password"
 										className="input-field password-field"
 										placeholder="Enter your password"
-<<<<<<< HEAD
-										value={this.state.password}
-										onChange={this.handle_typing_password}
-=======
 										onChange={this.handleChange.bind(this)}
 										value={this.state.password}
->>>>>>> d960f87757ecc6a3246d91dc02e8eaecabce604f
 									></input>
 								</div>
 								<div className="password-reset">

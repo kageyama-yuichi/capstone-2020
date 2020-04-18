@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import SockJS from 'sockjs-client'
 import StompJS from 'stompjs'
 import { API_URL } from '../../Constants'
+import AuthenticationService from '../Authentication/AuthenticationService.js'
 import  './ChatComponent.css'
 
 var stomp_client = null;
@@ -14,7 +15,8 @@ class ChatComponent extends Component {
 	constructor (props) {
 		super(props);
 		this.state = {
-			username: this.props.match.params.username,
+			//username: this.props.match.params.username,
+			username: AuthenticationService.getLoggedInUserName(),
 			channel_connected: false,
 			message: '',
 			room_notification: [],

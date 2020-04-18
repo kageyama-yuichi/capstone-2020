@@ -56,13 +56,14 @@ public class JWTWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity
-		.csrf().disable()
-		.exceptionHandling().authenticationEntryPoint(jwtUnAuth).and()
-		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-		.authorizeRequests()
-		.antMatchers("/", "register-check").permitAll()
+		// Disable CSRF (cross site request forgery)
+		.csrf().disable().exceptionHandling().authenticationEntryPoint(jwtUnAuth)
+		.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+		// Allow Anyone (including unauthorised Members) access "/" and register-check
+		.and().authorizeRequests().antMatchers("/", "register-check").permitAll()
+		// This means to access anything else, the User must be Logged In
 		.anyRequest().authenticated().and().cors()
-		.and().requestMatchers().antMatchers("/jpa/users");
+		.and().requestMatchers().antMatchers("/jpa/**");
 
 		httpSecurity
 		.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
@@ -77,14 +78,9 @@ public class JWTWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	public void configure(WebSecurity webSecurity) throws Exception {
 		webSecurity
-		.ignoring()
-		.antMatchers(
-				HttpMethod.POST,
-				authenticationPath
-				)
-		.and().ignoring().antMatchers(HttpMethod.POST, "/**")
-		.and().ignoring().antMatchers(HttpMethod.OPTIONS, "/**")
-		.and().ignoring().antMatchers(HttpMethod.GET, "/")
+		.ignoring().antMatchers(HttpMethod.POST, authenticationPath)
+		// Anything going to /jpa/** is ignored by the Security
+		.and().ignoring().antMatchers("/jpa/**")
 		.and().ignoring().antMatchers("/h2-console/**/**");//Should not be in Production!
 
 	}
