@@ -3,7 +3,7 @@ import "./LandingComponent.css";
 import FooterComponent from "../Footer/FooterComponent.jsx";
 import RegisterComponent from "../Register/RegisterComponent.jsx";
 import logoSVG from "../../assests/Logo_v4.png";
-import {Form, Button} from "react-bootstrap";
+import { Container, Form, Button } from "react-bootstrap";
 import AuthenticationService from '../Authentication/AuthenticationService.js'
 
 class LandingComponent extends Component {
@@ -27,17 +27,17 @@ class LandingComponent extends Component {
 
 	//Handles dynamic styling for login form
 	calcFormSize() {
-		let h =
-			document.getElementsByClassName("register-container")[0].offsetHeight +
-			document.getElementsByClassName("logo-container")[0].offsetHeight +
-			document.getElementsByClassName("login-form")[0].offsetHeight;
+		// let h =
+		// 	document.getElementsByClassName("register-container")[0].offsetHeight +
+		// 	document.getElementsByClassName("logo-container")[0].offsetHeight +
+		// 	document.getElementsByClassName("login-form")[0].offsetHeight;
 
-		let cont = document.getElementsByClassName("cont")[0];
-		if (h <= this.getBodyHeight()) {
-			cont.style.height = "100%";
-		} else {
-			cont.style.height = "fit-content";
-		}
+		// let cont = document.getElementsByClassName("cont")[0];
+		// if (h <= this.getBodyHeight()) {
+		// 	cont.style.height = "inherit";
+		// } else {
+		// 	cont.style.height = "fit-content";
+		// }
 	}
 	//Called on resize
 	handleResize = (e) => {
@@ -101,7 +101,7 @@ class LandingComponent extends Component {
 		return (
 			<div className="home-page">
 				<div className="login-container">
-					<div className="cont">
+					<Container style={{height: "100vh"}}>
 						<div className="logo-container">
 							<img className="logo" src={logoSVG}></img>
 						</div>
@@ -154,7 +154,7 @@ class LandingComponent extends Component {
 						{this.state.showRegister ? (
 							<RegisterComponent handler={this.newUserOnClickHandler} />
 						) : null}
-					</div>
+					</Container>
 					<FooterComponent />
 
 					{window.innerHeight < window.innerWidth && this.getBodyWidth() > 1200 ? (

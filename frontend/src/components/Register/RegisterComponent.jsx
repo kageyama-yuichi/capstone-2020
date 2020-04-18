@@ -101,8 +101,6 @@ class RegisterComponent extends Component {
 		return formIsValid;
 	}
 
-
-	
 	handleChange(event) {
 		const {name: fieldName, value} = event.target;
 		this.setState({
@@ -274,6 +272,8 @@ class RegisterComponent extends Component {
 										{this.state.errors.password}
 									</Form.Control.Feedback>
 								</Form.Group>
+							</Form.Row>
+							<Form.Row className="justify-content-end">
 								<Form.Text className="text-muted text-center">
 									Password must use 6 or more characters with a mix of
 									letters,numbers and symbols
@@ -282,6 +282,7 @@ class RegisterComponent extends Component {
 							<Form.Row>
 								<Form.Group as={Col}>
 									<Button
+										style={{width: "inherit"}}
 										type="submit"
 										className="submit-button btn-lg"
 										variant="secondary">
