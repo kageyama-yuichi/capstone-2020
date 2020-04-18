@@ -7,7 +7,7 @@ class AddOrgsComponent extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			username: this.props.match.params.username,
+			username: localStorage.getItem("username"),
 			org_id: "",
 			org_title: "",
 			owned_ids: [],

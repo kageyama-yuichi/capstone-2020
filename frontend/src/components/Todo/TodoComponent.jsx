@@ -90,7 +90,7 @@ class TodoComponent extends Component {
 		return (
 			<div className="todo-component">
 				<Container fluid>
-					<Row  className="todo-header align-items-center">
+					<Row  className="border-bottom mb-3 align-items-center">
 						<Col>
 							<h1 style={{height: "fit-content"}}>Todo List</h1>
 						</Col>
