@@ -1,5 +1,6 @@
 .todo-component {
 	width: 100%;
+	height: fit-content;
 }
 
 .todo-container {

@@ -3,6 +3,7 @@ import TodoResources from "./TodoResources.js";
 import "./TodoComponent.css";
 import moment from "moment";
 import TodoEditComponent from "./TodoEditComponent.jsx";
+import {Container, Col, Row, Button} from "react-bootstrap";
 
 class TodoComponent extends Component {
 	constructor(props) {
@@ -16,6 +17,7 @@ class TodoComponent extends Component {
 		this.toggleOverlay = this.toggleOverlay.bind(this);
 		this.handleDeleteClick = this.handleDeleteClick.bind(this);
 		this.handleEditClick = this.handleEditClick.bind(this);
+		this.handleCreateClick = this.handleCreateClick.bind(this);
 	}
 
 	toggleOverlay = () => {
@@ -30,11 +32,9 @@ class TodoComponent extends Component {
 	};
 
 	handleDoneClick(id) {
-		console.log(this.state.username);
 		TodoResources.update_todo_status(this.state.username, id).then((response) => {
 			this.refresh_todos();
 		});
-		
 	}
 
 	handleDeleteClick = (id) => {
@@ -50,6 +50,11 @@ class TodoComponent extends Component {
 		// this.props.history.push(url);
 	};
 
+	handleCreateClick() {
+		this.setState({ editTodo: "" });
+		this.toggleOverlay();
+	}
+
 	componentDidUpdate() {
 		//console.log(this.state.todos);
 	}
@@ -60,7 +65,6 @@ class TodoComponent extends Component {
 		});
 		// Retrieves the Todos for the User from the Server
 		TodoResources.retrieve_todos(this.state.username).then((response) => {
-			console.log(response.data);
 			let todos = [];
 			// Maps the Response Data (Todo.class) to JSObject
 			for (let i = 0; i < response.data.length; i++) {
@@ -73,7 +77,7 @@ class TodoComponent extends Component {
 				});
 			}
 			todos.sort((a, b) => new moment(a.date) - new moment(b.date));
-			this.setState({ todos: todos });
+			this.setState({todos: todos});
 		});
 		this.forceUpdate();
 	};
@@ -85,13 +89,17 @@ class TodoComponent extends Component {
 	render() {
 		return (
 			<div className="todo-component">
-				<div>
-					<div className="todo-header">
-						<h1 style={{height: "fit-content"}}>Todo List</h1>
-						<button className="new-todo-button" onClick={this.toggleOverlay}>
-							New Todo
-						</button>
-					</div>
+				<Container fluid>
+					<Row  className="todo-header align-items-center">
+						<Col>
+							<h1 style={{height: "fit-content"}}>Todo List</h1>
+						</Col>
+						<Col md={2} style={{height: "100%"}} className="justify-content-end">
+							<Button variant="outline-primary"  onClick={this.handleCreateClick}>
+								New Todo
+							</Button>
+						</Col>
+					</Row>
 
 					<div className="todo-container">
 						<table cellSpacing="0" className="todo-table">
@@ -109,8 +117,9 @@ class TodoComponent extends Component {
 										</td>
 										<td className="desc-col">{todo.desc}</td>
 										<td className="date-col">
-											
-											{moment().isSame(todo.date,'date') ? "Today" : moment(todo.date).format("ll")}
+											{moment().isSame(todo.date, "date")
+												? "Today"
+												: moment(todo.date).format("ll")}
 										</td>
 
 										<td className="update-col">
@@ -136,7 +145,7 @@ class TodoComponent extends Component {
 							/>
 						) : null}
 					</div>
-				</div>
+				</Container>
 			</div>
 		);
 	}
