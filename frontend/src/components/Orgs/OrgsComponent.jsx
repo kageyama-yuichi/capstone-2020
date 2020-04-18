@@ -1,8 +1,8 @@
-import React, {Component} from 'react'
-import OrgsResources from './OrgsResources.js'
-import AuthenticationService from '../Authentication/AuthenticationService.js'
-import './OrgsComponent.css'
-
+import React, {Component} from "react";
+import OrgsResources from "./OrgsResources.js";
+import AuthenticationService from "../Authentication/AuthenticationService.js";
+import "./OrgsComponent.css";
+import { Link } from "react-router-dom";
 import tempImg from "../../assests/tempImg.svg";
 
 import {Button, ButtonGroup, Container, Row, Col, Card, CardDeck} from "react-bootstrap";
@@ -18,36 +18,35 @@ class OrgsComponent extends Component {
 		super(props);
 		this.state = {
 			username: AuthenticationService.getLoggedInUserName(),
-			orgs: []
+			orgs: [],
 		};
 		this.handle_delete_org = this.handle_delete_org.bind(this);
 		this.handleCreateClick = this.handleCreateClick.bind(this);
 	}
 
-	
 	handle_goto_channel = (org_id) => {
-		var url = this.props.history.location.pathname+'/'+org_id+'/channels';
+		var url = this.props.history.location.pathname + "/" + org_id + "/channels";
 		this.props.history.push(url);
-	}
+	};
 	handle_create_org = () => {
-		var url = this.props.history.location.pathname+'/new';
+		var url = this.props.history.location.pathname + "/new";
 		this.props.history.push(url);
-	}
+	};
 	handle_delete_org = (org_id) => {
-		OrgsResources.delete_org(this.state.username, org_id).then(
-			response => {
-				// Reset using this.refresh_orgs in Callback to Force
-				this.setState({
-					orgs: []
-				}, () => {
+		OrgsResources.delete_org(this.state.username, org_id).then((response) => {
+			// Reset using this.refresh_orgs in Callback to Force
+			this.setState(
+				{
+					orgs: [],
+				},
+				() => {
 					this.refresh_orgs();
-				})
-			}
-		);
-		
-	}
+				}
+			);
+		});
+	};
 	handle_update_org = (org_id) => {
-		var url = this.props.history.location.pathname+"/"+org_id;
+		var url = this.props.history.location.pathname + "/" + org_id;
 		this.props.history.push(url);
 	};
 
@@ -94,11 +93,7 @@ class OrgsComponent extends Component {
 			// this.setState({
 			// 	orgs: this.state.orgs
 			// })
-
 		});
-
-		
-
 	};
 
 	handleCreateClick() {
@@ -116,7 +111,9 @@ class OrgsComponent extends Component {
 				<Card.Footer>
 					<ButtonGroup>
 						<Button variant="dark">Edit</Button>
-						<Button onClick={() => this.handle_delete_org(org.id)} variant="danger">Delete</Button>
+						<Button onClick={() => this.handle_delete_org(org.id)} variant="danger">
+							Delete
+						</Button>
 					</ButtonGroup>
 				</Card.Footer>
 			);
@@ -124,7 +121,7 @@ class OrgsComponent extends Component {
 			return (
 				<Card.Footer>
 					<ButtonGroup>
-						<Button  variant="dark">Edit</Button>
+						<Button variant="dark">Edit</Button>
 					</ButtonGroup>
 				</Card.Footer>
 			);
@@ -137,23 +134,28 @@ class OrgsComponent extends Component {
 		return (
 			<div className="app-window org-component">
 				<Container fluid>
-					<Row style={{height: "fit-content"}} className="border-bottom mb-3 align-items-center">
+					<Row
+						style={{height: "fit-content"}}
+						className="border-bottom mb-3 align-items-center">
 						<Col style={{height: "fit-content"}}>
 							<h1>Organisations</h1>
 						</Col>
-						<Col md={2} style={{height: "fit-content"}}>
-							<Button variant="primary" onClick={this.handleCreateClick}>
+						<Col  md={1} sm={3} style={{height: "fit-content"}}>
+							<Button style={{whiteSpace: "nowrap"}} variant="primary" onClick={this.handleCreateClick}>
 								New org
 							</Button>
 						</Col>
 					</Row>
 					<CardDeck style={{height: "auto"}}>
 						{this.state.orgs.map((org) => (
-							<Card style={{width: "20rem", flex: "initial"}} key={org.org_id}>
-								<Card.Img variant="top" src={tempImg} />
-								<Card.Body>
-									<Card.Title>{org.org_title}</Card.Title>
-								</Card.Body>
+							<Card className="org-card" key={org.org_id}>
+								<Link to={"orgs/" + org.org_id} className="cards-fix">
+									<Card.Img variant="top" src={tempImg} />
+									<Card.Body>
+										<Card.Title>{org.org_title}</Card.Title>
+									</Card.Body>
+								</Link>
+
 								{this.renderButtons(org)}
 							</Card>
 						))}
