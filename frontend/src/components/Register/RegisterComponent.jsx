@@ -1,6 +1,12 @@
 import React, {Component} from "react";
 import "./RegisterComponent.css";
 import {Form, Button, Col, Container} from "react-bootstrap";
+import AuthenticationService from '../Authentication/AuthenticationService.js'
+
+// What's left to be done:
+// When they register, redirect to Dashboard/username
+// Currently this.props.history is undefined so cannot be pushed
+
 
 class RegisterComponent extends Component {
 	constructor(props) {
@@ -13,7 +19,7 @@ class RegisterComponent extends Component {
 			address: "",
 			username: "",
 			password: "",
-			errors: [],
+			errors: []
 		};
 	}
 
@@ -104,10 +110,51 @@ class RegisterComponent extends Component {
 
 	onSubmit(e) {
 		e.preventDefault();
-
+	
 		if (this.handleValidation(e)) {
 			console.log("success");
-			this.props.push("/dashboard");
+			let user = {
+				username: this.state.username,
+				fname: this.state.firstname,
+				lname: this.state.lastname,
+				email: this.state.email,
+				address: this.state.address,
+				password: this.state.password,
+				bio: '',
+				imagePath: ''
+			}
+			//RegisterResources.registerUser(this.state.username, user);
+			AuthenticationService.checkForUser(this.state.username)
+			.then((response) => {
+				console.log(response.data);
+				if (response.data == true) {
+					this.setState({
+						username:'',
+						firstname:'',
+						lastname:'',
+						email:'',
+						address:'',
+						password:''
+					})
+				} else {
+					AuthenticationService.registerNewUser(user).then((response) => {
+						AuthenticationService
+						.executeJwtAuthenticationService(this.state.username, this.state.password)
+						.then((response) => {
+							AuthenticationService.registerSuccessfulLoginForJwt(this.state.username, response.data.token)
+							/*
+							let url = '/dashboard/'+this.state.username;
+							console.log(this.props.history);
+							this.props.history.push(url);
+							*/
+						})
+					})
+				}
+			})
+
+
+			this.props.submitHandler();
+
 		}
 
 		this.setState({validated: true});

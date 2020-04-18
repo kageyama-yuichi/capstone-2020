@@ -1,15 +1,16 @@
-import React, {Component} from "react";
-import OrgsResources from "./OrgsResources.js";
-import "./AddOrgsComponent.css";
+import AuthenticationService from '../Authentication/AuthenticationService.js'
+import OrgsResources from './OrgsResources.js'
+import React, {Component} from 'react'
 import {Form, Container, Button} from "react-bootstrap";
+import "./AddOrgsComponent.css";
 
 class AddOrgsComponent extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			username: localStorage.getItem("username"),
-			org_id: "",
-			org_title: "",
+			username: AuthenticationService.getLoggedInUserName(),
+			org_id: '',
+			org_title: '',
 			owned_ids: [],
 			errors: [],
 			validated: false,

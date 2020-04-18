@@ -99,6 +99,6 @@ public class Channels {
          if (o == null || getClass() != o.getClass()) return false;
          
          Channels comp = (Channels) o;
-         return channel_title == comp.channel_title;
+         return channel_title.equals(comp.channel_title);
      }
 }

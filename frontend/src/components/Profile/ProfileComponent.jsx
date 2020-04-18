@@ -1,7 +1,8 @@
-import React, {Component} from "react";
-import "./ProfileComponent.css";
+import React, { Component } from "react";
 import ProfileResources from "./ProfileResources.js";
+import "./ProfileComponent.css";
 import {Form, Col, Button, Image, Container} from "react-bootstrap";
+import AuthenticationService from '../Authentication/AuthenticationService.js'
 
 //TODO: Prevent XSS
 
@@ -9,12 +10,13 @@ class ProfileComponent extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			username: "Larrad.Tyler",
+			username: AuthenticationService.getLoggedInUserName(),
 			firstname: "",
 			lastname: "",
 			address: "",
 			bio: "",
 			picUrl: "",
+			id: "",
 			imageError: "",
 			firstnameError: "",
 			lastnameError: "",
@@ -106,6 +108,7 @@ class ProfileComponent extends Component {
 
 		if (this.handleValidation()) {
 			let prof = {
+				id: this.state.id,
 				username: this.state.username,
 				fname: this.state.firstname,
 				lname: this.state.lastname,
@@ -129,6 +132,7 @@ class ProfileComponent extends Component {
 		ProfileResources.receiveUserProfile(this.state.username).then((response) => {
 			console.log(response.data);
 			this.setState({
+				id: response.data.id,
 				firstname: response.data.fname,
 				lastname: response.data.lname,
 				address: response.data.address,

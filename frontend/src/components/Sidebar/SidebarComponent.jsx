@@ -8,6 +8,7 @@ import ProfileIcon from "../../assests/ProfileIcon.svg";
 // import SettingsIcon from "../../assests/SettingsIcon.svg";
 import TeamsIcon from "../../assests/TeamsIcon.svg";
 import { Link } from "react-router-dom";
+import AuthenticationService from '../Authentication/AuthenticationService.js'
 
 class SidebarComponent extends Component {
 	render() {
@@ -50,7 +51,7 @@ class SidebarComponent extends Component {
 						</li>
 
 						<li className="sidebar-item">
-							<Link to="/" className="nav-link">
+							<Link to="/" className="nav-link" onClick={AuthenticationService.logout}>
 								<img src={LogoutIcon}></img>
 								<span className="link-text">Logout</span>
 							</Link>

@@ -1,12 +1,14 @@
 import React, {Component} from 'react'
 import TodoResources from './TodoResources.js'
+import AuthenticationService from '../Authentication/AuthenticationService.js'
+
 
 class AddUpdateTodoComponent extends Component {
 	constructor (props) {
 		super(props);
 		this.state = {
 			old_id: this.props.match.params.id,
-			username: this.props.match.params.username,
+			username: AuthenticationService.getLoggedInUserName(),
 			desc: '',
 			date: (new Date().toISOString().slice(0,10)).toString(),
 			desc_error: false,
@@ -32,18 +34,17 @@ class AddUpdateTodoComponent extends Component {
 		if(!internal_error) {
 			var t_date = this.state.date;
 			var modified_date = t_date.slice(8,10)+"/"+t_date.slice(5,7)+"/"+t_date.slice(0,4);
-			console.log("System - Creating New Organisation");
+			console.log("System - Creating New Todo List");
 			let todo = {
 				username: this.state.username,
 				desc: this.state.desc,
 				date: modified_date,
 				status: false
 			}
-			var url = '/dashboard/'+this.state.username;
 			if(this.state.old_id === "new"){
-				TodoResources.create_todo(this.state.username, todo).then(() => this.props.history.push(url));
+				TodoResources.create_todo(this.state.username, todo).then(() => this.props.history.toBack());
 			} else {
-				TodoResources.update_todo(this.state.username, this.state.old_id, todo).then(() => this.props.history.push(url));
+				TodoResources.update_todo(this.state.username, this.state.old_id, todo).then(() => this.props.history.toBack());
 			}
 		}
 	} 

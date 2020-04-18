@@ -45,7 +45,9 @@ public class ChatController {
     	) {
     	// Log the Message with the URL
     	log_to_stdout("send_message", org_id, channel_title, instance_title);
-
+    	chat_message.display_message(); // Displays the Chat Message for Debugging Purposes
+    	
+    	
     	// If the Message Received WAS a CHAT Message, Save it
     	if(chat_message.get_type() == ChatMessage.MessageType.CHAT) {
         	try {
@@ -79,7 +81,6 @@ public class ChatController {
     		}
     	}
     	
-    	//chat_message.display_message(); // Displays the Chat Message for Debugging Purposes
         return chat_message;
     }
 

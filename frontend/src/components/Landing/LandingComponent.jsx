@@ -4,24 +4,35 @@ import FooterComponent from "../Footer/FooterComponent.jsx";
 import RegisterComponent from "../Register/RegisterComponent.jsx";
 import logoSVG from "../../assests/Logo_v4.png";
 import { Container, Form, Button } from "react-bootstrap";
-
+import AuthenticationService from '../Authentication/AuthenticationService.js'
 
 class LandingComponent extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			username: "",
+			password: "",
 			showRegister: false,
 			windowSize: "",
 			username: "",
 			password: "",
 		};
 		this.handleSubmit = this.handleSubmit.bind(this);
+		this.registerSubmitHandler = this.registerSubmitHandler.bind(this);
+
 		this.newUserOnClickHandler = this.newUserOnClickHandler.bind(this);
 	}
 
 	newUserOnClickHandler() {
 		this.setState({showRegister: !this.state.showRegister});
 	}
+
+	
+	registerSubmitHandler() {
+		this.props.history.push('/dashboard');
+	}
+
+	//Ha
 
 	//Handles dynamic styling for login form
 	calcFormSize() {
@@ -72,11 +83,27 @@ class LandingComponent extends Component {
 		return document.getElementsByTagName("body")[0].offsetWidth;
 	}
 
+	handle_typing_username = (event) => {
+		this.setState({
+            username: event.target.value,
+        });
+	}
+	handle_typing_password = (event) => {
+		this.setState({
+            password: event.target.value,
+        });
+	}
+	
 	handleSubmit(e) {
 		e.preventDefault();
-		//Temporary solution to store username
-		localStorage.setItem("username", this.state.username);
-		this.props.history.push("/dashboard");
+		AuthenticationService
+			.executeJwtAuthenticationService(this.state.username, this.state.password)
+			.then((response) => {
+				console.log("Inner Authetnication");
+				AuthenticationService.registerSuccessfulLoginForJwt(this.state.username, response.data.token)
+				let url = '/dashboard';
+				this.props.history.push(url);
+			})
 	}
 
 	render() {
@@ -134,7 +161,7 @@ class LandingComponent extends Component {
 							</div>
 						</div>
 						{this.state.showRegister ? (
-							<RegisterComponent handler={this.newUserOnClickHandler} />
+							<RegisterComponent  submitHandler={this.registerSubmitHandler} handler={this.newUserOnClickHandler} />
 						) : null}
 					</Container>
 					<FooterComponent />

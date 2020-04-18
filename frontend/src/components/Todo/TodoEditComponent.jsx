@@ -1,33 +1,36 @@
 import React, {Component} from "react";
 import "./TodoEditComponent.css";
 import moment from "moment";
-import TodoResources from "./TodoResources.js";
+import TodoResources from './TodoResources.js'
 import {Form, Button, Container} from "react-bootstrap";
+import AuthenticationService from '../Authentication/AuthenticationService.js'
 
 class TodoEditComponent extends Component {
 	constructor(props) {
 		super(props);
 
         let todo = this.props.editTodo;
-		if (todo.length == 0) {
-			this.state = {
-				validated: false,
-				id: "",
-				username: localStorage.getItem("username"),
-				desc: "",
-				date: "",
-				errors: [],
-				status: false,
-			};
-		} else {
-			this.state = {
-				id: todo.id,
-				username: localStorage.getItem("username"),
-				desc: todo.desc,
-				date: todo.date,
-				errors: [],
-				status: todo.status,
-			};
+        if (todo.length == 0) {
+            
+            this.state = {
+                id: "",
+                username: AuthenticationService.getLoggedInUserName(),
+                desc: "",
+                date: "",
+                descError: "",
+                dateError: "",
+                status: false
+            }
+        } else {
+            this.state = {
+                id: todo.id,
+                username: AuthenticationService.getLoggedInUserName(),
+                desc: todo.desc,
+                date: todo.date,
+                descError: "",
+                dateError: "",
+                status: todo.status
+            }
         }
 	}
 
@@ -126,7 +129,7 @@ class TodoEditComponent extends Component {
 								value={this.state.desc}
 							/>
 							<Form.Control.Feedback type="invalid">
-								{this.state.errors.desc}
+								{this.state.descError}
 							</Form.Control.Feedback>
 						</Form.Group>
 
@@ -140,7 +143,7 @@ class TodoEditComponent extends Component {
 								value={this.state.date}
 							/>
 							<Form.Control.Feedback type="invalid">
-								{this.state.errors.date}
+								{this.state.dateError}
 							</Form.Control.Feedback>
 						</Form.Group>
 

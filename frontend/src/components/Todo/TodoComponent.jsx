@@ -4,12 +4,13 @@ import "./TodoComponent.css";
 import moment from "moment";
 import TodoEditComponent from "./TodoEditComponent.jsx";
 import {Container, Col, Row, Button} from "react-bootstrap";
+import AuthenticationService from '../Authentication/AuthenticationService.js'
 
 class TodoComponent extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			username: localStorage.getItem("username"),
+			username: AuthenticationService.getLoggedInUserName(),
 			todos: [],
 			showOverlay: false,
 			editTodo: "",

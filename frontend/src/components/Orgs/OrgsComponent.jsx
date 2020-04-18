@@ -1,7 +1,7 @@
-import React, {Component} from "react";
-import OrgsResources from "./OrgsResources.js";
-import {API_URL} from "../../Constants";
-import "./OrgsComponent.css";
+import React, {Component} from 'react'
+import OrgsResources from './OrgsResources.js'
+import AuthenticationService from '../Authentication/AuthenticationService.js'
+import './OrgsComponent.css'
 
 import tempImg from "../../assests/tempImg.svg";
 
@@ -17,27 +17,37 @@ class OrgsComponent extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			username: localStorage.getItem("username"),
-			orgs: [],
+			username: AuthenticationService.getLoggedInUserName(),
+			orgs: []
 		};
 		this.handle_delete_org = this.handle_delete_org.bind(this);
 		this.handleCreateClick = this.handleCreateClick.bind(this);
 	}
 
+	
+	handle_goto_channel = (org_id) => {
+		var url = this.props.history.location.pathname+'/'+org_id+'/channels';
+		this.props.history.push(url);
+	}
+	handle_create_org = () => {
+		var url = this.props.history.location.pathname+'/new';
+		this.props.history.push(url);
+	}
 	handle_delete_org = (org_id) => {
-		OrgsResources.delete_org(this.state.username, org_id);
-		// Reset using this.refresh_orgs in Callback to Force
-		this.setState(
-			{
-				orgs: [],
-			},
-			() => {
-				this.refresh_orgs();
+		OrgsResources.delete_org(this.state.username, org_id).then(
+			response => {
+				// Reset using this.refresh_orgs in Callback to Force
+				this.setState({
+					orgs: []
+				}, () => {
+					this.refresh_orgs();
+				})
 			}
 		);
-	};
+		
+	}
 	handle_update_org = (org_id) => {
-		var url = this.state.username + "/" + org_id;
+		var url = this.props.history.location.pathname+"/"+org_id;
 		this.props.history.push(url);
 	};
 
@@ -166,6 +176,12 @@ class OrgsComponent extends Component {
 							type="button"
 							value="-"
 							onClick={() => this.handle_delete_org(org.org_id)}
+						/>
+						<input
+							className="go_channels"
+							type="button"
+							value="o"
+							onClick={() => this.handle_goto_channel(org.org_id)}
 						/>
 						<input
 							className="update_organisation"

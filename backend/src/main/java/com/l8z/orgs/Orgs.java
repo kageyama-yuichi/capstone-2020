@@ -83,12 +83,31 @@ public class Orgs {
 	public void add_channel(Channels new_channel) {
 		channels.add(new_channel);
 	}
+	public void add_instance(String channel_title, Instances new_instance) {
+		// Hold the Old Values
+		Channels temp = retrieve_channel(channel_title);
+		// Remove the Old Channel
+		channels.remove(temp);
+		// Update Channel and Save
+		temp.add_instance(new_instance);
+		channels.add(temp);
+	}
+	public void remove_instance(String channel_title, String instance_title) {
+		// Hold the Old Values
+		Channels temp = retrieve_channel(channel_title);
+		// Remove the Old Channel
+		channels.remove(temp);
+		// Update Channel and Save
+		temp.remove_instance(new Instances(instance_title, Instances.InstanceType.CHAT));
+		channels.add(temp);
+	}
 	public void remove_channel(Channels old_channel) {
 		channels.remove(old_channel);
 	}
 	public void clear_channel() {
 		channels.clear();
 	}
+	
 	
 	public boolean manage_member(Members auth, Members member, Members.Role new_role) {
 		boolean change_status = false;

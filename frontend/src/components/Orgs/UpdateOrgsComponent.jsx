@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import OrgsResources from './OrgsResources.js'
+import AuthenticationService from '../Authentication/AuthenticationService.js'
 import './OrgsComponent.css'
 
 /*
@@ -15,7 +16,7 @@ class UpdateOrgsComponent extends Component {
 	constructor (props) {
 		super(props);
 		this.state = {
-			username: this.props.match.params.username,
+			username: AuthenticationService.getLoggedInUserName(),
 			org_id: this.props.match.params.org_id,
 			old_org_id: this.props.match.params.org_id,
 			org_title: '',
@@ -78,7 +79,7 @@ class UpdateOrgsComponent extends Component {
 				var url = '/orgs/'+this.state.username;
 				OrgsResources.update_org(
 					this.state.username, this.state.old_org_id, org_push
-				).then(()=> this.props.history.push(url));
+				).then(()=> this.props.history.goBack());
 			}
 		}
 	} 
@@ -95,6 +96,36 @@ class UpdateOrgsComponent extends Component {
             org_title: event.target.value,
 			error: false
         });
+	}
+	
+	handle_create_channel = () => {
+		var url = this.props.history.location.pathname+'/new';
+		this.props.history.push(url);
+	}
+	handle_delete_channel = (channel_title) => {
+		console.log("Deleteing");
+		OrgsResources.delete_channel(this.state.username, this.state.org_id, channel_title).then(
+			response => {
+				console.log("Deleted");
+				this.setState({
+					channels: []
+				}, () => {
+					// Retrieves All Channels from the Org Data
+					OrgsResources.retrieve_org(this.state.username, this.state.old_org_id)
+					.then(response => 
+					{
+						this.setState({
+							channels: response.data.channels
+						});
+					});
+				})
+			}
+		);
+		
+	}
+	handle_update_channel = (channel_title) => {
+		var url = this.props.history.location.pathname+"/"+channel_title;
+		this.props.history.push(url);
 	}
 	
 	componentDidUpdate() {
@@ -121,7 +152,7 @@ class UpdateOrgsComponent extends Component {
 				}
 			}
 		});
-		// Retrieves All the Current Organisations IDs
+		// Retrieves All the Current Org Data
 		OrgsResources.retrieve_org(this.state.username, this.state.old_org_id)
 		.then(response => 
 		{
@@ -173,9 +204,27 @@ class UpdateOrgsComponent extends Component {
 						}
 					}
 				)}
-				<h2>{this.state.org_title} Channels</h2>
+				<h1>{this.state.org_title} Channels</h1>
+				<input
+					className="new_channel"
+					type="button"
+					value="+"
+					onClick={this.handle_create_channel}
+				/>
 				{this.state.channels.map(ch =>
 					<div key={ch.channel_title} className='channels'>
+						<input
+							className="delete_channel"
+							type="button"
+							value="-"
+							onClick={() => this.handle_delete_channel(ch.channel_title)}
+						/>
+						<input
+							className="update_channel"
+							type="button"
+							value="#"
+							onClick={() => this.handle_update_channel(ch.channel_title)}
+						/>
 						<h3 key={ch.channel_title}>{ch.channel_title}</h3>
 						<div>
 							{ch.members.map(member =>
