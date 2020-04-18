@@ -99,22 +99,22 @@ class OrgsComponent extends Component {
 		this.refresh_orgs();
 	}
 
-	renderButtons(user_role) {
-		if (user_role == "ORG_OWNER") {
+	renderButtons(org) {
+		if (org.user_role == "ORG_OWNER") {
 			console.log("calling render for org owner");
 			return (
 				<Card.Footer>
 					<ButtonGroup>
-						<Button>Edit</Button>
-						<Button variant="danger">Delete</Button>
+						<Button variant="dark">Edit</Button>
+						<Button onClick={() => this.handle_delete_org(org.id)} variant="danger">Delete</Button>
 					</ButtonGroup>
 				</Card.Footer>
 			);
-		} else if (user_role == "ADMIN") {
+		} else if (org.user_role == "ADMIN") {
 			return (
 				<Card.Footer>
 					<ButtonGroup>
-						<Button>Edit</Button>
+						<Button  variant="dark">Edit</Button>
 					</ButtonGroup>
 				</Card.Footer>
 			);
@@ -144,7 +144,7 @@ class OrgsComponent extends Component {
 								<Card.Body>
 									<Card.Title>{org.org_title}</Card.Title>
 								</Card.Body>
-								{this.renderButtons(org.user_role)}
+								{this.renderButtons(org)}
 							</Card>
 						))}
 					</CardDeck>
