@@ -104,8 +104,6 @@ class AddOrgsComponent extends Component {
 		});
 	};
 
-	componentDidUpdate() {}
-
 	componentDidMount() {
 		// Retrieves All the Current Organisations IDs
 		OrgsResources.retrieve_all_orgs(this.state.username).then((response) => {
@@ -135,7 +133,8 @@ class AddOrgsComponent extends Component {
 							<Form.Control
 								name="id"
 								type="text"
-								onChange={this.handle_typing_org_id.bind(this)}
+								value={this.state.org_id}
+								onChange={this.handle_typing_org_id}
 								placeholder="Enter a unique id"
 							/>
 							<Form.Control.Feedback type="invalid">
@@ -147,7 +146,8 @@ class AddOrgsComponent extends Component {
 							<Form.Control
 								type="text"
 								name="title"
-								onChange={this.handle_typing_org_title.bind(this)}
+								value={this.state.org_title}
+								onChange={this.handle_typing_org_title}
 								placeholder="Enter a title"
 							/>
 							<Form.Control.Feedback type="invalid">
