@@ -22,7 +22,7 @@ import com.l8z.orgs.Instances;
 import com.l8z.orgs.Members;
 import com.l8z.orgs.MembersStatus;
 import com.l8z.orgs.Orgs;
-import com.l8z.orgs.Sql;
+import com.l8z.orgs.OrgsSQL;
 
 
 @Controller
@@ -72,7 +72,7 @@ public class ChatController {
     			temp_org.add_channel(temp_channel);
     			
     			// Save to Database
-    			Sql sql = new Sql(org_id, json_mapper.writeValueAsString(temp_org));
+    			OrgsSQL sql = new OrgsSQL(org_id, json_mapper.writeValueAsString(temp_org));
     			orgsjpa.save(sql);
     		} catch (JsonMappingException e) {
     			System.out.println("System - Error Updating Database");

@@ -7,18 +7,18 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "orgs")
-public class Sql {
+public class OrgsSQL {
 	@Id
 	String orgId;
 	@Column(length = 1999999999)
 	String data;
 	
 	// Default Constructor
-	public Sql() {
+	public OrgsSQL() {
 		
 	}
 	// Constructor
-	public Sql(String orgId, String data) {
+	public OrgsSQL(String orgId, String data) {
 		this.orgId = orgId;
 		this.data = data;
 	}
