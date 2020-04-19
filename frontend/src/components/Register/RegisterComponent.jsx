@@ -3,11 +3,7 @@ import "./RegisterComponent.css";
 import {Form, Button, Col, Container, Spinner} from "react-bootstrap";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
 
-import PlacesAutoComplete, {
-	geocodeByAddress,
-	geocodeByPlaceId,
-	getLatLng,
-} from "react-places-autocomplete";
+import PlacesAutoComplete from "react-places-autocomplete";
 
 // What's left to be done:
 // When they register, redirect to Dashboard/username
@@ -51,7 +47,7 @@ class RegisterComponent extends Component {
 		if (navigator.geolocation) {
 			//60s timeout
 			var options = {timeout: 60000};
-			navigator.geolocation.getCurrentPosition(this.showLocation, this.errorHandler, options);
+			navigator.geolocation.getCurrentPosition(this.showLocation, this.locationErrorHandler, options);
 		} else {
 			console.log("Geolocation is not supported by this browser.");
 			const tempLocation = new window.google.maps.LatLng(37.8136, 144.9631);
@@ -66,7 +62,7 @@ class RegisterComponent extends Component {
 		this.setSearchOptions(currentLocation);
 	}
 
-	errorHandler(err) {
+	locationErrorHandler(err) {
 		console.log("Error when getting geolocation.");
 
 		const tempLocation = new window.google.maps.LatLng(37.8136, 144.9631);
@@ -301,7 +297,7 @@ class RegisterComponent extends Component {
 															autoComplete: "justdont",
 															name: "address",
 															placeholder: "Address",
-
+															required: true,
 															className:
 																"location-search-input form-control",
 														})}
