@@ -19,7 +19,6 @@ class LandingComponent extends Component {
 		};
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.registerSubmitHandler = this.registerSubmitHandler.bind(this);
-
 		this.newUserOnClickHandler = this.newUserOnClickHandler.bind(this);
 	}
 
@@ -72,6 +71,11 @@ class LandingComponent extends Component {
 			})
 	}
 
+	componentDidMount() {
+		localStorage.clear();
+		sessionStorage.clear();
+	}
+	
 	render() {
 		return (
 			<div className="home-page">

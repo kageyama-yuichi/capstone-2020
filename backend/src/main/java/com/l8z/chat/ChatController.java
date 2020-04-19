@@ -106,11 +106,11 @@ public class ChatController {
     	
     	// Add user in Web Socket Session
     	//chat_message.display_message(); // Displays the Chat Message for Debugging Purposes
-    	header_accessor.getSessionAttributes().put("username", chat_message.get_sender());
-    	header_accessor.getSessionAttributes().put("url", org_id+"/"+channel_title+"/"+instance_title);
     	
 		// Add them to the Online List
     	if(!online_users.containsKey(chat_message.get_sender())) {
+    		header_accessor.getSessionAttributes().put("username", chat_message.get_sender());
+        	header_accessor.getSessionAttributes().put("url", org_id+"/"+channel_title+"/"+instance_title);
     		online_users.put(chat_message.get_sender(), "online");
     	}
     	
@@ -243,11 +243,10 @@ public class ChatController {
 	@MessageMapping("/existing_private_user")
 	@SendTo("/queue/reply")
 	public ChatMessage existing_private_user(@Payload ChatMessage chat_message, SimpMessageHeaderAccessor header_accessor) {
-		// Add user in Web Socket Session
-		header_accessor.getSessionAttributes().put("private_username", chat_message.get_sender());
-		
 		// Add them to the Online List
 		if(!online_users.containsKey(chat_message.get_sender())) {
+			// Add user in Web Socket Session
+			header_accessor.getSessionAttributes().put("private_username", chat_message.get_sender());
     		online_users.put(chat_message.get_sender(), "online");
     	}
 		
