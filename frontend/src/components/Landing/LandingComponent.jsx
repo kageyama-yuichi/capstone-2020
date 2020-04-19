@@ -66,7 +66,7 @@ class LandingComponent extends Component {
 		});
 	}
 
-	componentDidMount() {
+	componentDidMount() {		
 		window.addEventListener("resize", this.handleResize);
 		this.calcFormSize();
 	}
