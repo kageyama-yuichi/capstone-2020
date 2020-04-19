@@ -18,6 +18,7 @@ class InstancesComponent extends Component {
 			channel_title: this.props.match.params.channel_title,
 			instances: []
 		};
+		this.handle_open_chat = this.handle_open_chat.bind(this);
 	}
 
 	handle_create_instance = () => {
@@ -25,18 +26,37 @@ class InstancesComponent extends Component {
 		this.props.history.push(url);
 	}
 		
+	handle_open_chat = (instance_title) => {
+		let url = "/chat/"+this.state.org_id+"/"+this.state.channel_title+"/"+instance_title;
+		this.props.history.push(url);
+	}
+	
 	componentDidUpdate() {
 		console.log(this.state.orgs);
 	}
 	
 	refresh_instances = () => {
 		// Retrieves All Instances from the Org Data
-		OrgsResources.retrieve_all_instance_titles(this.state.username, this.state.org_id, this.state.channel_title)
+		OrgsResources.retrieve_org(this.state.username, this.state.org_id)
 		.then(response => 
-		{
-			this.setState({
-				instances: response.data.instances
-			});
+		{	
+			console.log(response.data.channels);
+			// Maps the Response Data (Channels.class) to JSONbject
+			for (let i = 0; i < response.data.channels.length; i++) {
+				if(response.data.channels[i].channel_title === this.state.channel_title){
+					// Map the Response Data (Instances.class) to JSONObject
+					for(let j = 0; j < response.data.channels[i].instances.length; j++){
+						console.log(response.data.channels[i]);
+						this.state.instances.push({
+							instance_title: response.data.channels[i].instances[j].instance_title,
+							type: response.data.channels[i].instances[j].type,
+						});
+						this.setState({
+							instances: this.state.instances,
+						});
+					} 					
+				}
+			}
 		});
 	}
 	
@@ -56,11 +76,11 @@ class InstancesComponent extends Component {
 					value="+"
 					onClick={this.handle_create_instance}
 				/>
+				<div>
 				{this.state.instances.map(ins =>
-					<div key={ins.instance_title} className='instances'>
-						<h3 key={ins.instance_title}>{ins.instance_title}</h3>
-					</div>
+					<h3 key={ins.instance_title} onClick={() => this.handle_open_chat(ins.instance_title)}>{ins.instance_title}</h3>
 				)}
+				</div>
 			</div>
         )
     }
