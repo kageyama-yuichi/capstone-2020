@@ -1,11 +1,26 @@
-import React, {Component} from "react";
+import React, {useEffect, Component} from "react";
 import "./RegisterComponent.css";
-import {Form, Button, Col, Container} from "react-bootstrap";
-import AuthenticationService from '../Authentication/AuthenticationService.js'
+import {Form, Button, Col, Container, Spinner} from "react-bootstrap";
+import AuthenticationService from "../Authentication/AuthenticationService.js";
+import {ENABLE_AUTOCOMPLETE} from "../../Constants.js"
+import PlacesAutoComplete from "react-places-autocomplete";
 
 // What's left to be done:
 // When they register, redirect to Dashboard/username
 // Currently this.props.history is undefined so cannot be pushed
+
+
+// 
+// TO ENABLE PLACES AUTOCOMPLETE
+//	set ENABLE_AUTOCOMPLETE in Contants.js to true
+// 	Create a file in the root directory (where package.json is) called .env
+//	In the .env file write REACT_APP_PLACES_API_KEY=API_KEY
+//	Get the API_KEY from console.cloud.google.com > APIs & Services > Credentials
+//	
+// Currently the api key is visible to the user if they inspect body
+//	 This will be fixed when we move autocomplete to process in the backend
+//	 As a measure the key is restricted to HTTP refers from localhost:6942
+//	 
 
 
 class RegisterComponent extends Component {
@@ -19,8 +34,59 @@ class RegisterComponent extends Component {
 			address: "",
 			username: "",
 			password: "",
-			errors: []
+			errors: [],
+			searchOptions: "",
+			radius: 5000,
+			//If the api key is in .env
+			shouldFetchSuggestions: process.env.REACT_APP_PLACES_API_KEY ? true : false,
+			//Forcibly turn off autocomplete
+			enableAutoComplete: ENABLE_AUTOCOMPLETE
 		};
+		this.showLocation = this.showLocation.bind(this);
+	}
+
+	componentDidMount() {
+		if (this.state.shouldFetchSuggestions && this.state.enableAutoComplete) {
+			this.geoLocate();
+		}
+		
+	}
+	//Takes a google.maps.LatLng
+	setSearchOptions(location) {
+		//Generate session token
+		var token = new window.google.maps.places.AutocompleteSessionToken();
+		const options = {
+			location: location,
+			radius: this.state.radius,
+			types: ["address"],
+			sessionToken: token,
+		};
+		this.setState({searchOptions: options});
+	}
+	geoLocate() {
+		if (navigator.geolocation) {
+			//60s timeout
+			var options = {timeout: 60000};
+			navigator.geolocation.getCurrentPosition(this.showLocation, this.locationErrorHandler, options);
+		} else {
+			console.log("Geolocation is not supported by this browser.");
+			const tempLocation = new window.google.maps.LatLng(37.8136, 144.9631);
+			this.setSearchOptions(tempLocation);
+		}
+	}
+
+	showLocation(position) {
+		var latitude = position.coords.latitude;
+		var longitude = position.coords.longitude;
+		const currentLocation = new window.google.maps.LatLng(latitude, longitude);
+		this.setSearchOptions(currentLocation);
+	}
+
+	locationErrorHandler(err) {
+		console.log("Error when getting geolocation.");
+
+		const tempLocation = new window.google.maps.LatLng(37.8136, 144.9631);
+		this.setSearchOptions(tempLocation);
 	}
 
 	handleValidation(e) {
@@ -108,11 +174,14 @@ class RegisterComponent extends Component {
 		});
 	}
 
+	handleAddresChange(address) {
+		this.setState({address: address});
+	}
+
 	onSubmit(e) {
 		e.preventDefault();
-	
+
 		if (this.handleValidation(e)) {
-			console.log("success");
 			let user = {
 				username: this.state.username,
 				fname: this.state.firstname,
@@ -120,178 +189,241 @@ class RegisterComponent extends Component {
 				email: this.state.email,
 				address: this.state.address,
 				password: this.state.password,
-				bio: '',
-				imagePath: ''
-			}
+				bio: "",
+				imagePath: "",
+			};
 			//RegisterResources.registerUser(this.state.username, user);
-			AuthenticationService.checkForUser(this.state.username)
-			.then((response) => {
-				console.log(response.data);
+			AuthenticationService.checkForUser(this.state.username).then((response) => {
 				if (response.data == true) {
 					this.setState({
-						username:'',
-						firstname:'',
-						lastname:'',
-						email:'',
-						address:'',
-						password:''
-					})
+						username: "",
+						firstname: "",
+						lastname: "",
+						email: "",
+						address: "",
+						password: "",
+					});
 				} else {
 					AuthenticationService.registerNewUser(user).then((response) => {
-						AuthenticationService
-						.executeJwtAuthenticationService(this.state.username, this.state.password)
-						.then((response) => {
-							AuthenticationService.registerSuccessfulLoginForJwt(this.state.username, response.data.token)
+						AuthenticationService.executeJwtAuthenticationService(
+							this.state.username,
+							this.state.password
+						).then((response) => {
+							AuthenticationService.registerSuccessfulLoginForJwt(
+								this.state.username,
+								response.data.token
+							);
 							/*
 							let url = '/dashboard/'+this.state.username;
 							console.log(this.props.history);
 							this.props.history.push(url);
 							*/
-						})
-					})
+						});
+					});
 				}
-			})
-
+			});
 
 			this.props.submitHandler();
-
 		}
 
 		this.setState({validated: true});
 	}
 
 	render() {
-		return (
-			<div className="wrapper">
-				<div className="bg" onClick={this.props.handler}></div>
+		if (this.state.searchOptions || !this.state.enableAutoComplete) {
+			return (
+				<div className="wrapper">
+					<div className="bg" onClick={this.props.handler}></div>
 
-				<div className="overlay">
-					<button className="exit-button" onClick={this.props.handler}>
-						X
-					</button>
-					<div className="info-text">
-						<h1>Get started with your L8Z account</h1>
+					<div className="overlay">
+						<button className="exit-button" onClick={this.props.handler}>
+							X
+						</button>
+						<div className="info-text">
+							<h1>Get started with your L8Z account</h1>
+						</div>
+
+						<Form
+							noValidate
+							validated={this.state.validated}
+							className="signup-form"
+							onSubmit={this.onSubmit.bind(this)}>
+							<Container style={{width: "100%"}}>
+								<Form.Row>
+									<Form.Group as={Col}>
+										<Form.Label>First Name</Form.Label>
+										<Form.Control
+											type="text"
+											name="firstname"
+											placeholder="First name"
+											onChange={this.handleChange.bind(this)}
+											value={this.state.firstname}
+										/>
+										<Form.Control.Feedback type="invalid">
+											{this.state.errors.firstname}
+										</Form.Control.Feedback>
+									</Form.Group>
+									<Form.Group as={Col}>
+										<Form.Label>Last Name</Form.Label>
+										<Form.Control
+											type="text"
+											name="lastname"
+											placeholder="Last name"
+											onChange={this.handleChange.bind(this)}
+											value={this.state.lastname}
+										/>
+										<Form.Control.Feedback type="invalid">
+											{this.state.errors.lastname}
+										</Form.Control.Feedback>
+									</Form.Group>
+								</Form.Row>
+								<Form.Row>
+									<Form.Group as={Col}>
+										<Form.Label>Email</Form.Label>
+
+										<Form.Control
+											type="email"
+											name="email"
+											placeholder="Email"
+											onChange={this.handleChange.bind(this)}
+											value={this.state.email}
+										/>
+										<Form.Control.Feedback type="invalid">
+											{this.state.errors.email}
+										</Form.Control.Feedback>
+									</Form.Group>
+								</Form.Row>
+								<Form.Row>
+									<Form.Group as={Col}>
+										<Form.Label>Address</Form.Label>
+
+										<PlacesAutoComplete
+											value={this.state.address}
+											onChange={this.handleAddresChange.bind(this)}
+											searchOptions={this.state.searchOptions}
+											debounce={1000}
+											shouldFetchSuggestions={
+												this.state.shouldFetchSuggestions && this.state.enableAutoComplete
+											}>
+											{({
+												getInputProps,
+												suggestions,
+												getSuggestionItemProps,
+												loading,
+											}) => (
+												<div>
+													<input
+														{...getInputProps({
+															autoComplete: "justdont",
+															name: "address",
+															placeholder: "Address",
+															required: true,
+															className:
+																"location-search-input form-control",
+														})}
+													/>
+													<div className="autocomplete-dropdown-container zindex-dropdown">
+														{loading && (
+															<Spinner animation="grow"></Spinner>
+														)}
+														{suggestions.map((suggestion) => {
+															const className = suggestion.active
+																? "suggestion-item--active"
+																: "suggestion-item";
+															// inline style for demonstration purpose
+															const style = suggestion.active
+																? {
+																		backgroundColor: "#fafafa",
+																		cursor: "pointer",
+																  }
+																: {
+																		backgroundColor: "#ffffff",
+																		cursor: "pointer",
+																  };
+															return (
+																<div
+																	{...getSuggestionItemProps(
+																		suggestion,
+																		{
+																			className,
+																			style,
+																		}
+																	)}>
+																	<span>
+																		{suggestion.description}
+																	</span>
+																</div>
+															);
+														})}
+													</div>
+												</div>
+											)}
+										</PlacesAutoComplete>
+										<Form.Control.Feedback type="invalid">
+											{this.state.errors.address}
+										</Form.Control.Feedback>
+									</Form.Group>
+								</Form.Row>
+
+								<Form.Row>
+									<Form.Group as={Col}>
+										<Form.Label>Username</Form.Label>
+										<Form.Control
+											type="text"
+											name="username"
+											placeholder="Username"
+											onChange={this.handleChange.bind(this)}
+											value={this.state.username}
+										/>
+										<Form.Control.Feedback type="invalid">
+											{this.state.errors.username}
+										</Form.Control.Feedback>
+									</Form.Group>
+
+									<Form.Group as={Col}>
+										<Form.Label>Password</Form.Label>
+										<Form.Control
+											className="password-control"
+											type="password"
+											name="password"
+											placeholder="Password"
+											onChange={this.handleChange.bind(this)}
+											value={this.state.password}
+										/>
+										<Form.Control.Feedback type="invalid">
+											{this.state.errors.password}
+										</Form.Control.Feedback>
+									</Form.Group>
+								</Form.Row>
+								<Form.Row className="justify-content-end">
+									<Form.Text className="text-muted text-center">
+										Password must use 6 or more characters with a mix of
+										letters,numbers and symbols
+									</Form.Text>
+								</Form.Row>
+								<Form.Row>
+									<Form.Group as={Col}>
+										<Button
+											style={{width: "inherit"}}
+											type="submit"
+											className="submit-button btn-lg"
+											variant="secondary">
+											SIGN UP
+										</Button>
+									</Form.Group>
+								</Form.Row>
+							</Container>
+						</Form>
 					</div>
-
-					<Form
-						noValidate
-						validated={this.state.validated}
-						className="signup-form"
-						onSubmit={this.onSubmit.bind(this)}>
-						<Container style={{width: "100%"}}>
-							<Form.Row>
-								<Form.Group as={Col}>
-									<Form.Label>First Name</Form.Label>
-									<Form.Control
-										type="text"
-										name="firstname"
-										placeholder="First name"
-										onChange={this.handleChange.bind(this)}
-										value={this.state.firstname}
-									/>
-									<Form.Control.Feedback type="invalid">
-										{this.state.errors.firstname}
-									</Form.Control.Feedback>
-								</Form.Group>
-								<Form.Group as={Col}>
-									<Form.Label>Last Name</Form.Label>
-									<Form.Control
-										type="text"
-										name="lastname"
-										placeholder="Last name"
-										onChange={this.handleChange.bind(this)}
-										value={this.state.lastname}
-									/>
-									<Form.Control.Feedback type="invalid">
-										{this.state.errors.lastname}
-									</Form.Control.Feedback>
-								</Form.Group>
-							</Form.Row>
-							<Form.Row>
-								<Form.Group as={Col}>
-									<Form.Label>Email</Form.Label>
-
-									<Form.Control
-										type="email"
-										name="email"
-										placeholder="Email"
-										onChange={this.handleChange.bind(this)}
-										value={this.state.email}
-									/>
-									<Form.Control.Feedback type="invalid">
-										{this.state.errors.email}
-									</Form.Control.Feedback>
-								</Form.Group>
-							</Form.Row>
-							<Form.Row>
-								<Form.Group as={Col}>
-									<Form.Label>Address</Form.Label>
-
-									<Form.Control
-										type="text"
-										name="address"
-										placeholder="Address"
-										onChange={this.handleChange.bind(this)}
-										value={this.state.address}
-									/>
-									<Form.Control.Feedback type="invalid">
-										{this.state.errors.address}
-									</Form.Control.Feedback>
-								</Form.Group>
-							</Form.Row>
-
-							<Form.Row>
-								<Form.Group as={Col}>
-									<Form.Label>Username</Form.Label>
-									<Form.Control
-										type="text"
-										name="username"
-										placeholder="Username"
-										onChange={this.handleChange.bind(this)}
-										value={this.state.username}
-									/>
-									<Form.Control.Feedback type="invalid">
-										{this.state.errors.username}
-									</Form.Control.Feedback>
-								</Form.Group>
-
-								<Form.Group as={Col}>
-									<Form.Label>Password</Form.Label>
-									<Form.Control
-										className="password-control"
-										type="password"
-										name="password"
-										placeholder="Password"
-										onChange={this.handleChange.bind(this)}
-										value={this.state.password}
-									/>
-									<Form.Control.Feedback type="invalid">
-										{this.state.errors.password}
-									</Form.Control.Feedback>
-								</Form.Group>
-							</Form.Row>
-							<Form.Row className="justify-content-end">
-								<Form.Text className="text-muted text-center">
-									Password must use 6 or more characters with a mix of
-									letters,numbers and symbols
-								</Form.Text>
-							</Form.Row>
-							<Form.Row>
-								<Form.Group as={Col}>
-									<Button
-										style={{width: "inherit"}}
-										type="submit"
-										className="submit-button btn-lg"
-										variant="secondary">
-										SIGN UP
-									</Button>
-								</Form.Group>
-							</Form.Row>
-						</Container>
-					</Form>
 				</div>
-			</div>
-		);
+			);
+		} else {
+			return (
+				<div className="loading-spinner">
+					<Spinner animation="border"></Spinner>;
+				</div>
+			);
+		}
 	}
 }
 

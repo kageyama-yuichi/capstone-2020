@@ -32,47 +32,13 @@ class LandingComponent extends Component {
 		this.props.history.push('/dashboard');
 	}
 
-	//Ha
-
-	//Handles dynamic styling for login form
-	calcFormSize() {
-		// let h =
-		// 	document.getElementsByClassName("register-container")[0].offsetHeight +
-		// 	document.getElementsByClassName("logo-container")[0].offsetHeight +
-		// 	document.getElementsByClassName("login-form")[0].offsetHeight;
-
-		// let cont = document.getElementsByClassName("cont")[0];
-		// if (h <= this.getBodyHeight()) {
-		// 	cont.style.height = "inherit";
-		// } else {
-		// 	cont.style.height = "fit-content";
-		// }
-	}
-	//Called on resize
-	handleResize = (e) => {
-		const windowSize = window.innerWidth;
-
-		this.calcFormSize();
-
-		this.setState((prevState) => {
-			return {windowSize};
-		});
-	};
+	
 
 	handleChange(event) {
 		const {name: fieldName, value} = event.target;
 		this.setState({
 			[fieldName]: value,
 		});
-	}
-
-	componentDidMount() {
-		window.addEventListener("resize", this.handleResize);
-		this.calcFormSize();
-	}
-
-	componentWillUnmount() {
-		window.removeEventListener("resize", this.handleResize);
 	}
 
 	getBodyHeight() {
