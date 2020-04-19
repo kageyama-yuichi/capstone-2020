@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import OrgsResources from '../OrgsResources.js'
 import AuthenticationService from '../../Authentication/AuthenticationService.js'
 import '../OrgsComponent.css'
+import {Container, Form, Button} from "react-bootstrap"
 
 class UpdateChannelsComponent extends Component {
 	constructor (props) {
@@ -9,33 +10,35 @@ class UpdateChannelsComponent extends Component {
 		this.state = {
 			username: AuthenticationService.getLoggedInUserName(),
 			org_id: this.props.match.params.org_id,
+			old_channel_title: this.props.match.params.channel_title,
 			channel_title: this.props.match.params.channel_title,
 			channel_title_old: this.props.match.params.channel_title, 
-			channel_title_error: false,
+			channel_title_error: "",
 			owned_ids: []			
 		};
 		this.on_submit = this.on_submit.bind(this)
 	}
 	
-	on_submit  = () => {
+	on_submit = (e) => {
+		e.preventDefault();
 		console.log(this.state.channel_title);
 		var internal_error = false;
+		var error = "";
 		var str2 = new String(this.state.channel_title);
 		
 		// Ensure Length is 3 or Greater
-		if(this.state.channel_title.length < 3 || this.state.channel_title === "new") { 
-			this.setState({
-				org_id_error: true
-			})
+		if (this.state.channel_title.length < 3 || this.state.channel_title === "new") {
+			
+			error = "Channel title too short";
 			internal_error = true;
 		}
-		
-		if(!internal_error) {
+
+		if (!internal_error) {
 			// Check if the ID Exists
-			for(let i=0; i<this.state.owned_ids.length; i++){
+			for (let i = 0; i < this.state.owned_ids.length; i++) {
 				var str1 = new String(this.state.owned_ids[i].channel_title);
 				// Compare the String Values
-				if(str1.valueOf() == str2.valueOf()){
+				if (str1.valueOf() == str2.valueOf()) {
 					internal_error = true;
 				}
 			}
@@ -59,6 +62,14 @@ class UpdateChannelsComponent extends Component {
 				OrgsResources.update_channel(this.state.username, this.state.org_id, this.state.channel_title_old, channel).then(() => this.props.history.goBack());
 			}
 		}
+
+		if (error.length > 0) {
+			e.currentTarget.querySelector(".form-control").setCustomValidity("invalid");
+		}
+		
+		this.setState({ channel_title_error: error, validated: true });
+	
+
 	} 
 	
     handle_typing_channel_title = (event) => {
@@ -94,23 +105,33 @@ class UpdateChannelsComponent extends Component {
 	render() {
 		console.log("System - Rendering Page...");
         return (
-            <div className="FormChannelComponent">
-				<h1>Register a Channel</h1>
-				<h2>Channel Title</h2>
-				<input 
-					type="text"
-					name="channel_title"
-					id="channel_title"
-					value={this.state.channel_title}
-					onChange={this.handle_typing_channel_title}
-					placeholder="Channel Title"
-				/>
-				<input
-					id="channel_update"
-					type="button"
-					value="Update Channel"
-					onClick={this.on_submit}
-				/>
+            <div className="app-window FormChannelComponent">
+				<Container>
+					<h1>Edit <b>{this.state.old_channel_title}</b></h1>
+
+					<Form
+						noValidate
+						validated={this.state.validated}
+						onSubmit={this.on_submit.bind(this)}>
+						<Form.Group>
+							<Form.Label>Channel Title</Form.Label>
+							<Form.Control
+								type="text"
+								name="channel_title"
+								id="channel_title"
+								value={this.state.channel_title}
+								onChange={this.handle_typing_channel_title}
+								placeholder="Channel Title"
+							/>
+							<Form.Control.Feedback type="invalid">
+								{this.state.channel_title_error}
+							</Form.Control.Feedback>
+						</Form.Group>
+						<Button id="channel_create" type="submit">
+							Create Channel
+						</Button>
+					</Form>
+				</Container>
 			</div>
         )
     }
