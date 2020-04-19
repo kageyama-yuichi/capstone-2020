@@ -3,7 +3,9 @@ package com.l8z.web_socket;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.web.socket.config.annotation.*;
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
+import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
+import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
 import com.l8z.GlobalVariable;
 
@@ -26,7 +28,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     	registry.setApplicationDestinationPrefixes("/app");
         // This will be used for Group Channel Chat Instances
         // i.e., This will be "/group-id/channel/"
-        //registry.enableSimpleBroker("/group","/group/history","/group/members","/user");
     	registry.enableSimpleBroker("/group","/user");
         // Enables Split Stream Routing
         registry.setUserDestinationPrefix("/user");

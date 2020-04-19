@@ -8,6 +8,7 @@ import ProfileIcon from "../../assests/ProfileIcon.svg";
 // import SettingsIcon from "../../assests/SettingsIcon.svg";
 import TeamsIcon from "../../assests/TeamsIcon.svg";
 import { Link } from "react-router-dom";
+import AuthenticationService from '../Authentication/AuthenticationService.js'
 
 class SidebarComponent extends Component {
 	render() {
@@ -30,14 +31,14 @@ class SidebarComponent extends Component {
 								<span className="link-text">Profile</span>
 							</Link>
 						</li>
-						<li className={(window.location.pathname == `/chat` ? "current-window": "") + " sidebar-item"}>
-							<Link to="/chat" className="nav-link">
+						<li className={(window.location.pathname == `/orgs` ? "current-window": "") + " sidebar-item"}>
+							<Link to="/orgs" className="nav-link">
 								<img src={TeamsIcon}></img>
 								<span className="link-text">Orgs</span>
 							</Link>
 						</li>
-						<li className={(window.location.pathname == `/agenda` ? "current-window": "") + " sidebar-item"}>
-							<Link to="/dashboard" className="nav-link">
+						<li className="sidebar-item">
+							<Link to="/agenda" className="nav-link">
 								<img src={AgendaIcon}></img>
 								<span className="link-text">Agenda</span>
 							</Link>
@@ -50,7 +51,7 @@ class SidebarComponent extends Component {
 						</li>
 
 						<li className="sidebar-item">
-							<Link to="/" className="nav-link">
+							<Link to="/" className="nav-link" onClick={AuthenticationService.logout}>
 								<img src={LogoutIcon}></img>
 								<span className="link-text">Logout</span>
 							</Link>

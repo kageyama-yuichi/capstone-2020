@@ -1,0 +1,9 @@
+.agenda-component{
+    display: flex;
+    height: 100%;
+    width: 95%;
+}
+
+.calendar-wrapper{
+    background: darkgray;
+}

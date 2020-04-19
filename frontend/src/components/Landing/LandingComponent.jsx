@@ -1,49 +1,70 @@
-import React, { Component } from "react";
-import { Nav, NavItem, NavLink } from "reactstrap";
+import React, {Component} from "react";
 import "./LandingComponent.css";
 import FooterComponent from "../Footer/FooterComponent.jsx";
 import RegisterComponent from "../Register/RegisterComponent.jsx";
 import logoSVG from "../../assests/Logo_v4.png";
+import { Container, Form, Button } from "react-bootstrap";
+import AuthenticationService from '../Authentication/AuthenticationService.js'
 
 class LandingComponent extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			username: "",
+			password: "",
 			showRegister: false,
-			windowSize: ""
+			windowSize: "",
+			username: "",
+			password: "",
 		};
 		this.handleSubmit = this.handleSubmit.bind(this);
+		this.registerSubmitHandler = this.registerSubmitHandler.bind(this);
+
 		this.newUserOnClickHandler = this.newUserOnClickHandler.bind(this);
 	}
 
 	newUserOnClickHandler() {
-		this.setState({ showRegister: !this.state.showRegister });
+		this.setState({showRegister: !this.state.showRegister});
 	}
 
+	
+	registerSubmitHandler() {
+		this.props.history.push('/dashboard');
+	}
+
+	//Ha
+
+	//Handles dynamic styling for login form
 	calcFormSize() {
-		let h =
-			document.getElementsByClassName("register-container")[0]
-				.offsetHeight +
-			document.getElementsByClassName("logo-container")[0].offsetHeight +
-			document.getElementsByClassName("login-form")[0].offsetHeight;
+		// let h =
+		// 	document.getElementsByClassName("register-container")[0].offsetHeight +
+		// 	document.getElementsByClassName("logo-container")[0].offsetHeight +
+		// 	document.getElementsByClassName("login-form")[0].offsetHeight;
 
-		let cont = document.getElementsByClassName("cont")[0];
-		if (h <= this.getBodyHeight()) {
-			cont.style.height = "100%";
-		} else {
-			cont.style.height = "fit-content";
-		}
+		// let cont = document.getElementsByClassName("cont")[0];
+		// if (h <= this.getBodyHeight()) {
+		// 	cont.style.height = "inherit";
+		// } else {
+		// 	cont.style.height = "fit-content";
+		// }
 	}
-
-	handleResize = e => {
+	//Called on resize
+	handleResize = (e) => {
 		const windowSize = window.innerWidth;
 
 		this.calcFormSize();
 
-		this.setState(prevState => {
-			return { windowSize };
+		this.setState((prevState) => {
+			return {windowSize};
 		});
 	};
+
+	handleChange(event) {
+		const {name: fieldName, value} = event.target;
+		this.setState({
+			[fieldName]: value,
+		});
+	}
 
 	componentDidMount() {
 		window.addEventListener("resize", this.handleResize);
@@ -62,74 +83,96 @@ class LandingComponent extends Component {
 		return document.getElementsByTagName("body")[0].offsetWidth;
 	}
 
+	handle_typing_username = (event) => {
+		this.setState({
+            username: event.target.value,
+        });
+	}
+	handle_typing_password = (event) => {
+		this.setState({
+            password: event.target.value,
+        });
+	}
+	
 	handleSubmit(e) {
 		e.preventDefault();
-		this.props.history.push("/dashboard");
+		AuthenticationService
+			.executeJwtAuthenticationService(this.state.username, this.state.password)
+			.then((response) => {
+				console.log("Inner Authetnication");
+				AuthenticationService.registerSuccessfulLoginForJwt(this.state.username, response.data.token)
+				let url = '/dashboard';
+				this.props.history.push(url);
+			})
 	}
 
 	render() {
 		return (
 			<div className="home-page">
-				<div>
-					<div className="login-container">
-						<div className="cont">
-							<div className="logo-container">
-								<img className="logo" src={logoSVG}></img>
-							</div>
-							<form className="login-form" onSubmit={this.handleSubmit}>
-								<h1 className="login-title">LOGIN</h1>
-								<div className="input-container">
-									<p className="input-name">Username</p>
-									<input
-										type="text"
-										className="input-field username-field"
-										placeholder="Enter your username"
-									></input>
-								</div>
-								<div className="input-container">
-									<p className="input-name">Password</p>
-									<input
-										type="text"
-										className="input-field password-field"
-										placeholder="Enter your password"
-									></input>
-								</div>
-								<div className="password-reset">
-									<a className="login-link-text">Forgot password?</a>
-								</div>
-
-								<input
-									type="submit"
-									className="login-button submit-button"
-									value="SIGN IN"
-								></input>
-							</form>
-							<div className="register-container">
-								<p className="or">or</p>
-								<hr></hr>
-								<div className="create-account-container">
-									<p>
-										New user?{" "}
-										<a className="login-link-text" onClick={this.newUserOnClickHandler}>
-											Create a new account
-										</a>
-									</p>
-								</div>
-							</div>
-							{this.state.showRegister ? (
-								<RegisterComponent
-									handler={this.newUserOnClickHandler}
-								/>
-							) : null}
+				<div className="login-container">
+					<Container style={{height: "100vh"}}>
+						<div className="logo-container">
+							<img className="logo" src={logoSVG}></img>
 						</div>
-						<FooterComponent />
-					</div>
-					{window.innerHeight < window.innerWidth &&
-					this.getBodyWidth() > 1200 ? (
+						<Form className="login-form" onSubmit={this.handleSubmit}>
+							<h1 className="login-title">LOGIN</h1>
+							<Form.Group className="input-container">
+								<p className="input-name">Username</p>
+								<input
+									type="text"
+									name="username"
+									className="input-field username-field"
+									placeholder="Enter your username"
+									onChange={this.handleChange.bind(this)}
+									value={this.state.username}></input>
+							</Form.Group>
+							<Form.Group className="input-container">
+								<p className="input-name">Password</p>
+								<input
+									type="password"
+									name="password"
+									className="input-field password-field"
+									placeholder="Enter your password"
+									onChange={this.handleChange.bind(this)}
+									value={this.state.password}></input>
+							</Form.Group>
+							<div className="password-reset">
+								<a className="login-link-text">Forgot password?</a>
+							</div>
+
+							<Button
+								type="submit"
+								variant="secondary"
+								size="lg"
+								className="submit-button button-lg"
+								>SIGN IN</Button>
+						</Form>
+						<div className="register-container">
+
+							<div className="create-account-container">
+								<p>
+									New user?{" "}
+									<a
+										className="login-link-text"
+										onClick={this.newUserOnClickHandler}>
+										Create a new account
+									</a>
+								</p>
+							</div>
+						</div>
+						{this.state.showRegister ? (
+							<RegisterComponent  submitHandler={this.registerSubmitHandler} handler={this.newUserOnClickHandler} />
+						) : null}
+					</Container>
+					<FooterComponent />
+
+					{window.innerHeight < window.innerWidth && this.getBodyWidth() > 1200 ? (
 						<div className="info-container">
 							<p className="motto">THIS MOTTO.</p>
 							<p className="more-motto">
-									Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin quis ornare nulla. Pellentesque quis malesuada sem. Quisque elementum purus at lorem rhoncus, eu dictum purus malesuada.
+								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin quis
+								ornare nulla. Pellentesque quis malesuada sem. Quisque elementum
+								purus at lorem rhoncus, eu dictum purus malesuada.
 							</p>
 						</div>
 					) : null}

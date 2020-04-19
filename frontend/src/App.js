@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import BodyComponent from './components/Routes/BodyComponent'
 import './App.css';
-//import './bootstrap.css';
+import './BootstrapCustom.scss';
+
 
 class App extends Component {
   render() {
