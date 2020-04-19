@@ -2,7 +2,7 @@ import React, {useEffect, Component} from "react";
 import "./RegisterComponent.css";
 import {Form, Button, Col, Container, Spinner} from "react-bootstrap";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
-
+import {ENABLE_AUTOCOMPLETE} from "../../Constants.js"
 import PlacesAutoComplete from "react-places-autocomplete";
 
 // What's left to be done:
@@ -23,13 +23,19 @@ class RegisterComponent extends Component {
 			errors: [],
 			searchOptions: "",
 			radius: 5000,
-			shouldFetchSuggestions: true, //Set this to false when you dont want to use place autocomplete
+			//If the api key is in .env
+			shouldFetchSuggestions: process.env.REACT_APP_PLACES_API_KEY ? true : false,
+			//Forcibly turn off autocomplete
+			enableAutoComplete: ENABLE_AUTOCOMPLETE
 		};
 		this.showLocation = this.showLocation.bind(this);
 	}
 
 	componentDidMount() {
-		this.geoLocate();
+		if (this.state.shouldFetchSuggestions && this.state.enableAutoComplete) {
+			this.geoLocate();
+		}
+		
 	}
 	//Takes a google.maps.LatLng
 	setSearchOptions(location) {
@@ -210,7 +216,7 @@ class RegisterComponent extends Component {
 	}
 
 	render() {
-		if (this.state.searchOptions) {
+		if (this.state.searchOptions || !this.state.enableAutoComplete) {
 			return (
 				<div className="wrapper">
 					<div className="bg" onClick={this.props.handler}></div>
@@ -283,7 +289,7 @@ class RegisterComponent extends Component {
 											searchOptions={this.state.searchOptions}
 											debounce={1000}
 											shouldFetchSuggestions={
-												this.state.shouldFetchSuggestions
+												this.state.shouldFetchSuggestions && this.state.enableAutoComplete
 											}>
 											{({
 												getInputProps,

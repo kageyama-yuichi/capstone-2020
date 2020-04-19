@@ -3,6 +3,7 @@ import ProfileResources from "./ProfileResources.js";
 import "./ProfileComponent.css";
 import {Form, Col, Button, Image, Container, Spinner} from "react-bootstrap";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
+import {ENABLE_AUTOCOMPLETE} from "../../Constants.js"
 
 import PlacesAutoComplete from "react-places-autocomplete";
 
@@ -26,7 +27,10 @@ class ProfileComponent extends Component {
 			validated: false,
 			searchOptions: "",
 			radius: 5000,
-			shouldFetchSuggestions: true,
+			//If the api key is in .env
+			shouldFetchSuggestions: process.env.REACT_APP_PLACES_API_KEY ? true : false,
+			//Forcibly turn off autocomplete
+			enableAutoComplete: ENABLE_AUTOCOMPLETE,
 		};
 		this.handleImageChange = this.handleImageChange.bind(this);
 		this.handleChange = this.handleChange.bind(this);
@@ -192,7 +196,9 @@ class ProfileComponent extends Component {
 
 	componentDidMount() {
 		this.refreshUserProfile();
-		this.geoLocate();
+		if (this.state.shouldFetchSuggestions && this.state.enableAutoComplete) {
+			this.geoLocate();
+		}
 	}
 
 	handleAddresChange(address) {
@@ -200,7 +206,7 @@ class ProfileComponent extends Component {
 	}
 
 	render() {
-		if (this.state.searchOptions) {
+		if (this.state.searchOptions || !this.state.enableAutoComplete) {
 			return (
 				<div className="app-window profile-component">
 					<Container fluid style={{height: "100vh"}}>
@@ -280,7 +286,10 @@ class ProfileComponent extends Component {
 										onChange={this.handleAddresChange.bind(this)}
 										searchOptions={this.state.searchOptions}
 										debounce={1000}
-										shouldFetchSuggestions={this.state.shouldFetchSuggestions}>
+										shouldFetchSuggestions={
+											this.state.shouldFetchSuggestions &&
+											this.state.enableAutoComplete
+										}>
 										{({
 											getInputProps,
 											suggestions,
@@ -373,11 +382,7 @@ class ProfileComponent extends Component {
 				</div>
 			);
 		} else {
-			return (
-				<div className="app-window loading-spinner">
-					<Spinner animation="border"></Spinner>;
-				</div>
-			);
+			return null;
 		}
 	}
 }
