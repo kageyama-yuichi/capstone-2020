@@ -44,7 +44,7 @@ class SidebarComponent extends Component {
 							</Link>
 						</li>
 						<li className={(window.location.pathname == `/private` ? "current-window": "") + " sidebar-item"}>
-							<Link to="/dashboard" className="nav-link">
+							<Link to="/private" className="nav-link">
 								<img src={ChatIcon}></img>
 								<span className="link-text">Private</span>
 							</Link>

@@ -79,9 +79,8 @@ class AddOrgsComponent extends Component {
 				members: [],
 			};
 			console.log(org);
-			var url = "/orgs/" + this.state.username;
 			OrgsResources.create_org(this.state.username, org).then(() =>
-				this.props.history.push(url)
+				this.props.history.goBack()
 			);
 		}
 

@@ -1,4 +1,4 @@
-package com.l8z.orgs;
+package com.l8z.chat;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -6,35 +6,35 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "orgs")
-public class Sql {
+@Table(name = "privatechat")
+public class PrivateChatSQL {
 	@Id
-	String orgId;
+	String id;
 	@Column(length = 1999999999)
 	String data;
 	
 	// Default Constructor
-	public Sql() {
+	public PrivateChatSQL() {
 		
 	}
 	// Constructor
-	public Sql(String orgId, String data) {
-		this.orgId = orgId;
+	public PrivateChatSQL(String id, String data) {
+		this.id = id;
 		this.data = data;
 	}
 	
 	// Getters
 	public String get_id() {
-		return orgId;
+		return id;
 	}
 	public String get_data() {
 		return data;
 	}
 	// Setters
-	public void set_id(String orgId) {
-		this.orgId = orgId;
+	public void set_id(String id) {
+		this.id = id;
 	}
 	public void set_data(String data) {
 		this.data = data;
-	}	
+	}
 }

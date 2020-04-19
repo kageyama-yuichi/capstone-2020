@@ -17,10 +17,16 @@ class ChannelsComponent extends Component {
 			org_id: this.props.match.params.org_id,
 			channels: []
 		};
+		this.handle_open_channel = this.handle_open_channel.bind(this);
 	}
 
 	handle_create_channel = () => {
 		var url = this.props.history.location.pathname.slice(0, this.props.history.location.pathname.length-9)+'/new';
+		this.props.history.push(url);
+	}
+	
+	handle_open_channel = (channel_title) => {
+		let url = "/orgs/"+this.state.org_id+"/"+channel_title+"/instances";
 		this.props.history.push(url);
 	}
 		
@@ -30,6 +36,7 @@ class ChannelsComponent extends Component {
 	
 	refresh_channels = () => {
 		// Retrieves All Channels from the Org Data
+		console.log(this.state.org_id);
 		OrgsResources.retrieve_org(this.state.username, this.state.org_id)
 		.then(response => 
 		{
@@ -57,7 +64,7 @@ class ChannelsComponent extends Component {
 				/>
 				{this.state.channels.map(ch =>
 					<div key={ch.channel_title} className='channels'>
-						<h3 key={ch.channel_title}>{ch.channel_title}</h3>
+						<h3 key={ch.channel_title} onClick={() => this.handle_open_channel(ch.channel_title)}>{ch.channel_title}</h3>
 						<div>
 							{ch.members.map(member =>
 								{

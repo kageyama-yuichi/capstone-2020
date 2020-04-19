@@ -22,7 +22,7 @@ import com.l8z.orgs.Channels;
 import com.l8z.orgs.Instances;
 import com.l8z.orgs.Members;
 import com.l8z.orgs.Orgs;
-import com.l8z.orgs.Sql;
+import com.l8z.orgs.OrgsSQL;
 
 @CrossOrigin(origins=GlobalVariable.L8Z_URL)
 @RestController
@@ -39,7 +39,7 @@ public class OrgsJpaResource {
 		
 		try {
     		// Convert to Sql Object
-			List<Sql> temp_sql = orgsjpa.findAll(); 
+			List<OrgsSQL> temp_sql = orgsjpa.findAll(); 
 			for(int i=0; i<temp_sql.size(); i++) {
 				Orgs temp_org = json_mapper.readValue(temp_sql.get(i).get_data(), Orgs.class);
 				
@@ -61,7 +61,7 @@ public class OrgsJpaResource {
 	@GetMapping("jpa/orgs/{username}/new")
 	public List<String> retrieve_all_orgs(@PathVariable String username) {
 		System.out.println("System - Retrieving All Orgs");
-		List<Sql> temp_sql = orgsjpa.findAll(); 
+		List<OrgsSQL> temp_sql = orgsjpa.findAll(); 
 		List<String> org_id_namespace = new ArrayList<String>();
 		
 		for(int i=0; i<temp_sql.size(); i++) {
@@ -78,7 +78,7 @@ public class OrgsJpaResource {
 		
 		try {
     		// Convert to Sql Object
-			Sql temp_sql = orgsjpa.getByOrgId(org_id); 
+			OrgsSQL temp_sql = orgsjpa.getByOrgId(org_id); 
 			Orgs temp_org = json_mapper.readValue(temp_sql.get_data(), Orgs.class);
 			
 			// Find the User
@@ -86,11 +86,8 @@ public class OrgsJpaResource {
 				Members temp_member = temp_org.get_members().get(i);
 				// This Comparison Only Checks for Username
 				if(temp_member.equals(new Members(username, Members.Role.ORG_OWNER))){
-					// Are they the ORG_OWNER or ADMIN?
-					if(temp_member.get_role() == Members.Role.ORG_OWNER /*|| temp_member.get_role() == Members.Role.ADMIN*/) {
-						System.out.println("System - Org Owner or Admin Found");
-						users_org = temp_org;
-					}
+					users_org = temp_org;
+					break;
 				} 
 			}
 		} catch (JsonMappingException e) {
@@ -110,9 +107,9 @@ public class OrgsJpaResource {
 		// Assign the ORG_OWNER to the Creator
 		org.add_member(new Members(username, Members.Role.ORG_OWNER));
 		// Save the Org
-		Sql sql = null;
+		OrgsSQL sql = null;
 		try {
-			sql = new Sql(org.get_org_id(), json_mapper.writeValueAsString(org));
+			sql = new OrgsSQL(org.get_org_id(), json_mapper.writeValueAsString(org));
 		} catch (JsonProcessingException e) {
 			System.out.println("System - Error Creating Org");
 		}
@@ -129,9 +126,9 @@ public class OrgsJpaResource {
 		){
 		
 		// Save the Org
-		Sql sql = null;
+		OrgsSQL sql = null;
 		try {
-			sql = new Sql(org.get_org_id(), json_mapper.writeValueAsString(org));
+			sql = new OrgsSQL(org.get_org_id(), json_mapper.writeValueAsString(org));
 		} catch (JsonProcessingException e) {
 			System.out.println("System - Error Updating Org");
 		}
@@ -148,7 +145,7 @@ public class OrgsJpaResource {
 	public ResponseEntity<Void> delete_org(@PathVariable String username, @PathVariable String org_id) {
 		System.out.println("System - Delete Org");
 		// First Get the Organisation
-		Sql temp_sql = orgsjpa.getByOrgId(org_id);
+		OrgsSQL temp_sql = orgsjpa.getByOrgId(org_id);
 		// Check if the Requestor is the ORG_OWNER
 		boolean org_owner = false;
 		try {
@@ -188,7 +185,7 @@ public class OrgsJpaResource {
 		
 		try {
     		// Convert to Sql Object
-			Sql temp_sql = orgsjpa.getByOrgId(org_id); 
+			OrgsSQL temp_sql = orgsjpa.getByOrgId(org_id); 
 			Orgs temp_org = json_mapper.readValue(temp_sql.get_data(), Orgs.class);
 			// Get the Channel List
 			channel_list = temp_org.get_channels();
@@ -214,7 +211,7 @@ public class OrgsJpaResource {
 		) {
 		System.out.println("System - Creating Channel");
 		
-		Sql sql = null;
+		OrgsSQL sql = null;
 		Orgs temp_org = null;
 		try {
 			// Convert to Sql Object
@@ -223,10 +220,12 @@ public class OrgsJpaResource {
 			
 			// Assign the ORG_OWNER to the Channel
 			channel.set_owner(new Members(username, temp_org.retrieve_member(username).get_role()));
+			System.out.println(username);
+			System.out.println(temp_org.retrieve_member(username).get_role());
 			// Add the Channel
 			temp_org.add_channel(channel);
 			
-			sql = new Sql(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org));
+			sql = new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org));
 			
 		} catch (JsonProcessingException e) {
 			System.out.println("System - Error Creating Org");
@@ -245,7 +244,7 @@ public class OrgsJpaResource {
 			@RequestBody Channels channel
 		){
 		
-		Sql sql = null;
+		OrgsSQL sql = null;
 		Orgs temp_org = null;
 
 		try {
@@ -253,7 +252,7 @@ public class OrgsJpaResource {
 			temp_org = json_mapper.readValue(sql.get_data(), Orgs.class);
 			
 			// Check if channel_title Changes
-			if(!temp_org.retrieve_channel(channel_title).equals(channel.get_channel_title())) {
+			if(!channel_title.equals(channel.get_channel_title())) {
 				// Remove the Old Channel
 				temp_org.remove_channel(temp_org.retrieve_channel(channel_title));
 				// Add the New Channel
@@ -261,7 +260,7 @@ public class OrgsJpaResource {
 			}
 			
 			// Convert to Sql Object
-			sql = new Sql(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org));
+			sql = new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org));
 		} catch (JsonProcessingException e) {
 			System.out.println("System - Error Updating Org");
 		}
@@ -279,10 +278,10 @@ public class OrgsJpaResource {
 		) {
 		System.out.println("System - Delete Channel");
 		// First Get the Organisation
-		Sql sql = null;
+		OrgsSQL sql = null;
 		Orgs temp_org = null;
 		
-		Sql temp_sql = orgsjpa.getByOrgId(org_id);
+		OrgsSQL temp_sql = orgsjpa.getByOrgId(org_id);
 		
 		// Check if the Requestor is the ORG_OWNER And OWNER of Channel
 		boolean org_owner = false;
@@ -304,7 +303,7 @@ public class OrgsJpaResource {
 			}
 			
 			// Convert to Sql Object
-			sql = new Sql(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org));
+			sql = new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org));
 		} catch (JsonMappingException e) {
 			System.out.println("System - Error Retrieving Organisations");
 		} catch (JsonProcessingException e) {
@@ -326,7 +325,7 @@ public class OrgsJpaResource {
 		
 		try {
     		// Convert to Sql Object
-			Sql temp_sql = orgsjpa.getByOrgId(org_id); 
+			OrgsSQL temp_sql = orgsjpa.getByOrgId(org_id); 
 			Orgs temp_org = json_mapper.readValue(temp_sql.get_data(), Orgs.class);
 			// Get the Instance List
 			instance_list = temp_org.retrieve_channel(channel_title).get_instances();
@@ -353,7 +352,7 @@ public class OrgsJpaResource {
 		) {
 		System.out.println("System - Creating Instance");
 		
-		Sql sql = null;
+		OrgsSQL sql = null;
 		Orgs temp_org = null;
 		try {
 			// Convert to Sql Object
@@ -363,7 +362,7 @@ public class OrgsJpaResource {
 			// Add the Instance
 			temp_org.add_instance(channel_title, instance);
 			
-			sql = new Sql(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org));
+			sql = new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org));
 			
 		} catch (JsonProcessingException e) {
 			System.out.println("System - Error Creating Instance");
@@ -383,7 +382,7 @@ public class OrgsJpaResource {
 			@RequestBody Instances instance
 		){
 		
-		Sql sql = null;
+		OrgsSQL sql = null;
 		Orgs temp_org = null;
 
 		try {
@@ -396,7 +395,7 @@ public class OrgsJpaResource {
 			temp_org.add_instance(channel_title, instance);
 			
 			// Convert to Sql Object
-			sql = new Sql(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org));
+			sql = new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org));
 		} catch (JsonProcessingException e) {
 			System.out.println("System - Error Updating Instance");
 		}
@@ -415,10 +414,10 @@ public class OrgsJpaResource {
 		) {
 		System.out.println("System - Delete Instance");
 		// First Get the Organisation
-		Sql sql = null;
+		OrgsSQL sql = null;
 		Orgs temp_org = null;
 		
-		Sql temp_sql = orgsjpa.getByOrgId(org_id);
+		OrgsSQL temp_sql = orgsjpa.getByOrgId(org_id);
 		
 		// Check if the Requestor is the ORG_OWNER And OWNER of Channel
 		boolean org_owner = false;
@@ -428,7 +427,7 @@ public class OrgsJpaResource {
 			temp_org.remove_instance(channel_title, instance_title);
 			
 			// Convert to Sql Object
-			sql = new Sql(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org));
+			sql = new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org));
 		} catch (JsonMappingException e) {
 			System.out.println("System - Error Retrieving Organisations");
 		} catch (JsonProcessingException e) {

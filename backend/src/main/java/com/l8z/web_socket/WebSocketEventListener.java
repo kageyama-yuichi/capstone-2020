@@ -32,10 +32,15 @@ public class WebSocketEventListener {
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         StompHeaderAccessor header_accessor = StompHeaderAccessor.wrap(event.getMessage());
+        // For Organisation User
         String username = (String) header_accessor.getSessionAttributes().get("username");
         String extension = (String) header_accessor.getSessionAttributes().get("url");
-        //String private_username = (String) header_accessor.getSessionAttributes().get("private-username");
+        // For Private Chatting User
+        String private_username = (String) header_accessor.getSessionAttributes().get("private_username");
+        
         logger.info(username);
+        logger.info(private_username);
+        
         // Group Users
         if(username != null) {
             logger.info("System - User Disconnected : " + username);
@@ -50,18 +55,19 @@ public class WebSocketEventListener {
             messaging_template.convertAndSend("/group/"+extension, chat_dc);
         }
         
-        /*
         // Private User
         if(private_username != null) {
-            logger.info("User Disconnected : " + private_username);
+            logger.info("System - User Disconnected : " + private_username);
 
             ChatMessage chat_dc = new ChatMessage();
             chat_dc.set_type(ChatMessage.MessageType.LEAVE);
             chat_dc.set_sender(private_username);
-
+            
+            // Make Sure They Are Offline
+            ChatController.online_users.remove(username);
+            // Send the Message
             messaging_template.convertAndSend("/queue/reply", chat_dc);
         }
-        */
         
     }
 }
