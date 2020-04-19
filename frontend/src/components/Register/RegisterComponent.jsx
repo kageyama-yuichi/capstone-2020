@@ -9,6 +9,20 @@ import PlacesAutoComplete from "react-places-autocomplete";
 // When they register, redirect to Dashboard/username
 // Currently this.props.history is undefined so cannot be pushed
 
+
+// 
+// TO ENABLE PLACES AUTOCOMPLETE
+//	set ENABLE_AUTOCOMPLETE in Contants.js to true
+// 	Create a file in the root directory (where package.json is) called .env
+//	In the .env file write REACT_APP_PLACES_API_KEY=API_KEY
+//	Get the API_KEY from console.cloud.google.com > APIs & Services > Credentials
+//	
+// Currently the api key is visible to the user if they inspect body
+//	 This will be fixed when we move autocomplete to process in the backend
+//	 As a measure the key is restricted to HTTP refers from localhost:6942
+//	 
+
+
 class RegisterComponent extends Component {
 	constructor(props) {
 		super(props);
