@@ -30,6 +30,7 @@ class ChannelsComponent extends Component {
 	
 	refresh_channels = () => {
 		// Retrieves All Channels from the Org Data
+		console.log(this.state.org_id);
 		OrgsResources.retrieve_org(this.state.username, this.state.org_id)
 		.then(response => 
 		{

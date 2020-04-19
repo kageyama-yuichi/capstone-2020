@@ -107,7 +107,6 @@ class UpdateOrgsComponent extends Component {
 				members: this.state.members,
 			};
 			console.log(org_push);
-			var url = "/orgs/" + this.state.username;
 			OrgsResources.update_org(
 				this.state.username,
 				this.state.old_org_id,

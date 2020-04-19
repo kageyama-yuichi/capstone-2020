@@ -20,18 +20,20 @@ class OrgsComponent extends Component {
 			username: AuthenticationService.getLoggedInUserName(),
 			orgs: [],
 		};
+		this.handle_create_org = this.handle_create_org.bind(this);
+		this.handle_update_org = this.handle_update_org.bind(this);
 		this.handle_delete_org = this.handle_delete_org.bind(this);
-		this.handleCreateClick = this.handleCreateClick.bind(this);
 	}
 
 	handle_goto_channel = (org_id) => {
 		var url = this.props.history.location.pathname + "/" + org_id + "/channels";
 		this.props.history.push(url);
 	};
-	handle_create_org = () => {
-		var url = this.props.history.location.pathname + "/new";
-		this.props.history.push(url);
-	};
+	// Function to Send the User to the Create Organisation Screen
+	handle_create_org() {
+		this.props.history.push("/orgs/new");
+	}
+	// Function to Delete the Organisation that the User has Clicked
 	handle_delete_org = (org_id) => {
 		OrgsResources.delete_org(this.state.username, org_id).then((response) => {
 			// Reset using this.refresh_orgs in Callback to Force
@@ -45,6 +47,7 @@ class OrgsComponent extends Component {
 			);
 		});
 	};
+	// Function to Update the Organisation that the User clicked
 	handle_update_org = (org_id) => {
 		var url = this.props.history.location.pathname + "/" + org_id;
 		this.props.history.push(url);
@@ -96,10 +99,6 @@ class OrgsComponent extends Component {
 		});
 	};
 
-	handleCreateClick() {
-		this.props.history.push("/orgs/new");
-	}
-
 	componentDidMount() {
 		this.refresh_orgs();
 	}
@@ -110,10 +109,8 @@ class OrgsComponent extends Component {
 			return (
 				<Card.Footer>
 					<ButtonGroup>
-						<Button variant="dark">Edit</Button>
-						<Button onClick={() => this.handle_delete_org(org.id)} variant="danger">
-							Delete
-						</Button>
+						<Button onClick={() => this.handle_update_org(org.org_id)} variant="dark">Edit</Button>
+						<Button onClick={() => this.handle_delete_org(org.org_id)} variant="danger">Delete</Button>
 					</ButtonGroup>
 				</Card.Footer>
 			);
@@ -121,7 +118,7 @@ class OrgsComponent extends Component {
 			return (
 				<Card.Footer>
 					<ButtonGroup>
-						<Button variant="dark">Edit</Button>
+						<Button onClick={() => this.handle_update_org(org.org_id)} variant="dark">Edit</Button>
 					</ButtonGroup>
 				</Card.Footer>
 			);
@@ -141,15 +138,13 @@ class OrgsComponent extends Component {
 							<h1>Organisations</h1>
 						</Col>
 						<Col  md={1} sm={3} style={{height: "fit-content"}}>
-							<Button style={{whiteSpace: "nowrap"}} variant="primary" onClick={this.handleCreateClick}>
-								New org
-							</Button>
+							<Button style={{whiteSpace: "nowrap"}} variant="primary" onClick={this.handle_create_org}>New org</Button>
 						</Col>
 					</Row>
 					<CardDeck style={{height: "auto"}}>
 						{this.state.orgs.map((org) => (
 							<Card className="org-card" key={org.org_id}>
-								<Link to={"orgs/" + org.org_id} className="cards-fix">
+								<Link to={"orgs/" + org.org_id + "/channels"} className="cards-fix">
 									<Card.Img variant="top" src={tempImg} />
 									<Card.Body>
 										<Card.Title>{org.org_title}</Card.Title>

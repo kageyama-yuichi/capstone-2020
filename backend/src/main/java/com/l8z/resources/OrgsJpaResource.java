@@ -86,11 +86,8 @@ public class OrgsJpaResource {
 				Members temp_member = temp_org.get_members().get(i);
 				// This Comparison Only Checks for Username
 				if(temp_member.equals(new Members(username, Members.Role.ORG_OWNER))){
-					// Are they the ORG_OWNER or ADMIN?
-					if(temp_member.get_role() == Members.Role.ORG_OWNER /*|| temp_member.get_role() == Members.Role.ADMIN*/) {
-						System.out.println("System - Org Owner or Admin Found");
-						users_org = temp_org;
-					}
+					users_org = temp_org;
+					break;
 				} 
 			}
 		} catch (JsonMappingException e) {
@@ -223,6 +220,8 @@ public class OrgsJpaResource {
 			
 			// Assign the ORG_OWNER to the Channel
 			channel.set_owner(new Members(username, temp_org.retrieve_member(username).get_role()));
+			System.out.println(username);
+			System.out.println(temp_org.retrieve_member(username).get_role());
 			// Add the Channel
 			temp_org.add_channel(channel);
 			
@@ -253,7 +252,7 @@ public class OrgsJpaResource {
 			temp_org = json_mapper.readValue(sql.get_data(), Orgs.class);
 			
 			// Check if channel_title Changes
-			if(!temp_org.retrieve_channel(channel_title).equals(channel.get_channel_title())) {
+			if(!channel_title.equals(channel.get_channel_title())) {
 				// Remove the Old Channel
 				temp_org.remove_channel(temp_org.retrieve_channel(channel_title));
 				// Add the New Channel
