@@ -237,7 +237,7 @@ class ChatComponent extends Component {
 	scroll_to_bottom = () => {
 		let chatDiv = document.getElementById("scrollable-chat");
 		if (chatDiv) {
-			console.log("Chat div ", chatDiv);
+			//console.log("Chat div ", chatDiv);
 			chatDiv.scrollTop = chatDiv.scrollHeight;
 			this.setState({bottom: false});
 		}
@@ -301,7 +301,7 @@ class ChatComponent extends Component {
 
 	componentDidUpdate() {
 		//let renderedMessages = document.getElementsByClassName("message").length;
-		console.log("Counter", counter, "Message Counter", messageCounter);
+		//console.log("Counter", counter, "Message Counter", messageCounter);
 		if (counter === messageCounter && messageCounter > 0 && this.state.bottom) {
 			console.log("How many rendered", messageCounter, messages.length);
 			this.scroll_to_bottom();
@@ -312,7 +312,7 @@ class ChatComponent extends Component {
 	mapMessages() {
 		let retDiv;
 		messageCounter = 0;
-		console.log(messages);
+		//console.log(messages);
 		retDiv = messages.map((old_msg) => {
 			messageCounter++;
 			return (
