@@ -23,10 +23,6 @@ import SidebarComponent from '../Sidebar/SidebarComponent.jsx'
 import AgendaComponent from '../Agenda/AgendaComponent.jsx'
 import ProfileComponent from '../Profile/ProfileComponent.jsx'
 
-import TodoComponent from '../Todo/TodoComponent.jsx'
-import AddUpdateTodoComponent from '../Todo/AddUpdateTodoComponent.jsx'
-
-
 class BodyComponent extends Component {
     render() {
         return (
@@ -45,14 +41,13 @@ class BodyComponent extends Component {
 							<Route path="/orgs/:org_id/:channel_title" exact component={UpdateChannelsComponent} />
 							<Route path="/orgs/:org_id/:channel_title/instances" exact component={InstancesComponent} />
 							<Route path="/orgs/:org_id/:channel_title/new" exact component={AddInstancesComponent} />
-							<Route path="/orgs/:org_id/:channel_title/:instance_title" exact component={UpdateInstancesComponent} />
 							
-							<Route path="/chat/:orgs_id/:channel_title/:instance_title" exact component={ChatComponent} />
+                            <Route path="/chat/:orgs_id/:channel_title/:instance_title" exact component={ChatComponent} />
+                            <Route path="/orgs/:org_id/:channel_title/:instance_title" exact component={UpdateInstancesComponent} />
+
 							<Route path="/private/:receiver" exact component={PrivateChatComponent} />
                             
 							<Route path="/dashboard" exact component={DashboardComponent} />
-                            //<Route path="/dashboard/" exact component={TodoComponent} />
-                            <Route path="/dashboard/:id" exact component={AddUpdateTodoComponent} />
                            
 						   <Route path="/profile" exact component={ProfileComponent} />
 

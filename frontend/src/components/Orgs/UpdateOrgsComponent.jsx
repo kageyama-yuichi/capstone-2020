@@ -3,7 +3,7 @@ import OrgsResources from "./OrgsResources.js";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
 import "./UpdateOrgsComponent.css";
 
-import {Container, Form, Button, ButtonGroup, Row, Col, ListGroup, Collapse} from "react-bootstrap";
+import {Container, Form, Button, ButtonGroup, Row, Col, ListGroup} from "react-bootstrap";
 
 /*
 	Left to do:
@@ -36,17 +36,17 @@ class UpdateOrgsComponent extends Component {
 	handleValidation(e) {
 		
 		var formIsValid = true;
-		var str2 = new String(this.state.org_id);
-		var errors = new Object();
+		var str2 = this.state.org_id;
+		var errors = {};
 		if (this.state.org_id.length < 3 || this.state.org_id === "new") {
 			errors.id = "Org ID is too short";
 			formIsValid = false;
 		} else {
 			// Check if the ID Exists
 			for (let i = 0; i < this.state.owned_ids.length; i++) {
-				var str1 = new String(this.state.owned_ids[i].org_id);
+				var str1 = this.state.owned_ids[i].org_id;
 				// Compare the String Values
-				if (str1.valueOf() == str2.valueOf()) {
+				if (str1.valueOf() === str2.valueOf()) {
 					formIsValid = false;
 					errors.id = "Org ID already used";
 					break;
@@ -181,7 +181,7 @@ class UpdateOrgsComponent extends Component {
 		OrgsResources.retrieve_all_orgs(this.state.username).then((response) => {
 			for (let i = 0; i < response.data.length; i++) {
 				// They Can Claim the Same ID
-				if (this.state.org_id != response.data[i]) {
+				if (this.state.org_id !== response.data[i]) {
 					this.state.owned_ids.push({
 						org_id: response.data[i],
 					});
@@ -243,7 +243,7 @@ class UpdateOrgsComponent extends Component {
 						validated={this.state.validated}
 						onSubmit={this.on_submit.bind(this)}
 						className="update-org-form">
-						<h1>Update: {this.state.org_title}</h1>
+						<h1>Update: <strong>{this.state.org_title}</strong></h1>
 						<Row>
 							<Col>
 								<Form.Group>

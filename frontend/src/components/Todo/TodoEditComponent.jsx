@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import "./TodoEditComponent.css";
 import moment from "moment";
 import TodoResources from './TodoResources.js'
-import {Form, Button, Container} from "react-bootstrap";
+import {Form, Button} from "react-bootstrap";
 import AuthenticationService from '../Authentication/AuthenticationService.js'
 
 class TodoEditComponent extends Component {
@@ -10,13 +10,13 @@ class TodoEditComponent extends Component {
 		super(props);
 
         let todo = this.props.editTodo;
-        if (todo.length == 0) {
+        if (todo.length === 0) {
             
             this.state = {
                 id: "",
                 username: AuthenticationService.getLoggedInUserName(),
                 desc: "",
-                date: "",
+                date: moment().format("YYYY-MM-DD"),
                 descError: "",
                 dateError: "",
                 status: false
@@ -40,7 +40,7 @@ class TodoEditComponent extends Component {
 		let formIsValid = true;
 		this.setState({dateError: "", descError: ""});
 
-		let errors = new Object();
+		let errors = {};
 
 		if (!fields.desc) {
 			errors.desc = "Description cannot be empty";
@@ -96,16 +96,18 @@ class TodoEditComponent extends Component {
 	}
 
 	handleChange(event) {
-		const {name: fieldName, value} = event.target;
+		const { name: fieldName, value } = event.target;
+		console.log(value, this.state.date)
 		this.setState({
 			[fieldName]: value,
 		});
+		
 	}
 
 	render() {
 		return (
 			<div className="wrapper">
-				<div className="bg" onClick={this.props.closeHandler}></div>
+				<div className="bg bg-full" onClick={this.props.closeHandler}></div>
 
 				<div className="overlay todo-overlay">
 					<button className="exit-button" onClick={this.props.closeHandler}>

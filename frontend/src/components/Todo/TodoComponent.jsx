@@ -3,8 +3,8 @@ import TodoResources from "./TodoResources.js";
 import "./TodoComponent.css";
 import moment from "moment";
 import TodoEditComponent from "./TodoEditComponent.jsx";
-import {Container, Col, Row, Button} from "react-bootstrap";
-import AuthenticationService from '../Authentication/AuthenticationService.js'
+import {Container, Button} from "react-bootstrap";
+import AuthenticationService from "../Authentication/AuthenticationService.js";
 
 class TodoComponent extends Component {
 	constructor(props) {
@@ -52,7 +52,7 @@ class TodoComponent extends Component {
 	};
 
 	handleCreateClick() {
-		this.setState({ editTodo: "" });
+		this.setState({editTodo: ""});
 		this.toggleOverlay();
 	}
 
@@ -91,18 +91,17 @@ class TodoComponent extends Component {
 		return (
 			<div className="todo-component">
 				<Container fluid>
-					<Row  className="border-bottom mb-3 align-items-center">
-						<Col>
-							<h1 style={{height: "fit-content"}}>Todo List</h1>
-						</Col>
-						<Col md={2} style={{height: "100%"}} className="justify-content-end">
-							<Button variant="outline-primary"  onClick={this.handleCreateClick}>
-								New Todo
-							</Button>
-						</Col>
-					</Row>
+					<div className="d-flex title-header border-bottom mb-3 w-100 justify-content-between">
+						<h1 style={{height: "fit-content"}}>Todo List</h1>
 
-					<div className="todo-container">
+						<Button className="align-self-center" variant="outline-primary" onClick={this.handleCreateClick}>
+							New Todo
+						</Button>
+					</div>
+
+					{/* <Col style={{height: "100%"}} style={{whiteSpace: "nowrap"}} className="justify-content-end"> */}
+
+					<div className="window-body todo-container">
 						<table cellSpacing="0" className="todo-table">
 							<tbody>
 								{this.state.todos.map((todo) => (

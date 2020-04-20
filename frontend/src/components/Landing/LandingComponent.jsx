@@ -3,8 +3,9 @@ import "./LandingComponent.css";
 import FooterComponent from "../Footer/FooterComponent.jsx";
 import RegisterComponent from "../Register/RegisterComponent.jsx";
 import logoSVG from "../../assests/Logo_v4.png";
-import { Container, Form, Button } from "react-bootstrap";
-import AuthenticationService from '../Authentication/AuthenticationService.js'
+import {Container, Form, Button} from "react-bootstrap";
+import AuthenticationService from "../Authentication/AuthenticationService.js";
+
 
 class LandingComponent extends Component {
 	constructor(props) {
@@ -13,9 +14,7 @@ class LandingComponent extends Component {
 			username: "",
 			password: "",
 			showRegister: false,
-			windowSize: "",
-			username: "",
-			password: "",
+			windowSize: "",		
 		};
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.registerSubmitHandler = this.registerSubmitHandler.bind(this);
@@ -26,12 +25,9 @@ class LandingComponent extends Component {
 		this.setState({showRegister: !this.state.showRegister});
 	}
 
-	
 	registerSubmitHandler() {
-		this.props.history.push('/dashboard');
+		this.props.history.push("/dashboard");
 	}
-
-	
 
 	handleChange(event) {
 		const {name: fieldName, value} = event.target;
@@ -50,39 +46,44 @@ class LandingComponent extends Component {
 
 	handle_typing_username = (event) => {
 		this.setState({
-            username: event.target.value,
-        });
-	}
+			username: event.target.value,
+		});
+	};
 	handle_typing_password = (event) => {
 		this.setState({
-            password: event.target.value,
-        });
-	}
-	
+			password: event.target.value,
+		});
+	};
+
 	handleSubmit(e) {
 		e.preventDefault();
-		AuthenticationService
-			.executeJwtAuthenticationService(this.state.username, this.state.password)
-			.then((response) => {
-				console.log("Inner Authetnication");
-				AuthenticationService.registerSuccessfulLoginForJwt(this.state.username, response.data.token)
-				let url = '/dashboard';
-				this.props.history.push(url);
-			})
+		AuthenticationService.executeJwtAuthenticationService(
+			this.state.username,
+			this.state.password
+		).then((response) => {
+			console.log("Inner Authetnication");
+			AuthenticationService.registerSuccessfulLoginForJwt(
+				this.state.username,
+				response.data.token
+			);
+			let url = "/dashboard";
+			this.props.history.push(url);
+		});
 	}
 
 	componentDidMount() {
 		localStorage.clear();
 		sessionStorage.clear();
+		
 	}
-	
+
 	render() {
 		return (
 			<div className="home-page">
 				<div className="login-container">
 					<Container style={{height: "100vh"}}>
 						<div className="logo-container">
-							<img className="logo" src={logoSVG}></img>
+							<img className="logo" src={logoSVG} alt="Logo"></img>
 						</div>
 						<Form className="login-form" onSubmit={this.handleSubmit}>
 							<h1 className="login-title">LOGIN</h1>
@@ -107,31 +108,35 @@ class LandingComponent extends Component {
 									value={this.state.password}></input>
 							</Form.Group>
 							<div className="password-reset">
-								<a className="login-link-text">Forgot password?</a>
+								<Button variant="link" className="login-link-text">Forgot password?</Button>
 							</div>
 
 							<Button
 								type="submit"
 								variant="secondary"
 								size="lg"
-								className="submit-button button-lg"
-								>SIGN IN</Button>
+								className="submit-button button-lg">
+								SIGN IN
+							</Button>
 						</Form>
 						<div className="register-container">
-
 							<div className="create-account-container">
 								<p>
 									New user?{" "}
-									<a
+									<Button
+										variant="link"
 										className="login-link-text"
 										onClick={this.newUserOnClickHandler}>
 										Create a new account
-									</a>
+									</Button>
 								</p>
 							</div>
 						</div>
 						{this.state.showRegister ? (
-							<RegisterComponent  submitHandler={this.registerSubmitHandler} handler={this.newUserOnClickHandler} />
+							<RegisterComponent
+								submitHandler={this.registerSubmitHandler}
+								handler={this.newUserOnClickHandler}
+							/>
 						) : null}
 					</Container>
 					<FooterComponent />

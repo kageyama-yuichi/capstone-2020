@@ -1,4 +1,4 @@
-import React, {useEffect, Component} from "react";
+import React, {Component} from "react";
 import "./RegisterComponent.css";
 import {Form, Button, Col, Container, Spinner} from "react-bootstrap";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
@@ -92,7 +92,7 @@ class RegisterComponent extends Component {
 	handleValidation(e) {
 		let fields = this.state;
 		let formIsValid = true;
-		let errors = new Object();
+		let errors = [];
 		let nameRegex = new RegExp("[a-zA-Z]+");
 		let form = e.currentTarget;
 
@@ -194,7 +194,7 @@ class RegisterComponent extends Component {
 			};
 			//RegisterResources.registerUser(this.state.username, user);
 			AuthenticationService.checkForUser(this.state.username).then((response) => {
-				if (response.data == true) {
+				if (response.data === true) {
 					this.setState({
 						username: "",
 						firstname: "",
