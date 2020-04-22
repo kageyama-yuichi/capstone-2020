@@ -114,7 +114,6 @@ class ProfileComponent extends Component {
 	}
 
 	onSubmit = (e) => {
-	
 		if (this.handleValidation()) {
 			let prof = {
 				id: this.state.id,

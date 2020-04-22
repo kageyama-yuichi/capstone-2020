@@ -14,6 +14,13 @@ var extension = null;
 var counter = 0;
 var messageCounter = 0;
 var messages = [];
+const instance_member_details = new Map();
+// Sender in All Instances are the Usernames of the User
+
+/* Things Left to Do:
+	- Bubbles for Users (Pull Users infromation from instance_member_details
+	
+*/
 
 class ChatComponent extends Component {
 	constructor(props) {
@@ -22,15 +29,14 @@ class ChatComponent extends Component {
 			username: AuthenticationService.getLoggedInUserName(),
 			channel_connected: false,
 			message: "",
-			room_notification: [],
-			broadcast_message: [],
 			error: "",
+			member_list: [],
 		
+			joined: false,
 			current_time: "",
-			open_notifications: false,
+			open_members: false,
 			bell_ring: false,
 			is_typing: false,
-			loaded_history: false,
 			bottom: true,
 		};
 	}
@@ -60,25 +66,21 @@ class ChatComponent extends Component {
 		stomp_client.connect({}, this.on_connected, this.on_error);
 	};
 
-	// Subscribe the User to the Groups and Send the Server Notification of User
+	// Subscribe the User to the Groups and Send the Server member of User
 	on_connected = () => {
 		console.log("System - Session is Connected.");
 		this.setState({
 			channel_connected: true,
 		});
+		// Subscribe to Fetching History and Members
+		// This has changed to Subscribe based on your Username so that when others join
+		// messages are not given to you. This will also allow for later chat loads 
+		// e.g., load 20 per page and then using javascript .unshift() push the new chat
+		stomp_client.subscribe("/group/members" + extension + "/" + this.state.username, this.on_members_received, {});
+		stomp_client.subscribe("/group/history" + extension + "/" + this.state.username, this.on_history_received, {});
 		// Subscribing to the public Group
-		stomp_client.subscribe("/group/members" + extension, this.on_members_received, {});
-		stomp_client.subscribe("/group/history" + extension, this.on_history_received, {});
 		stomp_client.subscribe("/group" + extension, this.on_message_received, {});
 		this.fetch_members();
-		this.fetch_history();
-
-		// Registering user to server as a group chat user
-		stomp_client.send(
-			"/app/existing_user" + extension,
-			{},
-			JSON.stringify({type: "JOIN", sender: this.state.username})
-		);
 	};
 
 	// Send Messages to the Server
@@ -102,18 +104,24 @@ class ChatComponent extends Component {
 	// Handles Chat History
 	on_history_received = (payload) => {
 		var obj = JSON.parse(payload.body);
-		if (!this.state.loaded_history) {
-			for (let i = 0; i < obj.length; i++) {
-				messages.push({
-					message: obj[i].content,
-					sender: obj[i].sender,
-					date_time: obj[i].date_time,
-				});
-				
-				counter++;
-			}
+		// Iterate over 
+		for (let i = obj.length-1; i >= 0; i--) {
+			// Use Unshift to Push objects from back to front
+			messages.unshift({
+				message: obj[i].content,
+				sender: obj[i].sender,
+				name: instance_member_details.get(obj[i].sender).name,
+				date_time: obj[i].date_time,
+			});
+			counter++;
+		}
+		// Might need to Change this so that we can load e.g., 20 Messages per Request
+		stomp_client.unsubscribe("/group/history" + extension + "/" + this.state.username, {});
+		if(!this.state.joined){
+			// Registering user to server as a group chat user
+			stomp_client.send("/app/existing_user" + extension, {}, JSON.stringify({type: "JOIN", sender: this.state.username}));
 			this.setState({
-				loaded_history: true,
+				joined: true
 			});
 		}
 	};
@@ -123,85 +131,75 @@ class ChatComponent extends Component {
 		var obj = JSON.parse(payload.body);
 		var does_exist = false;
 
+		// Go through Server Message and Extract Users
 		for (let i = 0; i < obj.length; i++) {
-			this.state.room_notification.map((notification) => {
-				if (notification.sender === obj[i].username) {
-					does_exist = true;
-				}
-			});
+			// Checks if the User Exists
+			does_exist = instance_member_details.has(obj[i].username);
+		
 			if (!does_exist) {
-				this.state.room_notification.push({
-					sender: obj[i].username,
+				// Used for Storing in the Map
+				let user_details = {
 					status: obj[i].status,
+					role: obj[i].role,
+					fname: obj[i].fname,
+					lname: obj[i].lname,
+					name: obj[i].fname + " " +obj[i].lname,
+					bio: obj[i].bio,
+					image_path: obj[i].image_path,
 					date_time: "",
-				});
-			} else {
-				// Reset variable
-				does_exist = false;
+				}
+				// Add them to the Members
+				console.log("Username to be added: ", obj[i].username);
+				instance_member_details.set(obj[i].username, user_details);
 			}
-			this.setState({
-				room_notification: this.state.room_notification.sort(this.sort_by_online_names),
-			});
 		}
+		// Sort the Members Map
+		this.sort_instance_member_details_map();
+		
+		// Unsubscribe from Retrieving Members for Server Stability 
+		stomp_client.unsubscribe("/group/members" + extension + "/" + this.state.username, {});
+		// Now Fetch the History
+		return this.fetch_history();
 	};
 
 	// Handles Server Responses Accordingly
 	on_message_received = (payload) => {
 		console.log(payload);
 		var message_text = JSON.parse(payload.body);
-		var user_exists = false;
+		var does_require_sorting = false;
+		// This gets the Original Contents in the Map
+		let temp = instance_member_details.get(message_text.sender);
+		
 		if (message_text.type === "JOIN") {
-			// Checks if the Users already Exists
-			this.state.room_notification.map((notification, i) => {
-				if (notification.sender === message_text.sender) {
-					notification.status = "online";
-					notification.date_time = message_text.date_time;
-					user_exists = true;
-				}
-			});
-			// If the User wasn't in Cache
-			if (!user_exists) {
-				this.state.room_notification.push({
-					sender: message_text.sender,
-					status: "online",
-					date_time: message_text.date_time,
-				});
-			}
+			// Assign User to Online
+			temp.status = "online";
+			temp.date_time = message_text.date_time;
+			does_require_sorting = true;
+			
 			this.setState({
-				room_notification: this.state.room_notification.sort(this.sort_by_online_names),
 				bell_ring: true,
 			});
 		} else if (message_text.type === "LEAVE") {
-			this.state.room_notification.map((notification, i) => {
-				if (notification.sender === message_text.sender) {
-					notification.status = "offline";
-					notification.date_time = message_text.date_time;
-				}
-			});
+			// Assign User to Offline
+			temp.status = "offline";
+			temp.date_time = message_text.date_time;
+			does_require_sorting = true;
+			
 			this.setState({
-				room_notification: this.state.room_notification.sort(this.sort_by_online_names),
 				bell_ring: true,
 			});
 		} else if (message_text.type === "TYPING") {
-			this.state.room_notification.map((notification, i) => {
-				if (notification.sender === message_text.sender) {
-					if (message_text.content) notification.status = "typing...";
-					if (message_text.content === "Stopped Typing") notification.status = "online";
-				}
-			});
-			this.setState({
-				room_notification: this.state.room_notification,
-			});
+			// Assign User to Typing or Online depending on State
+			if (message_text.content) temp.status = "typing...";
+			if (message_text.content === "Stopped Typing") temp.status = "online";
+			
 		} else if (message_text.type === "CHAT") {
 			console.log("System - Chat Message Received");
-			this.state.room_notification.map((notification, i) => {
-				if (notification.sender === message_text.sender) {
-					notification.status = "online";
-				}
-			});
+			temp.status = "online";
 			// Decrypt
 			messages.push({
 				message: message_text.content,
+				name: instance_member_details.get(message_text.sender).name,
 				sender: message_text.sender,
 				date_time: message_text.date_time,
 			});
@@ -210,10 +208,18 @@ class ChatComponent extends Component {
 				this.scroll_to_bottom();
 			}
 			
-			
 		} else {
 			// do nothing...
 		}
+		// Overwrite the Old Contents
+		instance_member_details.set(message_text.sender, temp);
+
+		if(does_require_sorting){
+			// Sort the Members Map
+			this.sort_instance_member_details_map();
+		}
+		// Re-renders the Users List
+		this.forceUpdate();
 	};
 
 	on_error = (error) => {
@@ -226,12 +232,12 @@ class ChatComponent extends Component {
 	fetch_history = () => {
 		messages = [];
 		console.log("System - Retrieving Old Messages");
-		stomp_client.send("/app/fetch_history" + extension);
+		stomp_client.send("/app/fetch_history" + extension + "/" + this.state.username);
 	};
 
 	fetch_members = () => {
 		console.log("System - Retrieving Members");
-		stomp_client.send("/app/fetch_members" + extension);
+		stomp_client.send("/app/fetch_members" + extension + "/" + this.state.username);
 	};
 
 	scroll_to_bottom = () => {
@@ -279,10 +285,10 @@ class ChatComponent extends Component {
 	// This function is a complementary function to .sort() where it
 	// helps Sort by Status (Online on Top) and then Name
 	sort_by_online_names = (a, b) => {
-		const user_a_name = a.sender.toUpperCase();
-		const user_a_status = a.status;
-		const user_b_name = b.sender.toUpperCase();
-		const user_b_status = b.status;
+		const user_a_name = a[1].name.toUpperCase();
+		const user_a_status = a[1].status;
+		const user_b_name = b[1].name.toUpperCase();
+		const user_b_status = b[1].status;
 
 		let comparison = 0;
 		if (user_a_status < user_b_status) {
@@ -298,6 +304,18 @@ class ChatComponent extends Component {
 		}
 		return comparison;
 	};
+	
+	// Function to Keep the Members Map Sorted
+	sort_instance_member_details_map = () => {
+		// Create the Temporary Sorted Map
+		const map_sorted_temp = new Map([...instance_member_details.entries()].sort((this.sort_by_online_names)));
+		// Clear the Old Map
+		instance_member_details.clear();
+		// Assign the Temporary Sorted Map to the Members Map
+		for (let [key, value] of map_sorted_temp) {
+			instance_member_details.set(key, value);
+		}		
+	}
 
 	componentDidUpdate() {
 		//let renderedMessages = document.getElementsByClassName("message").length;
@@ -318,7 +336,7 @@ class ChatComponent extends Component {
 			return (
 				<div key={messageCounter} id="message" className="message">
 					<div className="message-details">
-						<div className="message-sender">{old_msg.sender}</div>
+						<div className="message-sender">{old_msg.name} ({old_msg.date_time}) @{old_msg.sender} </div>
 
 						{/* <div className="message-date">
 				July 3rd 2020 at 12:30am
@@ -327,6 +345,16 @@ class ChatComponent extends Component {
 
 					<div className="message-body">{old_msg.message}</div>
 				</div>
+			);
+		});
+		return retDiv;
+	}
+	
+	mapUsers() {
+		let retDiv;
+		retDiv = [...instance_member_details.keys()].map(key => {
+			return (
+				<p>{instance_member_details.get(key).name} ({instance_member_details.get(key).status}) @{key}</p>
 			);
 		});
 		return retDiv;
@@ -349,9 +377,8 @@ class ChatComponent extends Component {
 	}
 
 	render() {
-		console.log("System - Rendering Page...");
-		// console.log("System - Connection Status: " + this.state.channel_connected);
-
+		console.log("System - Rendering Page... Connection Status to Server: " + this.state.channel_connected);
+		
 		return (
 			<div className="app-window chat-component">
 				<Container fluid style={{height: "100%"}} className="pr-0">
@@ -406,11 +433,7 @@ class ChatComponent extends Component {
 								<div className="user-container h-100">
 									<h1 className="user-title">Users</h1>
 									<div className="user-list">
-										{this.state.room_notification.map((rm_not, j) => (
-											<p key={j}>
-												- {rm_not.sender} ({rm_not.status})
-											</p>
-										))}
+									{this.mapUsers()}
 									</div>
 								</div>
 							</Container>

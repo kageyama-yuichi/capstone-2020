@@ -2,7 +2,6 @@ package com.l8z.chat;
 //Sourced from: https://www.callicoder.com/spring-boot-websocket-chat-example/
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -20,18 +19,22 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.l8z.jparepository.OrgsJpaRepository;
 import com.l8z.jparepository.PrivateChatJpaRepository;
+import com.l8z.jparepository.UserJpaRepository;
 import com.l8z.orgs.Channels;
 import com.l8z.orgs.Instances;
 import com.l8z.orgs.Members;
 import com.l8z.orgs.MembersStatus;
 import com.l8z.orgs.Orgs;
 import com.l8z.orgs.OrgsSQL;
+import com.l8z.user.User;
 
 
 @Controller
 public class ChatController {
 	@Autowired
 	private OrgsJpaRepository orgsjpa;
+	@Autowired
+	private UserJpaRepository userjpa;
 	@Autowired
 	private PrivateChatJpaRepository privchatjpa;
 
@@ -118,12 +121,13 @@ public class ChatController {
     }
     
     // Group History Loading
-    @MessageMapping("/fetch_history/{org_id}/{channel_title}/{instance_title}")
-    @SendTo("/group/history/{org_id}/{channel_title}/{instance_title}")
+    @MessageMapping("/fetch_history/{org_id}/{channel_title}/{instance_title}/{username}")
+    @SendTo("/group/history/{org_id}/{channel_title}/{instance_title}/{username}")
     public List<ChatMessage> fetch_history(
     		@DestinationVariable("org_id") String org_id,
     		@DestinationVariable("channel_title") String channel_title,
-    		@DestinationVariable("instance_title") String instance_title
+    		@DestinationVariable("instance_title") String instance_title,
+    		@DestinationVariable("username") String username
     	) {
     	// Log the Message with the URL
     	log_to_stdout_orgs("fetch_history", org_id, channel_title, instance_title);
@@ -144,12 +148,13 @@ public class ChatController {
     }
 
     // Group Member Loading
-    @MessageMapping("/fetch_members/{org_id}/{channel_title}/{instance_title}")
-    @SendTo("/group/members/{org_id}/{channel_title}/{instance_title}")
+    @MessageMapping("/fetch_members/{org_id}/{channel_title}/{instance_title}/{username}")
+    @SendTo("/group/members/{org_id}/{channel_title}/{instance_title}/{username}")
     public List<MembersStatus> fetch_members(
     		@DestinationVariable("org_id") String org_id,
     		@DestinationVariable("channel_title") String channel_title,
-    		@DestinationVariable("instance_title") String instance_title    	
+    		@DestinationVariable("instance_title") String instance_title,
+    		@DestinationVariable("username") String username
     	) {
     	// Log the Message with the URL
     	log_to_stdout_orgs("fetch_members", org_id, channel_title, instance_title);
@@ -163,12 +168,17 @@ public class ChatController {
 			// Retrieve the Channel -> Members
 			temp =  temp_org.retrieve_channel(channel_title).get_members();
 			
-			// Modify the Status of the Online Users
+			// Modify the Status of the Online Users and Get their Details
 			for(int i=0; i<temp.size(); i++) {
+				Members m = temp.get(i);
+				User user = userjpa.findByUsername(m.get_username());
+				if(user == null) continue; // Go Next
+				
+				// If the User was Online, Make Sure they're displayed as Online
 				if(online_users.containsKey(temp.get(i).get_username())) {
-					members.add(new MembersStatus(temp.get(i), online_users.get(temp.get(i).get_username())));
+					members.add(new MembersStatus(user, online_users.get(m.get_username()), m.get_role()));
 				} else {
-					members.add(new MembersStatus(temp.get(i)));
+					members.add(new MembersStatus(user, m.get_role()));
 				}
 			}
 		} catch (JsonMappingException e) {
