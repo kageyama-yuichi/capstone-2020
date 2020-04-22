@@ -34,7 +34,7 @@ public class WebSocketEventListener {
         StompHeaderAccessor header_accessor = StompHeaderAccessor.wrap(event.getMessage());
         // For Organisation User
         String username = (String) header_accessor.getSessionAttributes().get("username");
-        String extension = (String) header_accessor.getSessionAttributes().get("url");
+        //String extension = (String) header_accessor.getSessionAttributes().get("url");
         // For Private Chatting User
         String private_username = (String) header_accessor.getSessionAttributes().get("private_username");
         
@@ -52,7 +52,8 @@ public class WebSocketEventListener {
             // Make Sure They Are Offline
             ChatController.online_users.remove(username);
             // Send the Message
-            messaging_template.convertAndSend("/group/"+extension, chat_dc);
+            messaging_template.convertAndSend("/group", chat_dc);
+            //messaging_template.convertAndSend("/group/"+extension, chat_dc);
         }
         
         // Private User

@@ -11,7 +11,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -95,17 +94,12 @@ public class ChatController {
         return chat_message;
     }
 
-    @MessageMapping("/existing_user/{org_id}/{channel_title}/{instance_title}")
-    @SendTo("/group/{org_id}/{channel_title}/{instance_title}")
-    public ChatMessage existing_user(
-    		@DestinationVariable("org_id") String org_id,
-    		@DestinationVariable("channel_title") String channel_title,
-    		@DestinationVariable("instance_title") String instance_title,    		
-    		@Payload ChatMessage chat_message, 
-    		SimpMessageHeaderAccessor header_accessor
-    	) {
+    @MessageMapping("/existing_user")
+    @SendTo("/group")
+    public ChatMessage existing_user(@Payload ChatMessage chat_message,SimpMessageHeaderAccessor header_accessor) {
     	// Log the Message with the URL
-    	log_to_stdout_orgs("existing_user", org_id, channel_title, instance_title);
+    	//log_to_stdout_orgs("existing_user", org_id, channel_title, instance_title);
+    	log_to_stdout_orgs("existing_user", "", "", "");
     	
     	// Add user in Web Socket Session
     	//chat_message.display_message(); // Displays the Chat Message for Debugging Purposes
@@ -113,7 +107,7 @@ public class ChatController {
 		// Add them to the Online List
     	if(!online_users.containsKey(chat_message.get_sender())) {
     		header_accessor.getSessionAttributes().put("username", chat_message.get_sender());
-        	header_accessor.getSessionAttributes().put("url", org_id+"/"+channel_title+"/"+instance_title);
+        	//header_accessor.getSessionAttributes().put("url", org_id+"/"+channel_title+"/"+instance_title);
     		online_users.put(chat_message.get_sender(), "online");
     	}
     	
@@ -207,8 +201,8 @@ public class ChatController {
     ///////////////////////////////////////////////////////////////////////////
     //////////////////////////////PRIVATE CHATTING/////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
-    @Autowired
-	private SimpMessagingTemplate simp;
+    //@Autowired
+	//private SimpMessagingTemplate simp;
 
 	@MessageMapping("/send_private_message/{username_one}/{username_two}")
 	@SendTo("/user/reply/{username_one}/{username_two}")

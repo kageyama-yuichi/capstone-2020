@@ -44,16 +44,10 @@ class ChatComponent extends Component {
 
 	// Function to Connect the User to the Server
 	my_connect = () => {
-		console.log(this.props.match.params);
 		orgs_id = "/" + this.props.match.params.orgs_id;
 		channel_title = "/" + this.props.match.params.channel_title;
 		instance_title = "/" + this.props.match.params.instance_title;
 		extension = orgs_id + channel_title + instance_title;
-
-		console.log(orgs_id);
-		console.log(channel_title);
-		console.log(instance_title);
-		console.log(extension);
 
 		console.log("System - Trying to Connect...");
 
@@ -62,7 +56,9 @@ class ChatComponent extends Component {
 		var SockJS = require("sockjs-client");
 		var socket = new SockJS(API_URL + "/chat");
 		stomp_client = Stomp.over(socket);
-		console.log(stomp_client);
+		//console.log(stomp_client);
+		// Disables Console Messages
+		stomp_client.debug = null
 		// Connect the User
 		stomp_client.connect({}, this.on_connected, this.on_error);
 	};
@@ -81,6 +77,8 @@ class ChatComponent extends Component {
 		stomp_client.subscribe("/group/history" + extension + "/" + this.state.username, this.on_history_received, {});
 		// Subscribing to the public Group
 		stomp_client.subscribe("/group" + extension, this.on_message_received, {});
+		// Subscribe to the Join and Leave for Live Feedback
+		stomp_client.subscribe("/group", this.on_channel_connect, {});
 		this.fetch_members();
 	};
 
@@ -120,7 +118,7 @@ class ChatComponent extends Component {
 		stomp_client.unsubscribe("/group/history" + extension + "/" + this.state.username, {});
 		if(!this.state.joined){
 			// Registering user to server as a group chat user
-			stomp_client.send("/app/existing_user" + extension, {}, JSON.stringify({type: "JOIN", sender: this.state.username}));
+			stomp_client.send("/app/existing_user", {}, JSON.stringify({type: "JOIN", sender: this.state.username}));
 			this.setState({
 				joined: true
 			});
@@ -150,7 +148,6 @@ class ChatComponent extends Component {
 					date_time: "",
 				}
 				// Add them to the Members
-				console.log("Username to be added: ", obj[i].username);
 				instance_member_details.set(obj[i].username, user_details);
 			}
 		}
@@ -165,7 +162,6 @@ class ChatComponent extends Component {
 
 	// Handles Server Responses Accordingly
 	on_message_received = (payload) => {
-		console.log(payload);
 		var message_text = JSON.parse(payload.body);
 		var does_require_sorting = false;
 		// This gets the Original Contents in the Map
@@ -222,7 +218,43 @@ class ChatComponent extends Component {
 		// Re-renders the Users List
 		this.forceUpdate();
 	};
-
+	
+	// Handles Server Responses Accordingly
+	on_channel_connect = (payload) => {
+		var message_text = JSON.parse(payload.body);
+		// Checks if the Message was for this Org/Channel
+		if(instance_member_details.has(message_text.sender)){
+			// This gets the Original Contents in the Map
+			let temp = instance_member_details.get(message_text.sender);
+			
+			if (message_text.type === "JOIN") {
+				// Assign User to Online
+				temp.status = "online";
+				temp.date_time = message_text.date_time;
+				
+				this.setState({
+					bell_ring: true,
+				});
+			} else {
+				if (message_text.type === "LEAVE") {
+				// Assign User to Offline
+				temp.status = "offline";
+				temp.date_time = message_text.date_time;
+				
+				this.setState({
+					bell_ring: true,
+				});
+				} 
+			}
+			// Overwrite the Old Contents
+			instance_member_details.set(message_text.sender, temp);
+			// Sort the Members Map
+			this.sort_instance_member_details_map();
+			// Re-renders the Users List
+			this.forceUpdate();
+		}
+	};
+	
 	on_error = (error) => {
 		this.setState({
 			error:
@@ -231,7 +263,6 @@ class ChatComponent extends Component {
 	};
 
 	fetch_history = () => {
-		messages = [];
 		console.log("System - Retrieving Old Messages");
 		stomp_client.send("/app/fetch_history" + extension + "/" + this.state.username);
 	};
@@ -326,6 +357,9 @@ class ChatComponent extends Component {
 			this.scroll_to_bottom();
 			console.log("Called scroll");
 		}
+	}
+	componentWillUnmount() {
+		window.location.reload(false);
 	}
 
 	mapMessages() {
