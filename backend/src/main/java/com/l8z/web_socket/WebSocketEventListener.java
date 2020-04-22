@@ -37,38 +37,33 @@ public class WebSocketEventListener {
         //String extension = (String) header_accessor.getSessionAttributes().get("url");
         // For Private Chatting User
         String private_username = (String) header_accessor.getSessionAttributes().get("private_username");
-        
-        logger.info(username);
-        logger.info(private_username);
+        String user_disconnected = null;
+        boolean should_send_message = false;
         
         // Group Users
-        if(username != null) {
-            logger.info("System - User Disconnected : " + username);
-            // Create the ChatMessage Object
-            ChatMessage chat_dc = new ChatMessage();
-            chat_dc.set_type(ChatMessage.MessageType.LEAVE);
-            chat_dc.set_sender(username);
-            
+        if(username != null) {            
             // Make Sure They Are Offline
             ChatController.online_users.remove(username);
-            // Send the Message
-            messaging_template.convertAndSend("/group", chat_dc);
-            //messaging_template.convertAndSend("/group/"+extension, chat_dc);
+            user_disconnected = username;
+            should_send_message = true;
         }
         
         // Private User
-        if(private_username != null) {
-            logger.info("System - User Disconnected : " + private_username);
-
-            ChatMessage chat_dc = new ChatMessage();
-            chat_dc.set_type(ChatMessage.MessageType.LEAVE);
-            chat_dc.set_sender(private_username);
-            
+        if(private_username != null) {  
             // Make Sure They Are Offline
             ChatController.online_users.remove(username);
-            // Send the Message
-            messaging_template.convertAndSend("/queue/reply", chat_dc);
+            user_disconnected = private_username;
+            should_send_message = true;
         }
         
+        // Ensure the Message is Sent
+        if(should_send_message) {
+	        // Create the ChatMessage Object
+	        ChatMessage chat_dc = new ChatMessage();
+	        chat_dc.set_type(ChatMessage.MessageType.LEAVE);
+	        chat_dc.set_sender(user_disconnected);
+	        // Send the Message
+	        messaging_template.convertAndSend("/online", chat_dc);
+        }
     }
 }

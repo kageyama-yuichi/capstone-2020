@@ -1,6 +1,4 @@
 import React, {Component} from "react";
-// import SockJS from "sockjs-client";
-// import StompJS from "stompjs";
 import {API_URL} from "../../Constants";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
 import "./ChatComponent.css";
@@ -20,7 +18,6 @@ const instance_member_details = new Map();
 
 /* Things Left to Do:
 	- Bubbles for Users (Pull Users infromation from instance_member_details
-	
 */
 
 class ChatComponent extends Component {
@@ -78,7 +75,7 @@ class ChatComponent extends Component {
 		// Subscribing to the public Group
 		stomp_client.subscribe("/group" + extension, this.on_message_received, {});
 		// Subscribe to the Join and Leave for Live Feedback
-		stomp_client.subscribe("/group", this.on_channel_connect, {});
+		stomp_client.subscribe("/online", this.on_channel_connect, {});
 		this.fetch_members();
 	};
 
@@ -117,7 +114,7 @@ class ChatComponent extends Component {
 		// Might need to Change this so that we can load e.g., 20 Messages per Request
 		stomp_client.unsubscribe("/group/history" + extension + "/" + this.state.username, {});
 		if(!this.state.joined){
-			// Registering user to server as a group chat user
+			// Registering user to server as a Organisation User
 			stomp_client.send("/app/existing_user", {}, JSON.stringify({type: "JOIN", sender: this.state.username}));
 			this.setState({
 				joined: true
@@ -361,7 +358,22 @@ class ChatComponent extends Component {
 	componentWillUnmount() {
 		window.location.reload(false);
 	}
-
+	componentDidMount() {
+		this.my_connect();
+		this.setState({
+			current_time: new Date().toLocaleString(),
+		});
+		this.timerID = setInterval(
+			() =>
+				this.state.bell_ring
+					? this.setState({
+							bell_ring: false,
+					  })
+					: "",
+			10000
+		);
+	}
+	
 	mapMessages() {
 		let retDiv;
 		messageCounter = 0;
@@ -395,22 +407,6 @@ class ChatComponent extends Component {
 		return retDiv;
 	}
 
-	componentDidMount() {
-		this.my_connect();
-		this.setState({
-			current_time: new Date().toLocaleString(),
-		});
-		this.timerID = setInterval(
-			() =>
-				this.state.bell_ring
-					? this.setState({
-							bell_ring: false,
-					  })
-					: "",
-			10000
-		);
-	}
-
 	render() {
 		console.log("System - Rendering Page... Connection Status to Server: " + this.state.channel_connected);
 		
@@ -418,7 +414,7 @@ class ChatComponent extends Component {
 			<div className="app-window chat-component">
 				<Container fluid style={{height: "100%"}} className="pr-0">
 					<Row className="title-header border-bottom">
-						<h1>L8Z Chat Room</h1>
+						<h1>{this.props.match.params.instance_title} - Chat Room</h1>
 					</Row>
 					<Row className="window-body">
 						<Col xs={10} className="h-100 inline-block">

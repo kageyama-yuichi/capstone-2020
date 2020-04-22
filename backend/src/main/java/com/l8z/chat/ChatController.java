@@ -80,9 +80,9 @@ public class ChatController {
     			
     			// Add the Channel Back to the Orgs
     			temp_org.add_channel(temp_channel);
-    			
+
     			// Save to Database
-    			OrgsSQL sql = new OrgsSQL(org_id, json_mapper.writeValueAsString(temp_org));
+    			OrgsSQL sql = new OrgsSQL(org_id, json_mapper.writeValueAsString(temp_org), chat_message.get_date_time());
     			orgsjpa.save(sql);
     		} catch (JsonMappingException e) {
     			System.out.println("System - Error Updating Database");
@@ -95,7 +95,7 @@ public class ChatController {
     }
 
     @MessageMapping("/existing_user")
-    @SendTo("/group")
+    @SendTo("/online")
     public ChatMessage existing_user(@Payload ChatMessage chat_message,SimpMessageHeaderAccessor header_accessor) {
     	// Log the Message with the URL
     	//log_to_stdout_orgs("existing_user", org_id, channel_title, instance_title);
@@ -141,7 +141,7 @@ public class ChatController {
     	return old_messages;
     }
 
-    // Group Member Loading
+    // Group Member Details Loading
     @MessageMapping("/fetch_members/{org_id}/{channel_title}/{instance_title}/{username}")
     @SendTo("/group/members/{org_id}/{channel_title}/{instance_title}/{username}")
     public List<MembersStatus> fetch_members(
@@ -205,7 +205,7 @@ public class ChatController {
 	//private SimpMessagingTemplate simp;
 
 	@MessageMapping("/send_private_message/{username_one}/{username_two}")
-	@SendTo("/user/reply/{username_one}/{username_two}")
+	@SendTo("/private/reply/{username_one}/{username_two}")
 	public ChatMessage send_private_message(
 			@Payload ChatMessage chat_message, 
 			@DestinationVariable("username_one") String username_one,
@@ -232,7 +232,7 @@ public class ChatController {
         		all_messages.add(chat_message);
     			
     			// Save to Database
-    			PrivateChatSQL sql = new PrivateChatSQL(unique_id, json_mapper.writeValueAsString(all_messages));
+    			PrivateChatSQL sql = new PrivateChatSQL(unique_id, json_mapper.writeValueAsString(all_messages), true);
     			privchatjpa.save(sql);
     		} catch (JsonMappingException e) {
     			System.out.println("System - Error Updating Database");
@@ -245,7 +245,7 @@ public class ChatController {
 	}
 
 	@MessageMapping("/existing_private_user")
-	@SendTo("/queue/reply")
+	@SendTo("/online")
 	public ChatMessage existing_private_user(@Payload ChatMessage chat_message, SimpMessageHeaderAccessor header_accessor) {
 		// Add them to the Online List
 		if(!online_users.containsKey(chat_message.get_sender())) {
@@ -258,11 +258,13 @@ public class ChatController {
 	}
 	
 	// Private Chat History Loading
-    @MessageMapping("/fetch_private_history/{username_one}/{username_two}")
-    @SendTo("/queue/{username_one}/{username_two}/reply")
+    @MessageMapping("/fetch_private_history/{username_one}/{username_two}/{id}")
+    @SendTo("/private/history/{username_one}/{username_two}/{id}")
     public List<ChatMessage> fetch_private_history(
     		@DestinationVariable("username_one") String username_one,
-    		@DestinationVariable("username_two") String username_two
+    		@DestinationVariable("username_two") String username_two,
+    		// id does nothing but seperate the history on load
+    		@DestinationVariable("id") String id
     	) {
     	log_to_stdout_private("fetch_private_history", username_one, username_two);
     	// Stores the Old Messages
@@ -285,6 +287,34 @@ public class ChatController {
 		}
     	
     	return old_messages;
+    }
+    
+    // Private Members Details Loading
+    @MessageMapping("/fetch_private_members/{username_one}/{username_two}/{id}")
+    @SendTo("/private/members/{username_one}/{username_two}/{id}")
+    public List<MembersStatus> fetch_private_members(
+    		@DestinationVariable("username_one") String username_one,
+    		@DestinationVariable("username_two") String username_two,
+    		// id does nothing but seperate the history on load
+    		@DestinationVariable("id") String id
+    	) {
+    	log_to_stdout_private("fetch_private_members", username_one, username_two);
+    	
+    	List<MembersStatus> members = new ArrayList<MembersStatus>();
+    	User user_one = userjpa.findByUsername(username_one);
+    	User user_two = userjpa.findByUsername(username_two);
+    	
+    	if(user_one != null && user_two != null) {
+    		members.add(new MembersStatus(user_one, online_users.get(username_one)));
+    		members.add(new MembersStatus(user_two, online_users.get(username_two)));
+    	}
+    	
+    	if(members.size() > 0) {
+    		return members;
+    	} else {
+    		return null;
+    	}
+    	
     }
 	
     // If User One is Less Than User Two's Username, Make U1.U2 Else U2.U1

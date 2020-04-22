@@ -26,9 +26,16 @@ public class MembersStatus extends BasicUser {
     	this.status = status;
     	this.role = role;
 	}
+	// Override Constructor
 	public MembersStatus(User user, Role role) {
 		super(user);
     	this.role = role;
+	}
+	// Override Constructor
+	public MembersStatus(User user, String status) {
+		super(user);
+    	this.status = status;
+    	this.role = Members.Role.ORG_OWNER;
 	}
 	
 	// Getters
