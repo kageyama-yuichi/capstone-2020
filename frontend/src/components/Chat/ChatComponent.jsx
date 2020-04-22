@@ -4,6 +4,7 @@ import React, {Component} from "react";
 import {API_URL} from "../../Constants";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
 import "./ChatComponent.css";
+import Encryption from './Encryption.js';
 import {Container, Row, Col, Button} from "react-bootstrap";
 
 var stomp_client = null;
@@ -91,7 +92,7 @@ class ChatComponent extends Component {
 			else {
 				var message = {
 					sender: this.state.username,
-					content: type === "TYPING" ? value : value,
+					content: type === "TYPING" ? value : Encryption.encrpyt_message(value),
 					type: type,
 				};
 			}
@@ -108,7 +109,7 @@ class ChatComponent extends Component {
 		for (let i = obj.length-1; i >= 0; i--) {
 			// Use Unshift to Push objects from back to front
 			messages.unshift({
-				message: obj[i].content,
+				message: Encryption.decrypt_message(obj[i].content),
 				sender: obj[i].sender,
 				name: instance_member_details.get(obj[i].sender).name,
 				date_time: obj[i].date_time,
@@ -198,7 +199,7 @@ class ChatComponent extends Component {
 			temp.status = "online";
 			// Decrypt
 			messages.push({
-				message: message_text.content,
+				message: Encryption.decrypt_message(message_text.content),
 				name: instance_member_details.get(message_text.sender).name,
 				sender: message_text.sender,
 				date_time: message_text.date_time,
@@ -354,7 +355,7 @@ class ChatComponent extends Component {
 		let retDiv;
 		retDiv = [...instance_member_details.keys()].map(key => {
 			return (
-				<p>{instance_member_details.get(key).name} ({instance_member_details.get(key).status}) @{key}</p>
+				<p key={key}>{instance_member_details.get(key).name} ({instance_member_details.get(key).status}) @{key}</p>
 			);
 		});
 		return retDiv;
