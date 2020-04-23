@@ -104,7 +104,7 @@ class OrgsComponent extends Component {
 	}
 
 	renderButtons(org) {
-		if (org.user_role == "ORG_OWNER") {
+		if (org.user_role === "ORG_OWNER") {
 			console.log("calling render for org owner");
 			return (
 				<Card.Footer>
@@ -114,7 +114,7 @@ class OrgsComponent extends Component {
 					</ButtonGroup>
 				</Card.Footer>
 			);
-		} else if (org.user_role == "ADMIN") {
+		} else if (org.user_role === "ADMIN") {
 			return (
 				<Card.Footer>
 					<ButtonGroup>
@@ -130,10 +130,10 @@ class OrgsComponent extends Component {
 	render() {
 		return (
 			<div className="app-window org-component">
-				<Container fluid>
+				<Container fluid className="h-100">
 					<Row
 						style={{height: "fit-content"}}
-						className="border-bottom mb-3 align-items-center">
+						className="header-title border-bottom mb-3 align-items-center">
 						<Col style={{height: "fit-content"}}>
 							<h1>Organisations</h1>
 						</Col>
@@ -141,7 +141,7 @@ class OrgsComponent extends Component {
 							<Button style={{whiteSpace: "nowrap"}} variant="primary" onClick={this.handle_create_org}>New org</Button>
 						</Col>
 					</Row>
-					<CardDeck style={{height: "auto"}}>
+					<CardDeck className="window-body" style={{height: "auto", overflowY: "scroll"}}>
 						{this.state.orgs.map((org) => (
 							<Card className="org-card" key={org.org_id}>
 								<Link to={"orgs/" + org.org_id + "/channels"} className="cards-fix">
@@ -157,43 +157,7 @@ class OrgsComponent extends Component {
 					</CardDeck>
 				</Container>
 			</div>
-			/*{ <header className="title-container">
-					<div className="title-flex">
-						<div className="title-div">Organisations</div>
-						<Button onClick={this.handleCreateClick}>
-							Create a new org
-						</Button>
-					</div>
-				</header>
-
-				{this.state.orgs.map((org) => (
-					<div key={org.org_id} className="orgs">
-						<input
-							className="delete_organisation"
-							type="button"
-							value="-"
-							onClick={() => this.handle_delete_org(org.org_id)}
-						/>
-						<input
-							className="go_channels"
-							type="button"
-							value="o"
-							onClick={() => this.handle_goto_channel(org.org_id)}
-						/>
-						<input
-							className="update_organisation"
-							type="button"
-							value="#"
-							onClick={() => this.handle_update_org(org.org_id)}
-						/>
-						<h3 key={org.org_id}>{org.org_title}</h3>
-						<div>
-							{org.members.map((member) => (
-								<p key={member.username}>{member.username}</p>
-							))}
-						</div>
-					</div>
-				))} }*/
+			
 		);
 	}
 }

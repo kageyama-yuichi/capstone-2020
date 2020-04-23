@@ -109,7 +109,7 @@ public class OrgsJpaResource {
 		// Save the Org
 		OrgsSQL sql = null;
 		try {
-			sql = new OrgsSQL(org.get_org_id(), json_mapper.writeValueAsString(org));
+			sql = new OrgsSQL(org.get_org_id(), json_mapper.writeValueAsString(org), true);
 		} catch (JsonProcessingException e) {
 			System.out.println("System - Error Creating Org");
 		}
@@ -127,16 +127,16 @@ public class OrgsJpaResource {
 		
 		// Save the Org
 		OrgsSQL sql = null;
+		// Ensure the Passed Value Wasn't Altered
+		org.set_org_id(org_id);
 		try {
-			sql = new OrgsSQL(org.get_org_id(), json_mapper.writeValueAsString(org));
+			// Grabs Recent Date Time From Chat
+			String recent_date_time = orgsjpa.getByOrgId(org_id).get_recent_date_time();
+			sql = new OrgsSQL(org_id, json_mapper.writeValueAsString(org), recent_date_time);
 		} catch (JsonProcessingException e) {
 			System.out.println("System - Error Updating Org");
 		}
 		
-		// If the ID's are the Same, Save, Else Delete then Save
-		if(!org_id.equals(org.get_org_id())) {
-			orgsjpa.deleteById(org_id);
-		}
 		orgsjpa.save(sql);
 		return ResponseEntity.noContent().build();
 	}
@@ -179,7 +179,6 @@ public class OrgsJpaResource {
 	public List<String> retrieve_all_channel_titles(@PathVariable String username, @PathVariable String org_id) {
 		System.out.println("System - Retrieving All Channels in the Org");
 
-		Orgs users_org = null;
 		List<Channels> channel_list = new ArrayList<Channels>();
 		List<String> channel_title_namespace = new ArrayList<String>();
 		
@@ -225,7 +224,7 @@ public class OrgsJpaResource {
 			// Add the Channel
 			temp_org.add_channel(channel);
 			
-			sql = new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org));
+			sql = new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org), true);
 			
 		} catch (JsonProcessingException e) {
 			System.out.println("System - Error Creating Org");
@@ -250,6 +249,8 @@ public class OrgsJpaResource {
 		try {
 			sql = orgsjpa.getByOrgId(org_id); 
 			temp_org = json_mapper.readValue(sql.get_data(), Orgs.class);
+			// Grabs Recent Date Time From Chat
+			String recent_date_time = orgsjpa.getByOrgId(org_id).get_recent_date_time();
 			
 			// Check if channel_title Changes
 			if(!channel_title.equals(channel.get_channel_title())) {
@@ -260,7 +261,7 @@ public class OrgsJpaResource {
 			}
 			
 			// Convert to Sql Object
-			sql = new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org));
+			sql = new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org), recent_date_time);
 		} catch (JsonProcessingException e) {
 			System.out.println("System - Error Updating Org");
 		}
@@ -285,6 +286,7 @@ public class OrgsJpaResource {
 		
 		// Check if the Requestor is the ORG_OWNER And OWNER of Channel
 		boolean org_owner = false;
+		boolean channel_was_deleted = false;
 		try {
     		// Convert to Orgs Object
 			temp_org = json_mapper.readValue(temp_sql.get_data(), Orgs.class);
@@ -300,10 +302,11 @@ public class OrgsJpaResource {
 			if(channel_owner.equals(temp_member) || org_owner) {
 				// Remove the Channel
 				temp_org.remove_channel(temp_org.retrieve_channel(channel_title));
+				channel_was_deleted = true;
 			}
 			
 			// Convert to Sql Object
-			sql = new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org));
+			sql = new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org), true);
 		} catch (JsonMappingException e) {
 			System.out.println("System - Error Retrieving Organisations");
 		} catch (JsonProcessingException e) {
@@ -311,7 +314,9 @@ public class OrgsJpaResource {
 		}
 		
 		// Update the Organisation
-		orgsjpa.save(sql);
+		if(channel_was_deleted) {
+			orgsjpa.save(sql);
+		}
 		return ResponseEntity.noContent().build();
 	}
 	
@@ -319,7 +324,6 @@ public class OrgsJpaResource {
 	public List<String> retrieve_all_instance_titles(@PathVariable String username, @PathVariable String org_id,  @PathVariable String channel_title) {
 		System.out.println("System - Retrieving All Instances in the Org");
 
-		Orgs users_org = null;
 		List<Instances> instance_list = new ArrayList<Instances>();
 		List<String> instance_title_namespace = new ArrayList<String>();
 		
@@ -362,7 +366,7 @@ public class OrgsJpaResource {
 			// Add the Instance
 			temp_org.add_instance(channel_title, instance);
 			
-			sql = new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org));
+			sql = new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org), true);
 			
 		} catch (JsonProcessingException e) {
 			System.out.println("System - Error Creating Instance");
@@ -388,14 +392,16 @@ public class OrgsJpaResource {
 		try {
 			sql = orgsjpa.getByOrgId(org_id); 
 			temp_org = json_mapper.readValue(sql.get_data(), Orgs.class);
-
+			// Grabs Recent Date Time From Chat
+			String recent_date_time = orgsjpa.getByOrgId(org_id).get_recent_date_time();
+			
 			// Remove the Old Instance
 			temp_org.remove_instance(channel_title, instance_title);
 			// Add the New Instance
 			temp_org.add_instance(channel_title, instance);
 			
 			// Convert to Sql Object
-			sql = new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org));
+			sql = new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org), recent_date_time);
 		} catch (JsonProcessingException e) {
 			System.out.println("System - Error Updating Instance");
 		}
@@ -421,13 +427,28 @@ public class OrgsJpaResource {
 		
 		// Check if the Requestor is the ORG_OWNER And OWNER of Channel
 		boolean org_owner = false;
+		boolean instance_was_deleted = false;
 		try {
     		// Convert to Orgs Object
 			temp_org = json_mapper.readValue(temp_sql.get_data(), Orgs.class);
-			temp_org.remove_instance(channel_title, instance_title);
+			
+			// Check if the User is the ORG_OWNER
+			if(temp_org.retrieve_member(username).get_role() == Members.Role.ORG_OWNER) {
+				org_owner = true;
+			}
+			// Just Making Lines Smaller
+			Members channel_owner = temp_org.retrieve_channel(channel_title).get_owner();
+			Members temp_member = new Members(username, Members.Role.ORG_OWNER);
+			
+			// If the Channel Owner is Equal to the Temp Member or ORG_OWNER
+			if(channel_owner.equals(temp_member) || org_owner) {
+				// Remove the Instance
+				temp_org.remove_instance(channel_title, instance_title);
+				instance_was_deleted = true;
+			}
 			
 			// Convert to Sql Object
-			sql = new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org));
+			sql = new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org), true);
 		} catch (JsonMappingException e) {
 			System.out.println("System - Error Retrieving Organisations");
 		} catch (JsonProcessingException e) {
@@ -435,7 +456,9 @@ public class OrgsJpaResource {
 		}
 		
 		// Update the Organisation
-		orgsjpa.save(sql);
+		if(instance_was_deleted) {
+			orgsjpa.save(sql);
+		}
 		return ResponseEntity.noContent().build();
 	}
 	

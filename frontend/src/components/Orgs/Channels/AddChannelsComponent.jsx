@@ -23,7 +23,7 @@ class AddChannelsComponent extends Component {
 		console.log(this.state.channel_title);
 		var internal_error = false;
 		var error = "";
-		var str2 = new String(this.state.channel_title);
+		var str2 = this.state.channel_title;
 
 		// Ensure Length is 3 or Greater
 		if (this.state.channel_title.length < 3 || this.state.channel_title === "new") {
@@ -35,9 +35,9 @@ class AddChannelsComponent extends Component {
 		if (!internal_error) {
 			// Check if the ID Exists
 			for (let i = 0; i < this.state.owned_ids.length; i++) {
-				var str1 = new String(this.state.owned_ids[i].channel_title);
+				var str1 = this.state.owned_ids[i].channel_title;
 				// Compare the String Values
-				if (str1.valueOf() == str2.valueOf()) {
+				if (str1.valueOf() === str2.valueOf()) {
 					internal_error = true;
 				}
 			}

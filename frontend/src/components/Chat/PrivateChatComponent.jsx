@@ -1,43 +1,63 @@
 import React, {Component} from 'react'
-import SockJS from 'sockjs-client'
-import StompJS from 'stompjs'
 import { API_URL } from '../../Constants'
 import AuthenticationService from '../Authentication/AuthenticationService.js'
 import  './PrivateChatComponent.css'
+import Encryption from './Encryption.js';
+import {Container, Row, Col, Button} from "react-bootstrap";
 
 var stomp_client = null;
+var receiver = null;
+var extension = null;
+var counter = 0;
+var messageCounter = 0;
+var messages = [];
+const member_details = new Map();
+// Sender in All Instances are the Usernames of the User
+
+/* Things Left to Do:
+	- Add Side Bar on Left Hand Side showing Contacts List Summary
+	- Fix UI
+	- Make it Right Side is Sender (You) Left Side is Receiver (Other)
+*/
 
 class PrivateChatComponent extends Component {
 	constructor (props) {
 		super(props);
 		this.state = {
 			username: AuthenticationService.getLoggedInUserName(),
-			receiver: this.props.match.params.receiver,
 			channel_connected: false,
-			message: '',
-			room_notification: [],
-			messages: [],
-			error: '',
-			bottom: false,
-			current_time: '',
+			message: "",
+			error: "",
+			
+			joined: false,
+			current_time: "",
+			open_members: false,
 			bell_ring: false,
 			is_typing: false,
-			loaded_history: false,
+			bottom: true,
 		};
 	}
 	
 	// Function to Connect the User to the Server
-	my_connect = () => {		
+	my_connect = () => {
+		receiver = this.props.match.params.receiver;
+		// Creates the Unique Extension URL for The 2 Users
+		this.state.username < receiver ? 
+			extension = "/" + this.state.username + "/" + receiver : 
+			extension = "/" + receiver + "/" + this.state.username;
+
 		console.log("System - Trying to Connect...");
 		// Create the Socket
 		const Stomp = require('stompjs')
 		var SockJS = require('sockjs-client')
 		var socket = new SockJS(API_URL+'/chat')
 		stomp_client = Stomp.over(socket);
-		console.log(stomp_client);
+		//console.log(stomp_client);
+		// Disables Console Messages
+		stomp_client.debug = null
 		// Connect the User
 		stomp_client.connect({}, this.on_connected, this.on_error);		
-	}
+	};
 	
 	// Subscribe the User to the Private Chat and Send the Server Notification of User
 	on_connected = () => {
@@ -46,22 +66,18 @@ class PrivateChatComponent extends Component {
 		  channel_connected: true
 		})
 		
-		stomp_client.subscribe('/queue/reply', this.on_message_received, {});
-		// Just for Consistency
-		if(this.state.username < this.state.receiver){ 
-			// Subscribing to the a Private Chat
-			stomp_client.subscribe('/user/reply/'+this.state.username+'/'+this.props.match.params.receiver, this.on_message_received, {});
-			stomp_client.subscribe('/queue/'+this.state.username+'/'+this.props.match.params.receiver+'/reply', this.on_history_received, {});
-		} else {
-			// Subscribing to the a Private Chat
-			stomp_client.subscribe('/user/reply/'+this.props.match.params.receiver+'/'+this.state.username, this.on_message_received, {});
-			stomp_client.subscribe('/queue/'+this.props.match.params.receiver+'/'+this.state.username+'/reply', this.on_history_received, {});
-		}
-		this.fetch_private_history();
-		
-		// Registering user to server as a group chat user
-		stomp_client.send("/app/existing_private_user", {}, JSON.stringify({ type: 'JOIN', sender: this.state.username }))
-	}
+		// Subscribe to Fetching History
+		// This has changed to Subscribe based on your Username so that the other person
+		// messages are not given to you on load. This will also allow for later chat loads 
+		// e.g., load 20 per page and then using javascript .unshift() push the new chat		
+		stomp_client.subscribe("/private/members" + extension + "/" + this.state.username, this.on_members_received, {});
+		stomp_client.subscribe('/private/history' + extension + "/" + this.state.username, this.on_history_received, {});
+		// Subscribing to the Private Chat
+		stomp_client.subscribe('/private/reply' + extension, this.on_message_received, {});
+		// Subscribe to the Join and Leave for Live Feedback
+		stomp_client.subscribe("/online", this.on_channel_connect, {});
+		this.fetch_private_members();
+	};
 	
 	// Send Messages to the Server
 	send_message = (type, value) => {
@@ -72,145 +88,194 @@ class PrivateChatComponent extends Component {
 			else {
 				var message = {
 					sender: this.state.username,
-					receiver: this.state.receiver,
-					content: type === 'TYPING' ? value : value,
+					receiver: receiver,
+					content: type === 'TYPING' ? value : Encryption.encrpyt_message(value),
 					type: type
 				};
 			}
 			// Send Public Message
 			if(valid_message){
-				let url = "";
-				// Just for Consistency
-				if(this.state.username < this.state.receiver){ 
-					url = "/app/send_private_message/"+this.state.username+"/"+this.state.receiver;
-				} else {
-					url = "/app/send_private_message/"+this.state.receiver+"/"+this.state.username;
-				}
-				stomp_client.send(url, {}, JSON.stringify(message));
+				stomp_client.send("/app/send_private_message" + extension, {}, JSON.stringify(message));
 			}
 		}
-	}
+	};
 
 	// Handles Chat History
 	on_history_received = (payload) => {
 		var obj = JSON.parse(payload.body);
-		if(!this.state.loaded_history){
-			for(let i=0; i<obj.length; i++){
-				this.state.messages.push({
-					message: obj[i].content,
-					sender: obj[i].sender,
-					date_time: obj[i].date_time
-				})
-				this.setState({
-					messages: this.state.messages,
-					loaded_history: true
-				})
+		// Iterate over 
+		for (let i = obj.length-1; i >= 0; i--) {
+			// Use Unshift to Push objects from back to front
+			messages.unshift({
+				message: Encryption.decrypt_message(obj[i].content),
+				sender: obj[i].sender,
+				receiver: obj[i].receiver,
+				name: member_details.get(obj[i].sender).name,
+				date_time: obj[i].date_time,
+			});
+			counter++;
+		}
+		// Might need to Change this so that we can load e.g., 20 Messages per Request
+		stomp_client.unsubscribe("/private/history" + extension + "/" + this.state.username, {});
+		if(!this.state.joined){
+			// Registering user to server as a Private User
+			stomp_client.send("/app/existing_private_user", {}, JSON.stringify({ type: 'JOIN', sender: this.state.username }))
+			this.setState({
+				joined: true
+			});
+		}
+	};
+	
+	// Handles Member Loading
+	on_members_received = (payload) => {
+		var obj = JSON.parse(payload.body);
+		var does_exist = false;
+
+		// Go through Server Message and Extract Users
+		for (let i = 0; i < obj.length; i++) {
+			// Checks if the User Exists
+			does_exist = member_details.has(obj[i].username);
+		
+			if (!does_exist) {
+				// Used for Storing in the Map
+				let user_details = {
+					status: obj[i].status,
+					role: obj[i].role,
+					fname: obj[i].fname,
+					lname: obj[i].lname,
+					name: obj[i].fname + " " +obj[i].lname,
+					bio: obj[i].bio,
+					image_path: obj[i].image_path,
+					date_time: "",
+				}
+				console.log(user_details);
+				// Add them to the Members
+				member_details.set(obj[i].username, user_details);
 			}
 		}
 		
-		
-	}
+		// Unsubscribe from Retrieving Members for Server Stability 
+		stomp_client.unsubscribe("/private/members" + extension + "/" + this.state.username, {});
+		// Now Fetch the Private History
+		return this.fetch_private_history();
+	};
 	
 	// Handles Server Responses Accordingly
 	on_message_received = (payload) => {
-		console.log(payload);
 		var message_text = JSON.parse(payload.body);
-		var user_exists = false;
-		if (message_text.type === 'JOIN') {
-			// Checks if the Users already Exists
-			this.state.room_notification.map((notification, i) => {
-				if (notification.sender === message_text.sender) {
-					notification.status = "online";
-					notification.date_time = message_text.date_time;
-					user_exists = true;
-				}
-			})
-			// If the User wasn't in Cache
-			if(!user_exists){
-				this.state.room_notification.push({ 'sender': message_text.sender, 'status': 'online', 'date_time': message_text.date_time })
-			}
+		// This gets the Original Contents in the Map
+		let temp = member_details.get(message_text.sender);
+		
+		if (message_text.type === "JOIN") {
+			// Assign User to Online
+			temp.status = "online";
+			temp.date_time = message_text.date_time;
+			
 			this.setState({
-				room_notification: this.state.room_notification.sort(this.sort_by_online_names),
-				bell_ring: true
-			})
-		}
-		else if (message_text.type === 'LEAVE') {
-			this.state.room_notification.map((notification, i) => {
-				if (notification.sender === message_text.sender) {
-					notification.status = "offline";
-					notification.date_time = message_text.date_time;
-				}
-			})
+				bell_ring: true,
+			});
+		} else if (message_text.type === "LEAVE") {
+			// Assign User to Offline
+			temp.status = "offline";
+			temp.date_time = message_text.date_time;
+			
 			this.setState({
-				room_notification: this.state.room_notification.sort(this.sort_by_online_names),
-				bell_ring: true
-			})
-		}
-		else if (message_text.type === 'TYPING') {
-			this.state.room_notification.map((notification, i) => {
-				if (notification.sender === message_text.sender) {
-					if (message_text.content)
-						notification.status = "typing...";
-					if (message_text.content === "Stopped Typing")
-						notification.status = "online";
-				}
-			})
-			this.setState({
-				room_notification: this.state.room_notification
-			})
-		}
-		else if (message_text.type === 'CHAT') {
+				bell_ring: true,
+			});
+		} else if (message_text.type === "TYPING") {
+			// Assign User to Typing or Online depending on State
+			if (message_text.content) temp.status = "typing...";
+			if (message_text.content === "Stopped Typing") temp.status = "online";
+			
+		} else if (message_text.type === "CHAT") {
 			console.log("System - Chat Message Received");
-			this.state.room_notification.map((notification, i) => {
-				if (notification.sender === message_text.sender) {
-					notification.status = "online";
-				}
-			})
+			temp.status = "online";
 			// Decrypt
-			this.state.messages.push({
-				message: message_text.content,
+			messages.push({
+				message: Encryption.decrypt_message(message_text.content),
+				name: member_details.get(message_text.sender).name,
 				sender: message_text.sender,
-				date_time: message_text.date_time
-			})
-			this.setState({
-				messages: this.state.messages,
-			})
+				date_time: message_text.date_time,
+			});
+			this.forceUpdate();
+			if (message_text.sender === this.state.username) {
+				this.scroll_to_bottom();
+			}
+			
+		} else {
+			// do nothing...
 		}
-		else {
-		// do nothing...
+		// Overwrite the Old Contents
+		member_details.set(message_text.sender, temp);
+		// Re-renders the Users List
+		this.forceUpdate();
+	};
+	
+	// Handles Server Responses Accordingly
+	on_channel_connect = (payload) => {
+		var message_text = JSON.parse(payload.body);
+		// Checks if the Message was for this Org/Channel
+		if(member_details.has(message_text.sender)){
+			// This gets the Original Contents in the Map
+			let temp = member_details.get(message_text.sender);
+			
+			if (message_text.type === "JOIN") {
+				// Assign User to Online
+				temp.status = "online";
+				temp.date_time = message_text.date_time;
+				
+				this.setState({
+					bell_ring: true,
+				});
+			} else {
+				if (message_text.type === "LEAVE") {
+				// Assign User to Offline
+				temp.status = "offline";
+				temp.date_time = message_text.date_time;
+				
+				this.setState({
+					bell_ring: true,
+				});
+				} 
+			}
+			// Overwrite the Old Contents
+			member_details.set(message_text.sender, temp);
+			// Re-renders the Users List
+			this.forceUpdate();
 		}
-	}
+	};
 	
 	on_error = (error) => {
 		this.setState({
 		  error: 'Could not connect you to the Chat Room Server. Please refresh this page and try again!'
 		})
-	}
+	};
 	
 	fetch_private_history = () => {
-		console.log("System - Retrieving Old Messages");
-		let url = "";
-		// Just for Consistency
-		if(this.state.username < this.state.receiver){ 
-			url = "/app/fetch_private_history/"+this.state.username+"/"+this.state.receiver;
-		} else {
-			url = "/app/fetch_private_history/"+this.state.receiver+"/"+this.state.username;
-		}
-		stomp_client.send(url);
-	}
+		console.log("System - Retrieving Private Old Messages");
+		stomp_client.send("/app/fetch_private_history" + extension + "/" + this.state.username);
+	};
+	
+	fetch_private_members = () => {
+		console.log("System - Retrieving Private Members");
+		stomp_client.send("/app/fetch_private_members" + extension + "/" + this.state.username);
+	};
 	
 	scroll_to_bottom = () => {
-		var object = this.refs.messageBox;
-		if (object)
-			object.scrollTop = object.scrollHeight;
-	}
+		let chatDiv = document.getElementById("scrollable-chat");
+		if (chatDiv) {
+			//console.log("Chat div ", chatDiv);
+			chatDiv.scrollTop = chatDiv.scrollHeight;
+			this.setState({bottom: false});
+		}
+	};
 	
 	handle_send_message = () => {
         this.send_message('CHAT', this.state.message)
 		this.setState({
 			message: ''
 		})
-    }
+    };
 	
 	// This method handels all the "TYPING" actions
     handle_typing = (event) => {
@@ -239,14 +304,17 @@ class PrivateChatComponent extends Component {
     };
 	
 	componentDidUpdate() {
-		if (this.state.error) {
-			throw new Error('Unable to connect to chat room server.');
-		}
-		else {
+		//let renderedMessages = document.getElementsByClassName("message").length;
+		//console.log("Counter", counter, "Message Counter", messageCounter);
+		if (counter === messageCounter && messageCounter > 0 && this.state.bottom) {
+			console.log("How many rendered", messageCounter, messages.length);
 			this.scroll_to_bottom();
+			console.log("Called scroll");
 		}
 	}
-
+	componentWillUnmount() {
+		window.location.reload(false);
+	}
 	componentDidMount() {
 		this.my_connect();
 		this.setState({
@@ -260,61 +328,82 @@ class PrivateChatComponent extends Component {
 		);
 	}
 	
+	mapMessages() {
+		let retDiv;
+		messageCounter = 0;
+		//console.log(messages);
+		retDiv = messages.map((old_msg) => {
+			messageCounter++;
+			return (
+				<div key={messageCounter} id="message" className="message">
+					<div className="message-details">
+						<div className="message-sender">{old_msg.name} ({old_msg.date_time}) @{old_msg.sender} </div>
+					</div>
+					<div className="message-body">{old_msg.message}</div>
+				</div>
+			);
+		});
+		return retDiv;
+	}
+	
+	printHeader() {
+		let retDiv;
+		if(member_details.get(receiver) == null){
+			retDiv = <h1>name</h1>;
+		} else {
+			retDiv = <h1>{member_details.get(receiver).name}</h1>
+		}
+		return retDiv;
+	}
+	
 	render() {
-		console.log("System - Rendering Page...");
-		console.log("System - Connection Status: "+this.state.channel_connected);
-
+		console.log("System - Rendering Page... Connection Status: " + this.state.channel_connected);
+		console.log(member_details.get(receiver));
         return (
 			<div className="app-window chat-component">
-				<h1 className="room-name">L8Z Chat Room</h1>
-				<div className="chat-room-container">
-					<div className="messages-container">
-						<div className="message-list">
-							{
-								this.state.messages.map((msg, i) => (
-								<div key={i} className="message">
-									<div className="message-details">
-										<div className="message-sender">
-											{msg.sender}
-										</div>
-										
-										{/* <div className="message-date">
-											July 3rd 2020 at 12:30am
-										</div> */}
-									</div>
+				<Container fluid style={{height: "100%"}} className="pr-0">
+					<Row className="title-header border-bottom">
+					{this.printHeader()}
+					</Row>
+					<Row className="window-body">
+						<Col xs={10} className="h-100 inline-block">
+							<Container fluid style={{height: "90%"}}>
+								<Container
+									fluid
+									className="h-100"
+									id="scrollable-chat"
+									style={{overflowY: "scroll"}}>
+									{this.mapMessages()}
+								</Container>
+							</Container>
+							<div className="d-flex flex-row justify-content-center">
+								<input
 									
-									<div className="message-body">
-										{msg.message}
-									</div>
-								</div>
-							))
-							}
-						</div>
-						<div className="message-input-container">
-							<input
-								className="message-input"
-								type="msg"
-								id="msg"
-								placeholder="Enter Message"
-								onChange={this.handle_typing}
-								value={this.state.message}
-								onKeyPress={event => {
-									if (event.key === "Enter") {
-										this.handle_send_message();
-									}
-								}}
-							/>
-							<input
-								className="message-button"
-								type="button"
-								value="SEND"
-								onClick={this.handle_send_message}
-							/>
-						</div>
-
-						{this.scroll_to_bottom()}
-					</div>
-				</div>
+									className="form-control rounded-left w-75"
+									type="msg"
+									id="msg"
+									style={{borderRadius: "0px"}}
+									placeholder="Enter Message"
+									onChange={this.handle_typing}
+									value={this.state.message}
+									onKeyPress={(event) => {
+										if (event.key === "Enter") {
+											this.handle_send_message();
+										}
+									}}
+								/>
+								<Button
+									type="button"
+									variant="secondary"
+									style={{borderRadius: "0px"}}
+									className="rounded-right"
+									onClick={this.handle_send_message}>
+									SEND
+								</Button>
+							</div>
+						</Col>
+					</Row>
+				</Container>
 			</div>
 		);
 	}

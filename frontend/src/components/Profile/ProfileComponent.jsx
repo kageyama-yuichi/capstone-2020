@@ -1,9 +1,9 @@
 import React, {Component} from "react";
 import ProfileResources from "./ProfileResources.js";
 import "./ProfileComponent.css";
-import {Form, Col, Button, Image, Container, Spinner} from "react-bootstrap";
+import {Form, Col, Row, Button, Image, Container, Spinner} from "react-bootstrap";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
-import {ENABLE_AUTOCOMPLETE} from "../../Constants.js"
+import {ENABLE_AUTOCOMPLETE} from "../../Constants.js";
 
 import PlacesAutoComplete from "react-places-autocomplete";
 
@@ -114,8 +114,6 @@ class ProfileComponent extends Component {
 	}
 
 	onSubmit = (e) => {
-		const form = e.currentTarget;
-
 		if (this.handleValidation()) {
 			let prof = {
 				id: this.state.id,
@@ -208,47 +206,63 @@ class ProfileComponent extends Component {
 	render() {
 		if (this.state.searchOptions || !this.state.enableAutoComplete) {
 			return (
-				<div className="app-window profile-component">
+				<div className="app-window">
 					<Container fluid style={{height: "100vh"}}>
-						<header className="title-container">Profile</header>
+						<h1 className="title-header border-bottom">Profile</h1>
 						<Form
+							as={Row}
 							noValidate
 							validated={this.state.validated}
 							className="profile-update-form"
 							onSubmit={this.onSubmit.bind(this)}>
-							<div className="image-upload-wrapper">
-								<Form.Group className="image-upload">
-									<Image
-										width="200"
-										height="200"
-										className="image-upload-current"
-										src={this.state.picUrl}
-										roundedCircle
-									/>
-									<div
-										className="image-upload-overlay"
-										onClick={this.handleImageClick}>
-										<div className="overlay-text">Upload Image</div>
-									</div>
-									<input
-										className="image-upload-input"
-										type="file"
-										ref={(input) => (this.imageInputElement = input)}
-										onChange={this.handleImageChange}
-									/>
-								</Form.Group>
-								<div className="help-text" onClick={this.handleImageClick}>
-									Click to change profile picture
-								</div>
-								<div className="image-upload-error">{this.state.imageError}</div>
-								<div className="cancel-button-container"></div>
-							</div>
-							<div className="info-container">
-								<div className="container-title">
-									<h2>Change your Profile details </h2>
-								</div>
+							<Col lg={3} className="mb-5"style={{height: "fit-content"}}>
+								<Container>
+									<Form.Group>
+										<div className="image-upload-current">
+											<Image
+												width="200"
+												height="200"
+												className="image-upload-current"
+												src={this.state.picUrl}
+												roundedCircle
+											/>
+											<div
+												style={{height: "200px", width: "200px"}}
+												className="image-upload-overlay"
+												onClick={this.handleImageClick}>
+												<div className="overlay-text">Upload Image</div>
+											</div>
+											<Button
+												variant="link"
+												className="help-text"
+												onClick={this.handleImageClick}>
+												Click to change profile picture
+											</Button>
+											<div className="image-upload-error">
+												{this.state.imageError}
+											</div>
+										</div>
+
+										<input
+											className="image-upload-input"
+											type="file"
+											ref={(input) => (this.imageInputElement = input)}
+											onChange={this.handleImageChange}
+										/>
+
+										<div className="cancel-button-container"></div>
+									</Form.Group>
+								</Container>
+							</Col>
+
+							<Container as={Col}>
 								<Form.Row>
-									<Form.Group as={Col} controlId="validationCustom01">
+									<div className="container-title">
+										<h2>Change your Profile details </h2>
+									</div>
+								</Form.Row>
+								<Form.Row>
+									<Form.Group sm={6} as={Col} controlId="validationCustom01">
 										<Form.Label>First name</Form.Label>
 										<Form.Control
 											required
@@ -263,7 +277,7 @@ class ProfileComponent extends Component {
 										</Form.Control.Feedback>
 									</Form.Group>
 
-									<Form.Group as={Col}>
+									<Form.Group sm={6} as={Col}>
 										<Form.Label>Last name</Form.Label>
 										<Form.Control
 											required
@@ -278,105 +292,110 @@ class ProfileComponent extends Component {
 										</Form.Control.Feedback>
 									</Form.Group>
 								</Form.Row>
-
-								<Form.Group className="address-container">
-									<Form.Label>Address</Form.Label>
-									<PlacesAutoComplete
-										value={this.state.address}
-										onChange={this.handleAddresChange.bind(this)}
-										searchOptions={this.state.searchOptions}
-										debounce={1000}
-										shouldFetchSuggestions={
-											this.state.shouldFetchSuggestions &&
-											this.state.enableAutoComplete
-										}>
-										{({
-											getInputProps,
-											suggestions,
-											getSuggestionItemProps,
-											loading,
-										}) => (
-											<div>
-												<input
-													{...getInputProps({
-														autoComplete: "justdont",
-														name: "address",
-														placeholder: "Address",
-														required: true,
-														className:
-															"location-search-input form-control :required",
-													})}
-												/>
-												<div className="autocomplete-dropdown-container zindex-dropdown">
-													{loading && (
-														<Spinner animation="grow"></Spinner>
-													)}
-													{suggestions.map((suggestion) => {
-														const className = suggestion.active
-															? "suggestion-item--active"
-															: "suggestion-item";
-														// inline style for demonstration purpose
-														const style = suggestion.active
-															? {
-																	backgroundColor: "#fafafa",
-																	cursor: "pointer",
-															  }
-															: {
-																	backgroundColor: "#ffffff",
-																	cursor: "pointer",
-															  };
-														return (
-															<div
-																{...getSuggestionItemProps(
-																	suggestion,
-																	{
-																		className,
-																		style,
-																	}
-																)}>
-																<span>
-																	{suggestion.description}
-																</span>
-															</div>
-														);
-													})}
+								<Form.Row>
+									<Form.Group as={Col} className="address-container">
+										<Form.Label>Address</Form.Label>
+										<PlacesAutoComplete
+											value={this.state.address}
+											onChange={this.handleAddresChange.bind(this)}
+											searchOptions={this.state.searchOptions}
+											debounce={1000}
+											shouldFetchSuggestions={
+												this.state.shouldFetchSuggestions &&
+												this.state.enableAutoComplete
+											}>
+											{({
+												getInputProps,
+												suggestions,
+												getSuggestionItemProps,
+												loading,
+											}) => (
+												<div>
+													<input
+														{...getInputProps({
+															autoComplete: "justdont",
+															name: "address",
+															placeholder: "Address",
+															required: true,
+															className:
+																"location-search-input form-control :required",
+														})}
+													/>
+													<div className="autocomplete-dropdown-container zindex-dropdown">
+														{loading && (
+															<Spinner animation="grow"></Spinner>
+														)}
+														{suggestions.map((suggestion) => {
+															const className = suggestion.active
+																? "suggestion-item--active"
+																: "suggestion-item";
+															// inline style for demonstration purpose
+															const style = suggestion.active
+																? {
+																		backgroundColor: "#fafafa",
+																		cursor: "pointer",
+																  }
+																: {
+																		backgroundColor: "#ffffff",
+																		cursor: "pointer",
+																  };
+															return (
+																<div
+																	{...getSuggestionItemProps(
+																		suggestion,
+																		{
+																			className,
+																			style,
+																		}
+																	)}>
+																	<span>
+																		{suggestion.description}
+																	</span>
+																</div>
+															);
+														})}
+													</div>
 												</div>
-											</div>
-										)}
-									</PlacesAutoComplete>
-									<Form.Control.Feedback type="invalid">
-										{this.state.addressError}
-									</Form.Control.Feedback>
-								</Form.Group>
-
-								<Form.Group className="bio-container">
-									<Form.Label>Biography</Form.Label>
-									<Form.Control
-										rows="15"
-										as="textarea"
-										name="bio"
-										form="profile-update-form"
-										value={this.state.bio}
-										onChange={this.handleChange.bind(this)}
-										placeholder="Create a bio!"
-									/>
-								</Form.Group>
-								<Form.Row className="justify-content-end">
-									<Form.Group md="1" as={Col}>
+											)}
+										</PlacesAutoComplete>
+										<Form.Control.Feedback type="invalid">
+											{this.state.addressError}
+										</Form.Control.Feedback>
+									</Form.Group>
+								</Form.Row>
+								<Form.Row>
+									<Form.Group as={Col} className="bio-container">
+										<Form.Label>Biography</Form.Label>
+										<Form.Control
+											rows="15"
+											as="textarea"
+											name="bio"
+											form="profile-update-form"
+											value={this.state.bio}
+											onChange={this.handleChange.bind(this)}
+											placeholder="Create a bio!"
+										/>
+									</Form.Group>
+								</Form.Row>
+								<Form.Row className="align-bottom justify-content-end">
+									<Form.Group>
 										<Button
 											type="button"
 											variant="outline-primary"
+											className="mr-2"
 											onClick={this.handleCancelClick}>
 											CANCEL
 										</Button>
-									</Form.Group>
-									<Form.Group md="2" as={Col}>
-										<Button type="submit" variant="secondary">
+
+										<Button
+											style={{whiteSpace: "nowrap"}}
+											type="submit"
+											variant="secondary">
 											SAVE CHANGES
 										</Button>
 									</Form.Group>
 								</Form.Row>
-							</div>
+							</Container>
 						</Form>
 					</Container>
 				</div>
