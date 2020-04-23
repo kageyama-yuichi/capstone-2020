@@ -1,0 +1,8 @@
+.suggestion-item {
+	background-color: white;
+	cursor: "pointer";
+}
+
+.suggestion-item:hover{
+    background: lightgrey;
+}

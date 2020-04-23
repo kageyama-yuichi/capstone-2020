@@ -2,26 +2,14 @@ import React, {Component} from "react";
 import "./RegisterComponent.css";
 import {Form, Button, Col, Container, Spinner} from "react-bootstrap";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
-import {ENABLE_AUTOCOMPLETE} from "../../Constants.js"
-import PlacesAutoComplete from "react-places-autocomplete";
+import PlacesAutoComplete from "../Places/PlacesAutoComplete.jsx";
 
 // What's left to be done:
 // When they register, redirect to Dashboard/username
 // Currently this.props.history is undefined so cannot be pushed
 
-
-// 
 // TO ENABLE PLACES AUTOCOMPLETE
 //	set ENABLE_AUTOCOMPLETE in Contants.js to true
-// 	Create a file in the root directory (where package.json is) called .env
-//	In the .env file write REACT_APP_PLACES_API_KEY=API_KEY
-//	Get the API_KEY from console.cloud.google.com > APIs & Services > Credentials
-//	
-// Currently the api key is visible to the user if they inspect body
-//	 This will be fixed when we move autocomplete to process in the backend
-//	 As a measure the key is restricted to HTTP refers from localhost:6942
-//	 
-
 
 class RegisterComponent extends Component {
 	constructor(props) {
@@ -35,58 +23,16 @@ class RegisterComponent extends Component {
 			username: "",
 			password: "",
 			errors: [],
-			searchOptions: "",
-			radius: 5000,
-			//If the api key is in .env
-			shouldFetchSuggestions: process.env.REACT_APP_PLACES_API_KEY ? true : false,
-			//Forcibly turn off autocomplete
-			enableAutoComplete: ENABLE_AUTOCOMPLETE
+			sessionToken: "",
 		};
-		this.showLocation = this.showLocation.bind(this);
 	}
 
 	componentDidMount() {
-		if (this.state.shouldFetchSuggestions && this.state.enableAutoComplete) {
-			this.geoLocate();
-		}
-		
-	}
-	//Takes a google.maps.LatLng
-	setSearchOptions(location) {
-		//Generate session token
-		var token = new window.google.maps.places.AutocompleteSessionToken();
-		const options = {
-			location: location,
-			radius: this.state.radius,
-			types: ["address"],
-			sessionToken: token,
-		};
-		this.setState({searchOptions: options});
-	}
-	geoLocate() {
-		if (navigator.geolocation) {
-			//60s timeout
-			var options = {timeout: 60000};
-			navigator.geolocation.getCurrentPosition(this.showLocation, this.locationErrorHandler, options);
-		} else {
-			console.log("Geolocation is not supported by this browser.");
-			const tempLocation = new window.google.maps.LatLng(37.8136, 144.9631);
-			this.setSearchOptions(tempLocation);
-		}
-	}
-
-	showLocation(position) {
-		var latitude = position.coords.latitude;
-		var longitude = position.coords.longitude;
-		const currentLocation = new window.google.maps.LatLng(latitude, longitude);
-		this.setSearchOptions(currentLocation);
-	}
-
-	locationErrorHandler(err) {
-		console.log("Error when getting geolocation.");
-
-		const tempLocation = new window.google.maps.LatLng(37.8136, 144.9631);
-		this.setSearchOptions(tempLocation);
+		fetch("https://www.uuidgenerator.net/api/version4").then((response) => {
+			response.text().then((text) => {
+				this.setState({sessionToken: text});
+			});
+		});
 	}
 
 	handleValidation(e) {
@@ -174,7 +120,7 @@ class RegisterComponent extends Component {
 		});
 	}
 
-	handleAddresChange(address) {
+	handleAddressChange(address) {
 		this.setState({address: address});
 	}
 
@@ -296,69 +242,20 @@ class RegisterComponent extends Component {
 								<Form.Row>
 									<Form.Group as={Col}>
 										<Form.Label>Address</Form.Label>
+										{this.state.sessionToken !== "" ? (
+											<PlacesAutoComplete
+												sessionToken={this.state.sessionToken}
+												debounce="1000"
+												minLetters={2}
+												value={this.state.address}
+												onChange={this.handleAddressChange.bind(this)}
+											/>
+										) : (
+											<div>
+												<Spinner animation="grow"></Spinner>
+											</div>
+										)}
 
-										<PlacesAutoComplete
-											value={this.state.address}
-											onChange={this.handleAddresChange.bind(this)}
-											searchOptions={this.state.searchOptions}
-											debounce={1000}
-											shouldFetchSuggestions={
-												this.state.shouldFetchSuggestions && this.state.enableAutoComplete
-											}>
-											{({
-												getInputProps,
-												suggestions,
-												getSuggestionItemProps,
-												loading,
-											}) => (
-												<div>
-													<input
-														{...getInputProps({
-															autoComplete: "justdont",
-															name: "address",
-															placeholder: "Address",
-															required: true,
-															className:
-																"location-search-input form-control",
-														})}
-													/>
-													<div className="autocomplete-dropdown-container zindex-dropdown">
-														{loading && (
-															<Spinner animation="grow"></Spinner>
-														)}
-														{suggestions.map((suggestion) => {
-															const className = suggestion.active
-																? "suggestion-item--active"
-																: "suggestion-item";
-															// inline style for demonstration purpose
-															const style = suggestion.active
-																? {
-																		backgroundColor: "#fafafa",
-																		cursor: "pointer",
-																  }
-																: {
-																		backgroundColor: "#ffffff",
-																		cursor: "pointer",
-																  };
-															return (
-																<div
-																	{...getSuggestionItemProps(
-																		suggestion,
-																		{
-																			className,
-																			style,
-																		}
-																	)}>
-																	<span>
-																		{suggestion.description}
-																	</span>
-																</div>
-															);
-														})}
-													</div>
-												</div>
-											)}
-										</PlacesAutoComplete>
 										<Form.Control.Feedback type="invalid">
 											{this.state.errors.address}
 										</Form.Control.Feedback>
