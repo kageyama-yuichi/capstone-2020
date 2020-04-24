@@ -216,6 +216,8 @@ public class OrgsJpaResource {
 			// Convert to Sql Object
 			sql = orgsjpa.getByOrgId(org_id); 
 			temp_org = json_mapper.readValue(sql.get_data(), Orgs.class);
+			// Grabs Recent Date Time From Chat
+			String recent_date_time = orgsjpa.getByOrgId(org_id).get_recent_date_time();
 			
 			// Assign the ORG_OWNER to the Channel
 			channel.set_owner(new Members(username, temp_org.retrieve_member(username).get_role()));
@@ -224,7 +226,7 @@ public class OrgsJpaResource {
 			// Add the Channel
 			temp_org.add_channel(channel);
 			
-			sql = new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org), true);
+			sql = new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org), recent_date_time);
 			
 		} catch (JsonProcessingException e) {
 			System.out.println("System - Error Creating Org");
@@ -290,6 +292,9 @@ public class OrgsJpaResource {
 		try {
     		// Convert to Orgs Object
 			temp_org = json_mapper.readValue(temp_sql.get_data(), Orgs.class);
+			// Grabs Recent Date Time From Chat
+			String recent_date_time = orgsjpa.getByOrgId(org_id).get_recent_date_time();
+			
 			// Check if the User is the ORG_OWNER
 			if(temp_org.retrieve_member(username).get_role() == Members.Role.ORG_OWNER) {
 				org_owner = true;
@@ -306,7 +311,7 @@ public class OrgsJpaResource {
 			}
 			
 			// Convert to Sql Object
-			sql = new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org), true);
+			sql = new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org), recent_date_time);
 		} catch (JsonMappingException e) {
 			System.out.println("System - Error Retrieving Organisations");
 		} catch (JsonProcessingException e) {
@@ -362,11 +367,13 @@ public class OrgsJpaResource {
 			// Convert to Sql Object
 			sql = orgsjpa.getByOrgId(org_id); 
 			temp_org = json_mapper.readValue(sql.get_data(), Orgs.class);
-			
+			// Grabs Recent Date Time From Chat
+			String recent_date_time = orgsjpa.getByOrgId(org_id).get_recent_date_time();
+						
 			// Add the Instance
 			temp_org.add_instance(channel_title, instance);
 			
-			sql = new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org), true);
+			sql = new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org), recent_date_time);
 			
 		} catch (JsonProcessingException e) {
 			System.out.println("System - Error Creating Instance");
@@ -431,7 +438,9 @@ public class OrgsJpaResource {
 		try {
     		// Convert to Orgs Object
 			temp_org = json_mapper.readValue(temp_sql.get_data(), Orgs.class);
-			
+			// Grabs Recent Date Time From Chat
+			String recent_date_time = orgsjpa.getByOrgId(org_id).get_recent_date_time();
+						
 			// Check if the User is the ORG_OWNER
 			if(temp_org.retrieve_member(username).get_role() == Members.Role.ORG_OWNER) {
 				org_owner = true;
@@ -448,7 +457,7 @@ public class OrgsJpaResource {
 			}
 			
 			// Convert to Sql Object
-			sql = new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org), true);
+			sql = new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org), recent_date_time);
 		} catch (JsonMappingException e) {
 			System.out.println("System - Error Retrieving Organisations");
 		} catch (JsonProcessingException e) {
