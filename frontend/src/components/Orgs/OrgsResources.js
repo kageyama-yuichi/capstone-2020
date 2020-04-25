@@ -34,6 +34,25 @@ class OrgsResources {
 	delete_channel(username, org_id, channel_title) {
         return axios.delete(`${JPA_URL}/orgs/${username}/${org_id}/${channel_title}`);
     }
+	// Channel Todo Related
+	retrieve_org_todos(username, org_id, channel_title) {
+		return axios.get(`${JPA_URL}/orgs/todos/${username}/${org_id}/${channel_title}`);
+	}
+	retrieve_org_todo(username, org_id, channel_title, id) {
+		return axios.get(`${JPA_URL}/orgs/todos/${username}/${org_id}/${channel_title}/${id}`);
+    }
+	create_org_todo(username, org_id, channel_title, todo) {
+        return axios.post(`${JPA_URL}/orgs/todos/${username}/${org_id}/${channel_title}/new`, todo);
+    }
+	update_org_todo(username, org_id, channel_title, id, todo) {
+        return axios.post(`${JPA_URL}/orgs/todos/${username}/${org_id}/${channel_title}/${id}`, todo);
+    }
+    update_org_todo_status(username, org_id, channel_title, id) {
+        return axios.post(`${JPA_URL}/orgs/todos/${username}/${org_id}/${channel_title}/${id}/status`)
+    }
+    delete_org_todo(username, org_id, channel_title, id) {
+        return axios.delete(`${JPA_URL}/orgs/todos/${username}/${org_id}/${channel_title}/${id}`);
+    }
 	// Instance Related
 	retrieve_all_instance_titles(username, org_id, channel_title) {
 	return axios.get(`${JPA_URL}/orgs/${username}/${org_id}/${channel_title}/new`);
