@@ -358,7 +358,7 @@ class PrivateChatComponent extends Component {
 	
 	render() {
 		console.log("System - Rendering Page... Connection Status: " + this.state.channel_connected);
-		console.log(member_details.get(receiver));
+
         return (
 			<div className="app-window chat-component">
 				<Container fluid style={{height: "100%"}} className="pr-0">
