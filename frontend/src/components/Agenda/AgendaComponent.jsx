@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import "./AgendaComponent.css";
-import AgendaTodoComponent from "../Todo/AgendaTodoComponent.jsx";
+import TodoComponent from "../Todo/TodoComponent.jsx";
 import CalendarComponent from "../Calendar/CalendarComponent.jsx";
 import {Container, Row, Col, Spinner} from "react-bootstrap";
 import AuthenticationService from "../Authentication/AuthenticationService";
@@ -55,7 +55,7 @@ class AgendaComponent extends Component {
 								<CalendarComponent callback={this.refresh_todos} todos={this.state.todos} />
 							</Col>
 							<Col>
-								<AgendaTodoComponent
+								<TodoComponent
 									callback={this.refresh_todos}
 									todos={this.state.todos}
 								/>

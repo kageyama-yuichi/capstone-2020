@@ -7,7 +7,6 @@ import {Calendar, momentLocalizer} from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
 import equal from "fast-deep-equal";
-import {Children} from "react";
 
 const localizer = momentLocalizer(moment);
 
@@ -19,6 +18,7 @@ class CalendarComponent extends Component {
 		};
 	}
 
+    //Formats events so they are useable by RBC
 	createEvents() {
 		var events = [];
 		this.props.todos.map((todo) => {
