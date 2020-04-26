@@ -25,7 +25,6 @@ import com.l8z.orgs.Members;
 import com.l8z.orgs.Orgs;
 import com.l8z.orgs.OrgsSQL;
 import com.l8z.todos.OrgTodo;
-import com.l8z.todos.Todo;
 
 @CrossOrigin(origins=GlobalVariable.L8Z_URL)
 @RestController
@@ -42,6 +41,9 @@ public class OrgsJpaResource {
 	// Used for Saving Organisation ID to the User's Name
 	@Autowired
 	private UserMetaDataJpaResource user_meta_data_jpa_resouce = new UserMetaDataJpaResource();
+	@Autowired
+	private UserJpaResource user_jpa_resouce = new UserJpaResource();
+	
 	///////////////////////////////////////////////////////////////////////////
 	///////////////// O R G A N I S A T I O N   R E L A T E D /////////////////
 	///////////////////////////////////////////////////////////////////////////
@@ -131,7 +133,9 @@ public class OrgsJpaResource {
 		orgsjpa.save(sql);
 		// Add the Organsiation ID to the User's Name
 		user_meta_data_jpa_resouce.user_joined_org(username, org.get_org_id());
-
+////////////////////////////////////////////////////////////////////////Testing 
+		user_jpa_resouce.resetPassword("s3662507@student.rmit.edu.au");
+///////////////////////////////////////////////////////////////////////////////
 		return ResponseEntity.noContent().build();
 	}
 	

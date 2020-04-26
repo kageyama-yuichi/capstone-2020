@@ -8,4 +8,5 @@ import com.l8z.user.User;
 @Repository
 public interface UserJpaRepository extends JpaRepository<User, Long> {
 	User findByUsername(String username);
+	User findUserByEmail(String email);
 }

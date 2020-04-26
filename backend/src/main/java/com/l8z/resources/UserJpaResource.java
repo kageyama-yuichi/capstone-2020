@@ -1,29 +1,33 @@
 package com.l8z.resources;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 
 import com.l8z.GlobalVariable;
 import com.l8z.jparepository.PasswordRecoveryJpaRepository;
 import com.l8z.jparepository.UserJpaRepository;
+import com.l8z.user.PasswordResetToken;
 import com.l8z.user.User;
 
 @CrossOrigin(origins=GlobalVariable.L8Z_URL)
 @RestController 
 public class UserJpaResource {
-	
 	@Autowired
 	private UserJpaRepository repo;
 	@Autowired
 	private PasswordRecoveryJpaRepository prrepo;
+	@Autowired
+    private JavaMailSender mail;
 	
 	@GetMapping("/jpa/profile/{username}") 
 	public User receiveUserProfile(@PathVariable String username){		
@@ -54,21 +58,39 @@ public class UserJpaResource {
 		return ResponseEntity.noContent().build();
 	}
 	
+	/*
 	@PostMapping("/user/password/reset")
-	public ResponseEntity<Void> resetPassword(
-			HttpServletRequest request, 
-			@RequestParam("email") String userEmail
-		) {
-	    User user = userService.findUserByEmail(userEmail);
+	public boolean resetPassword(@RequestParam("email") String email) {
+	*/
+	public boolean resetPassword(String email) {
+	    // Ensure the User Exists
+		User user = repo.findUserByEmail(email);
 	    if (user == null) {
-	        throw new UserNotFoundException();
-	    }
+	        System.out.println("System - Email Specified Is Not Associated to an Account!");
+	        return false;
+	    } else {
+	    // Create the Token for the User to Reset their Password
 	    String token = UUID.randomUUID().toString();
-	    userService.createPasswordResetTokenForUser(user, token);
-	    mailSender.send(constructResetTokenEmail(getAppUrl(request), 
-	      request.getLocale(), token, user));
-	    return new GenericResponse(
-	      messages.getMessage("message.resetPasswordEmail", null, 
-	      request.getLocale()));
+	    // Save the Token to the Database
+	    prrepo.save(new PasswordResetToken(token, user.getUsername()));
+	    // Create the Simple Mail Message and Set the Email, Subject and Message
+	    SimpleMailMessage msg = new SimpleMailMessage();
+	    // Set the Email
+        msg.setTo(email);
+        // Set the Subject
+        msg.setSubject("L8Z - Password Reset for "+user.getUsername());
+        String url = GlobalVariable.L8Z_URL + "/user/password/change?username="+user.getUsername()+"&token=" + token;
+        // Set the Body Content
+        msg.setText(
+    		"Hello "+user.getFname()+" "+user.getLname()+",\n"
+    		+ "Your L8Z account has requested a recovery of password. If this was not you, please ignore this email.\n"
+    		+ url + "\n"
+    		+ "Thank you for choosing L8Z,\n L8Z Team."
+    	);
+        
+        // Send the Email
+        mail.send(msg);
+	    return true;
+	    }
 	}
 }

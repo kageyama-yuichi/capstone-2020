@@ -18,11 +18,17 @@ public class PasswordResetToken {
     private Long id;
     // Token that is sent to the User's Email
     private String token;
+    private String username;
     private String expiryDate = (new SimpleDateFormat("h:mm a (dd/MM/yyyy)").format(new Date(new Date().getTime() + EXPIRATION))).toUpperCase();
     
 	// Default Constructor
     public PasswordResetToken() {
     	
+    }
+    // Override Constructor
+    public PasswordResetToken(String token, String username) {
+    	this.token = token;
+    	this.username = username;
     }
     
     // Getters
@@ -35,6 +41,9 @@ public class PasswordResetToken {
 	public String getToken() {
 		return token;
 	}
+	public String getUsername() {
+		return username;
+	}
 	public String getExpiryDate() {
 		return expiryDate;
 	}
@@ -45,6 +54,9 @@ public class PasswordResetToken {
 	}
 	public void setToken(String token) {
 		this.token = token;
+	}
+	public void setUsername(String username) {
+		this.username = username;
 	}
 	public void setExpiryDate(String expiryDate) {
 		this.expiryDate = expiryDate;
