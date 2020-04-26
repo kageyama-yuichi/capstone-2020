@@ -17,6 +17,7 @@ class LandingComponent extends Component {
 			windowSize: "",		
 		};
 		this.handleSubmit = this.handleSubmit.bind(this);
+		this.forgotPassword = this.forgotPassword.bind(this);
 		this.registerSubmitHandler = this.registerSubmitHandler.bind(this);
 		this.newUserOnClickHandler = this.newUserOnClickHandler.bind(this);
 	}
@@ -29,6 +30,11 @@ class LandingComponent extends Component {
 		this.props.history.push("/dashboard");
 	}
 
+	forgotPassword() {
+		console.log("HERE?");
+		this.props.history.push("/forgot_password");
+	}
+	
 	handleChange(event) {
 		const {name: fieldName, value} = event.target;
 		this.setState({
@@ -108,7 +114,12 @@ class LandingComponent extends Component {
 									value={this.state.password}></input>
 							</Form.Group>
 							<div className="password-reset">
-								<Button variant="link" className="login-link-text">Forgot password?</Button>
+								<Button 
+									variant="link" 
+									className="login-link-text" 
+									onClick={this.forgotPassword}>
+									Forgot password?
+								</Button>
 							</div>
 
 							<Button

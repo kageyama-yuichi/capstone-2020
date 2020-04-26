@@ -8,8 +8,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 
 import com.l8z.GlobalVariable;
+import com.l8z.jparepository.PasswordRecoveryJpaRepository;
 import com.l8z.jparepository.UserJpaRepository;
 import com.l8z.user.User;
 
@@ -19,17 +22,8 @@ public class UserJpaResource {
 	
 	@Autowired
 	private UserJpaRepository repo;
-	
-	@PostMapping("/jpa/register/{username}")
-	public ResponseEntity<Void> registerUser(
-			@PathVariable String username, 
-			@RequestBody User inboundUser
-		){
-		inboundUser.setUsername(username);
-		// Update Profile
-		repo.save(inboundUser);
-		return ResponseEntity.noContent().build();
-	}
+	@Autowired
+	private PasswordRecoveryJpaRepository prrepo;
 	
 	@GetMapping("/jpa/profile/{username}") 
 	public User receiveUserProfile(@PathVariable String username){		
@@ -58,5 +52,23 @@ public class UserJpaResource {
 		// Update Profile
 		repo.save(userUpdate);
 		return ResponseEntity.noContent().build();
+	}
+	
+	@PostMapping("/user/password/reset")
+	public ResponseEntity<Void> resetPassword(
+			HttpServletRequest request, 
+			@RequestParam("email") String userEmail
+		) {
+	    User user = userService.findUserByEmail(userEmail);
+	    if (user == null) {
+	        throw new UserNotFoundException();
+	    }
+	    String token = UUID.randomUUID().toString();
+	    userService.createPasswordResetTokenForUser(user, token);
+	    mailSender.send(constructResetTokenEmail(getAppUrl(request), 
+	      request.getLocale(), token, user));
+	    return new GenericResponse(
+	      messages.getMessage("message.resetPasswordEmail", null, 
+	      request.getLocale()));
 	}
 }

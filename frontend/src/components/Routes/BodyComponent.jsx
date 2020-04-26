@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
 import ErrorComponent from '../Error/ErrorComponent.jsx'
 import LandingComponent from '../Landing/LandingComponent.jsx'
+import ForgotPasswordComponent from '../ForgotPassword/ForgotPasswordComponent.jsx'
 
 import ChatComponent from '../Chat/ChatComponent.jsx'
 import PrivateChatComponent from '../Chat/PrivateChatComponent.jsx'
@@ -32,6 +33,7 @@ class BodyComponent extends Component {
                         {<SidebarComponent/>}
                         <Switch>
                             <Route path="/" exact component={LandingComponent} />
+							<Route path="/forgot_password" exact component={ForgotPasswordComponent} />
 							
 							<Route path="/orgs/" exact component={OrgsComponent} />
 							<Route path="/orgs/new" exact component={AddOrgsComponent} />

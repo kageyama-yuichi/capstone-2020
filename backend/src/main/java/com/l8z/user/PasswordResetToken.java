@@ -24,7 +24,7 @@ public class PasswordResetToken {
     public PasswordResetToken() {
     	
     }
-
+    
     // Getters
 	public static int getExpiration() {
 		return EXPIRATION;
