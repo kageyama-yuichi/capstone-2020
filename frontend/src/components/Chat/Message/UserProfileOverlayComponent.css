@@ -1,0 +1,9 @@
+.user-profile::-webkit-scrollbar{
+    width: 10px;
+}
+
+
+.user-profile::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+

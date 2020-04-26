@@ -25,39 +25,39 @@ class SidebarComponent extends Component {
 				<nav className="sidebar">
 					<ul className="sidebar-nav">
 						<li className={(window.location.pathname === `/dashboard` ? "current-window": "") + " sidebar-item logo-item"}>
-							<Link to="/dashboard" className="nav-link">
-								<img className="logo-img" src={LogoIcon} alt="DashboardIcon"></img>
+							<Link to="/dashboard" className="nav-link unselectable">
+								<img className="logo-img unselectable " src={LogoIcon} alt="DashboardIcon"></img>
 							</Link>
 						</li>
 							
 						<li className={(window.location.pathname === `/profile` ? "current-window" : "") + " sidebar-item"}>
-							<Link to="/profile" className="nav-link">
-								<img src={ProfileIcon} alt="ProfileIcon"></img>
+							<Link to="/profile" className="nav-link unselectable">
+								<img src={ProfileIcon} className="unselectable" alt="ProfileIcon"></img>
 								<span className="link-text">Profile</span>
 							</Link>
 						</li>
 						<li className={(window.location.pathname === `/orgs` ? "current-window": "") + " sidebar-item"}>
-							<Link to="/orgs" className="nav-link">
-								<img src={TeamsIcon} alt="TeamsIcon"></img>
+							<Link to="/orgs" className="nav-link unselectable">
+								<img src={TeamsIcon} className="unselectable" alt="TeamsIcon"></img>
 								<span className="link-text">Orgs</span>
 							</Link>
 						</li>
 						<li className="sidebar-item">
-							<Link to="/agenda" className="nav-link">
-								<img src={AgendaIcon} alt="AgendaIcon"></img>
+							<Link to="/agenda" className="nav-link unselectable">
+								<img src={AgendaIcon} className="unselectable" alt="AgendaIcon"></img>
 								<span className="link-text">Agenda</span>
 							</Link>
 						</li>
 						<li className={(window.location.pathname === `/private` ? "current-window": "") + " sidebar-item"}>
-							<Link to="/private" className="nav-link">
-								<img src={ChatIcon} alt="ChatIcon"></img>
+							<Link to="/private" className="nav-link unselectable">
+								<img src={ChatIcon} className="unselectable" alt="ChatIcon"></img>
 								<span className="link-text">Private</span>
 							</Link>
 						</li>
 
 						<li className="sidebar-item">
-							<Link to="/" className="nav-link" onClick={this.onClick}>
-								<img src={LogoutIcon} alt="LogoutIcon"></img>
+							<Link to="/" className="nav-link unselectable" onClick={this.onClick}>
+								<img src={LogoutIcon} className="unselectable" alt="LogoutIcon"></img>
 								<span className="link-text">Logout</span>
 							</Link>
 						</li>
