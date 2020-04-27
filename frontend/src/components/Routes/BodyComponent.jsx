@@ -1,5 +1,7 @@
 import React, {Component} from 'react'
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
+import AuthenticatedRoute from '../Authentication/AuthenticatedRoute.jsx'
+
 import ErrorComponent from '../Error/ErrorComponent.jsx'
 import LandingComponent from '../Landing/LandingComponent.jsx'
 
@@ -33,25 +35,25 @@ class BodyComponent extends Component {
                         <Switch>
                             <Route path="/" exact component={LandingComponent} />
 							
-							<Route path="/orgs/" exact component={OrgsComponent} />
-							<Route path="/orgs/new" exact component={AddOrgsComponent} />
-							<Route path="/orgs/:org_id" exact component={UpdateOrgsComponent} />
-							<Route path="/orgs/:org_id/channels" exact component={ChannelsComponent} />
-							<Route path="/orgs/:org_id/new" exact component={AddChannelsComponent} />
-							<Route path="/orgs/:org_id/:channel_title" exact component={UpdateChannelsComponent} />
-							<Route path="/orgs/:org_id/:channel_title/instances" exact component={InstancesComponent} />
-							<Route path="/orgs/:org_id/:channel_title/new" exact component={AddInstancesComponent} />
+							<AuthenticatedRoute path="/orgs/" exact component={OrgsComponent} />
+							<AuthenticatedRoute path="/orgs/new" exact component={AddOrgsComponent} />
+							<AuthenticatedRoute path="/orgs/:org_id" exact component={UpdateOrgsComponent} />
+							<AuthenticatedRoute path="/orgs/:org_id/channels" exact component={ChannelsComponent} />
+							<AuthenticatedRoute path="/orgs/:org_id/new" exact component={AddChannelsComponent} />
+							<AuthenticatedRoute path="/orgs/:org_id/:channel_title" exact component={UpdateChannelsComponent} />
+							<AuthenticatedRoute path="/orgs/:org_id/:channel_title/instances" exact component={InstancesComponent} />
+							<AuthenticatedRoute path="/orgs/:org_id/:channel_title/new" exact component={AddInstancesComponent} />
 							
-                            <Route path="/chat/:orgs_id/:channel_title/:instance_title" exact component={ChatComponent} />
-                            <Route path="/orgs/:org_id/:channel_title/:instance_title" exact component={UpdateInstancesComponent} />
+                            <AuthenticatedRoute path="/chat/:orgs_id/:channel_title/:instance_title" exact component={ChatComponent} />
+                            <AuthenticatedRoute path="/orgs/:org_id/:channel_title/:instance_title" exact component={UpdateInstancesComponent} />
 
-							<Route path="/private/:receiver" exact component={PrivateChatComponent} />
-                            
-							<Route path="/dashboard" exact component={DashboardComponent} />
-                           
-						   <Route path="/profile" exact component={ProfileComponent} />
+							<AuthenticatedRoute path="/private/:receiver" exact component={PrivateChatComponent} />
 
-						   <Route path="/agenda" exact component={AgendaComponent} />
+							<AuthenticatedRoute path="/dashboard" exact component={DashboardComponent} />
+
+							<AuthenticatedRoute path="/profile" exact component={ProfileComponent} />
+
+							<AuthenticatedRoute path="/agenda" exact component={AgendaComponent} />
 
                             <Route component={ErrorComponent} />
                         </Switch>
