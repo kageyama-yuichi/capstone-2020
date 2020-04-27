@@ -19,8 +19,8 @@ class MessageComponent extends Component {
 			target: null,
 			ref: createRef(),
 		};
-		console.log(props);
 		this.handleClick = this.handleClick.bind(this);
+
 	}
 
 	handleClick(e) {
@@ -44,8 +44,9 @@ class MessageComponent extends Component {
 					className="unselectable"
 					placement="right"
 					trigger="focus"
+					
 					container={this.refs.container}
-					overlay={<UserProfileOverlayComponent />}>
+					overlay={<UserProfileOverlayComponent sender={this.props.sender}/>}>
 					<a	
 						className="unselectable"
 						style={{userSelect: "none", userDrag: "none"}}
