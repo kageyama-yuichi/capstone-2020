@@ -4,6 +4,7 @@ import AuthenticationService from "../Authentication/AuthenticationService.js";
 import "./ChatComponent.css";
 import Encryption from './Encryption.js';
 import {Container, Row, Col, Button} from "react-bootstrap";
+import MessageComponent from "./Message/MessageComponent.jsx"
 
 var stomp_client = null;
 var orgs_id = null;
@@ -381,17 +382,7 @@ class ChatComponent extends Component {
 		retDiv = messages.map((old_msg) => {
 			messageCounter++;
 			return (
-				<div key={messageCounter} id="message" className="message">
-					<div className="message-details">
-						<div className="message-sender">{old_msg.name} ({old_msg.date_time}) @{old_msg.sender} </div>
-
-						{/* <div className="message-date">
-				July 3rd 2020 at 12:30am
-			</div> */}
-					</div>
-
-					<div className="message-body">{old_msg.message}</div>
-				</div>
+				<MessageComponent key={messageCounter} msg={old_msg}/>
 			);
 		});
 		return retDiv;

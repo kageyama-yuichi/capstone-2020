@@ -27,6 +27,7 @@ class ProfileComponent extends Component {
 		this.handleImageChange = this.handleImageChange.bind(this);
 		this.handleChange = this.handleChange.bind(this);
 		this.handleCancelClick = this.handleCancelClick.bind(this);
+		this.onSubmit = this.onSubmit.bind(this);
 	}
 
 	handleCancelClick() {
@@ -100,11 +101,13 @@ class ProfileComponent extends Component {
 			formIsValid = false;
 			this.setState({addressError: "Address Cannot be empty"});
 		}
-
+		console.log(formIsValid)
 		return formIsValid;
 	}
 
 	onSubmit = (e) => {
+		e.preventDefault();
+		
 		if (this.handleValidation()) {
 			let prof = {
 				id: this.state.id,
@@ -119,8 +122,6 @@ class ProfileComponent extends Component {
 			ProfileResources.updateUserProfile(this.state.username, prof);
 			console.log("success");
 			this.props.history.push(`/dashboard`);
-		} else {
-			e.preventDefault();
 		}
 
 		this.setState({validated: true});
@@ -155,11 +156,10 @@ class ProfileComponent extends Component {
 				<Container fluid style={{height: "100vh"}}>
 					<h1 className="title-header border-bottom">Profile</h1>
 					<Form
-						as={Row}
 						noValidate
 						validated={this.state.validated}
 						className="profile-update-form"
-						onSubmit={this.onSubmit.bind(this)}>
+						onSubmit={this.onSubmit}>
 						<Col lg={3} className="mb-5" style={{height: "fit-content"}}>
 							<Container>
 								<Form.Group>
