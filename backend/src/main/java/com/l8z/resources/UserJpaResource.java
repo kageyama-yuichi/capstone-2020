@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+//import org.springframework.mail.SimpleMailMessage;
+//import org.springframework.mail.javamail.JavaMailSender;
 
 import com.l8z.GlobalVariable;
 import com.l8z.jparepository.PasswordRecoveryJpaRepository;
@@ -54,7 +54,7 @@ public class UserJpaResource {
 		return ResponseEntity.noContent().build();
 	}
 	
-	@PostMapping("/user/password/reset")
+	/*@PostMapping("/user/password/reset")
 	public ResponseEntity<Void> resetPassword(
 			HttpServletRequest request, 
 			@RequestParam("email") String userEmail
@@ -70,5 +70,5 @@ public class UserJpaResource {
 	    return new GenericResponse(
 	      messages.getMessage("message.resetPasswordEmail", null, 
 	      request.getLocale()));
-	}
+	}*/
 }
