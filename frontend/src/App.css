@@ -44,6 +44,16 @@ a, button, input[type=button], input[type=submit]{
     cursor: pointer;
 }
 
+.unselectable {
+    
+    -moz-user-select: none; 
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    -webkit-user-drag: none; 
+}
+
 @font-face {
     font-family: "Segoe UI";
     font-weight: 200;
