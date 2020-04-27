@@ -14,7 +14,7 @@ class LandingComponent extends Component {
 			username: "",
 			password: "",
 			showRegister: false,
-			showRecovery: true,
+			showRecovery: false,
 			windowSize: "",
 		};
 		this.handleSubmit = this.handleSubmit.bind(this);
