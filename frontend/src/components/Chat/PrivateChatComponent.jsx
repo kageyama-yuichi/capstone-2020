@@ -4,6 +4,7 @@ import AuthenticationService from '../Authentication/AuthenticationService.js'
 import  './PrivateChatComponent.css'
 import Encryption from './Encryption.js';
 import {Container, Row, Col, Button} from "react-bootstrap";
+import MessageComponent from "./Message/MessageComponent.jsx"
 
 var stomp_client = null;
 var receiver = null;
@@ -342,12 +343,7 @@ class PrivateChatComponent extends Component {
 		retDiv = messages.map((old_msg) => {
 			messageCounter++;
 			return (
-				<div key={messageCounter} id="message" className="message">
-					<div className="message-details">
-						<div className="message-sender">{old_msg.name} ({old_msg.date_time}) @{old_msg.sender} </div>
-					</div>
-					<div className="message-body">{old_msg.message}</div>
-				</div>
+				<MessageComponent key={messageCounter} msg={old_msg}/>
 			);
 		});
 		return retDiv;
