@@ -343,21 +343,9 @@ class PrivateChatComponent extends Component {
 		retDiv = messages.map((old_msg) => {
 			messageCounter++;
 			return (
-				<MessageComponent key={messageCounter} msg={old_msg}/>
+				<MessageComponent key={messageCounter} sender={member_details.get(old_msg.sender)} msg={old_msg}/>
 			);
 		});
-		return retDiv;
-	}
-	
-	printHeader() {
-		let retDiv;
-		/*
-		if(member_details.get(receiver) == null){
-			retDiv = <h1>name</h1>;
-		} else {
-			retDiv = <h1>{member_details.get(receiver).name}</h1>
-		}
-		*/
 		return retDiv;
 	}
 	
