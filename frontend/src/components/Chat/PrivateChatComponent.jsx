@@ -26,6 +26,7 @@ class PrivateChatComponent extends Component {
 		this.state = {
 			username: AuthenticationService.getLoggedInUserName(),
 			channel_connected: false,
+			receiver_name: "",
 			message: "",
 			error: "",
 			
@@ -148,7 +149,13 @@ class PrivateChatComponent extends Component {
 					image_path: obj[i].image_path,
 					date_time: "",
 				}
-				console.log(user_details);
+				//console.log(user_details);
+				// Set Receiver State
+				if(obj[i].username != this.state.username) {
+					this.setState({
+						receiver_name: user_details.name,
+					})
+				}
 				// Add them to the Members
 				member_details.set(obj[i].username, user_details);
 			}
@@ -348,11 +355,13 @@ class PrivateChatComponent extends Component {
 	
 	printHeader() {
 		let retDiv;
+		/*
 		if(member_details.get(receiver) == null){
 			retDiv = <h1>name</h1>;
 		} else {
 			retDiv = <h1>{member_details.get(receiver).name}</h1>
 		}
+		*/
 		return retDiv;
 	}
 	
@@ -363,7 +372,7 @@ class PrivateChatComponent extends Component {
 			<div className="app-window chat-component">
 				<Container fluid style={{height: "100%"}} className="pr-0">
 					<Row className="title-header border-bottom">
-					{this.printHeader()}
+					<h1>{this.state.receiver_name}</h1>
 					</Row>
 					<Row className="window-body">
 						<Col xs={10} className="h-100 inline-block">
