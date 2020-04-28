@@ -24,9 +24,9 @@ import com.l8z.jparepository.UserJpaRepository;
 import com.l8z.orgs.Channels;
 import com.l8z.orgs.Instances;
 import com.l8z.orgs.Members;
-import com.l8z.orgs.MembersStatus;
 import com.l8z.orgs.Orgs;
 import com.l8z.orgs.OrgsSQL;
+import com.l8z.pending.PendingInvites;
 import com.l8z.todos.OrgTodo;
 import com.l8z.user.BasicUser;
 import com.l8z.user.User;
@@ -235,14 +235,14 @@ public class OrgsJpaResource {
     		return null;
     	}
     }
-	@PostMapping("jpa/invite/orgs/{inviter}/{org_id}")
+	@PostMapping("jpa/invite/orgs/{inviter}/{org_id}/{invitee}")
 	public ResponseEntity<Void> invite_to_org(
 			@PathVariable String inviter, 
 			@PathVariable String org_id, 
-			@RequestBody String invitee
+			@PathVariable String invitee
 		) {
 		String unique = org_id+"."+invitee;
-		//pendingjpa.save(new PendingInvites(unique, inviter, invitee, org_id));
+		pendingjpa.save(new PendingInvites(unique, inviter, invitee, org_id));
 		return ResponseEntity.noContent().build();
 	}
 	///////////////////////////////////////////////////////////////////////////

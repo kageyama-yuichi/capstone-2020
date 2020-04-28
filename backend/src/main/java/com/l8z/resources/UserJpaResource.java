@@ -98,4 +98,8 @@ public class UserJpaResource {
 	public List<BasicUser> retrieve_all_basic_users_by_name(@PathVariable String name) {
 		return repo.searchByName(name.toLowerCase());
 	}
+	@GetMapping("/jpa/retrieve/all/user/names")
+	public List<String> retrieve_all_name_space(){
+		return repo.retrieveAllNames();
+	}
 }

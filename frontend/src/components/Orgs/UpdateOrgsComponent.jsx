@@ -14,6 +14,8 @@ import {Container, Form, Button, ButtonGroup, Row, Col, ListGroup} from "react-b
 	Fix all the this.on_submit() validation
 */
 var channels = [];
+var current_namespace = [];
+var searched_users = [];
 const org_member_details = new Map();
 
 class UpdateOrgsComponent extends Component {
@@ -24,6 +26,7 @@ class UpdateOrgsComponent extends Component {
 			org_id: this.props.match.params.org_id,
 			old_org_id: this.props.match.params.org_id,
 			org_title: "",
+			search_key: "",
 			members: [],
 			org: [],
 			owned_ids: [],
@@ -33,6 +36,7 @@ class UpdateOrgsComponent extends Component {
 		};
 		this.on_submit = this.on_submit.bind(this);
 		this.handleCancel = this.handleCancel.bind(this);
+		this.invite_user = this.invite_user.bind(this);
 	}
 
 	handleValidation(e) {
@@ -121,10 +125,7 @@ class UpdateOrgsComponent extends Component {
 	handle_typing_org_id = (event) => {
 		// Organisation ID Must Be Lowercase and have NO SPACES and Special Characters
 		this.setState({
-			org_id: event.target.value
-				.toLowerCase()
-				.trim()
-				.replace(/[^\w\s]/gi, ""),
+			org_id: event.target.value.toLowerCase().trim().replace(/[^\w\s]/gi, ""),
 			error: false,
 		});
 	};
@@ -134,7 +135,12 @@ class UpdateOrgsComponent extends Component {
 			error: false,
 		});
 	};
-
+	handle_typing_search_key = (event) => {
+		this.setState({
+			search_key: event.target.value.replace(/[^a-zA-Z ']/gi, ""),
+		});
+	};
+	
 	handle_create_channel = () => {
 		var url = this.props.history.location.pathname + "/new";
 		this.props.history.push(url);
@@ -204,15 +210,33 @@ class UpdateOrgsComponent extends Component {
 				this.load_org_member_details();
 			}
 		);
-		
-		/*
-		// Testing Retrieving Users
-		OrgsResources.retrieve_all_basic_users_by_name("Michael A").then((response) => {
-			console.log(response.data);
+		OrgsResources.retrieve_all_name_space().then((response) => {
+			current_namespace = response.data.sort();
 		});
-		*/
 	}
 
+	handle_search_new_users = () => {
+		if(this.state.search_key != ""){
+			// Search for the Users Specified and Update Area
+			OrgsResources.retrieve_all_basic_users_by_name(this.state.search_key).then((response) => {
+				// Assign the Searched Users that Are Not in the Org to the Array
+				searched_users = [];
+				var temp = response.data.sort();
+				for(let i = 0; i<temp.length; i++){
+					if(!org_member_details.has(temp[i].username)){
+						searched_users.push(temp[i]);
+					}
+				}
+				// Re-render the Page to Display Array
+				this.setState({
+					search_key: ""
+				});
+			});
+		} else {
+			// Do Nothing
+		}
+	};
+	
 	toggleMemberListDisplay(channel_title) {
 		this.state.memberListOpen[channel_title] = !this.state.memberListOpen[channel_title];
 		this.forceUpdate();
@@ -359,6 +383,17 @@ class UpdateOrgsComponent extends Component {
 		});
 	};
 	
+	invite_user = (invitee) => {
+		OrgsResources.invite_to_org(this.state.username, invitee, this.state.org_id).then((response) => {
+			alert("User Successfully Emailed");
+			searched_users = [];
+			// Resetting Fields
+			this.setState({
+				search_key: ""
+			})
+		});
+	};
+	
 	// Maps all the OrgUsers
 	mapOrgUsers(mapper) {
 		let retDiv;
@@ -379,6 +414,24 @@ class UpdateOrgsComponent extends Component {
 		return retDiv;
 	}
 	
+	// Maps all the OrgUsers
+	mapSearchedUsers() {
+		let retDiv;
+		// Ensure the Array Has Data
+		if(searched_users.length > 0) {
+			retDiv = searched_users.map((new_user) => {
+				return (
+					<ListGroup.Item key={new_user.username} action onClick={e => {e.preventDefault(); this.invite_user(new_user.username)}}>
+						{new_user.fname} {new_user.lname} bio: {new_user.bio}
+					</ListGroup.Item>
+				);
+			});
+		} else {
+			retDiv = null;
+		}
+		return retDiv;
+	}
+	
 	render() {
 		console.log("System - Rendering Page...");
 		return (
@@ -387,7 +440,6 @@ class UpdateOrgsComponent extends Component {
 					<Form
 						noValidate
 						validated={this.state.validated}
-						onSubmit={this.on_submit.bind(this)}
 						className="update-org-form">
 						<h1>Update: <strong>{this.state.org_title}</strong></h1>
 						<Row>
@@ -526,6 +578,32 @@ class UpdateOrgsComponent extends Component {
 								</Container>
 							</Col>
 						</Row>
+						<Row className="pt-3">
+							<Col>
+								<Container>
+									<Row>
+										<h3>Invite a New User to <strong>{this.state.org_title}</strong></h3>
+										<input
+											type="text"
+											id="search_user"
+											value={this.state.search_key}
+											onChange={this.handle_typing_search_key}
+											placeholder="Enter the Name of the User"
+											onKeyPress={(event) => {
+												if (event.key === "Enter") {
+													this.handle_search_new_users();
+												}
+											}}
+										/>
+									</Row>
+									<ListGroup className="overflow-auto">
+									{this.mapSearchedUsers()}
+									</ListGroup>
+								</Container>
+							</Col>
+							<Col>
+							</Col>
+						</Row>
 						<Row className="fixed-bottom justify-content-end">
 							<Form.Group md="0.5" as={Col}>
 								<Button
@@ -538,9 +616,10 @@ class UpdateOrgsComponent extends Component {
 							<Form.Group md="2" as={Col}>
 								<Button
 									id="org_update"
-									type="submit"
+									type="button"
 									variant="secondary"
 									style={{whiteSpace: "nowrap"}}
+									onClick={this.on_submit.bind(this)}
 									>
 									Update Organisation
 								</Button>
