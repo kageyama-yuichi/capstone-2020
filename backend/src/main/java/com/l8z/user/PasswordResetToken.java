@@ -7,8 +7,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "PasswordResetToken")
 public class PasswordResetToken {
 	// Members
 	// 10 Minute Expiration

@@ -13,6 +13,8 @@ import {Container, Form, Button, ButtonGroup, Row, Col, ListGroup} from "react-b
 	Work out how to Update a Member Role
 	Fix all the this.on_submit() validation
 */
+var channels = [];
+const org_member_details = new Map();
 
 class UpdateOrgsComponent extends Component {
 	constructor(props) {
@@ -22,12 +24,12 @@ class UpdateOrgsComponent extends Component {
 			org_id: this.props.match.params.org_id,
 			old_org_id: this.props.match.params.org_id,
 			org_title: "",
-			channels: [],
 			members: [],
 			org: [],
 			owned_ids: [],
 			memberListOpen: [],
 			errors: [],
+			member_details_loaded: false,
 		};
 		this.on_submit = this.on_submit.bind(this);
 		this.handleCancel = this.handleCancel.bind(this);
@@ -103,7 +105,7 @@ class UpdateOrgsComponent extends Component {
 			let org_push = {
 				org_id: this.state.org_id,
 				org_title: this.state.org_title,
-				channels: this.state.channels,
+				channels: channels,
 				members: this.state.members,
 			};
 			console.log(org_push);
@@ -139,26 +141,15 @@ class UpdateOrgsComponent extends Component {
 	};
 	handle_delete_channel = (channel_title) => {
 		console.log("Deleteing");
-		OrgsResources.delete_channel(this.state.username, this.state.org_id, channel_title).then(
-			(response) => {
-				console.log("Deleted");
-				this.setState(
-					{
-						channels: [],
-					},
-					() => {
-						// Retrieves All Channels from the Org Data
-						OrgsResources.retrieve_org(this.state.username, this.state.old_org_id).then(
-							(response) => {
-								this.setState({
-									channels: response.data.channels,
-								});
-							}
-						);
-					}
-				);
-			}
-		);
+		OrgsResources.delete_channel(this.state.username, this.state.org_id, channel_title).then((response) => {
+			console.log("Deleted");
+			// Reset the Channels Variable
+			channels = []; 
+			// Retrieves All Channels from the Org Data
+			OrgsResources.retrieve_org(this.state.username, this.state.old_org_id).then((response) => {
+				channels = response.data.channels;
+			});
+		});
 	};
 	handle_update_channel = (channel_title) => {
 		var url = this.props.history.location.pathname + "/" + channel_title;
@@ -193,25 +184,33 @@ class UpdateOrgsComponent extends Component {
 		});
 		// Retrieves All the Current Org Data
 		OrgsResources.retrieve_org(this.state.username, this.state.old_org_id).then((response) => {
-			this.setState(
-				{
+			channels = response.data.channels;
+			this.setState({
 					org_id: response.data.org_id,
 					org_title: response.data.org_title,
-					channels: response.data.channels,
 					members: response.data.members,
 				},
 				() => {
 					//Initializing member list dropdown
-					this.state.channels.map((channel) => {
-						console.log(channel.channel_title);
+					channels.map((channel) => {
 						this.state.memberListOpen[channel.channel_title] = false;
 					});
 
 					this.setState({memberListOpen: this.state.memberListOpen});
-					console.log(this.state.memberListOpen);
 				}
 			);
+		}).then(
+			() => {
+				this.load_org_member_details();
+			}
+		);
+		
+		/*
+		// Testing Retrieving Users
+		OrgsResources.retrieve_all_basic_users_by_name("Michael A").then((response) => {
+			console.log(response.data);
 		});
+		*/
 	}
 
 	toggleMemberListDisplay(channel_title) {
@@ -232,7 +231,154 @@ class UpdateOrgsComponent extends Component {
 
 		return ret;
 	};
+	
+	sort_by_role = () => {
+		let org_owner;
+		let admins = [];
+		let team_leaders = [];
+		let team_members = [];
+		
+		let temp = this.state.members;
+		for(let i=0; i<temp.length; i++){
+			if(temp[i].role === "ORG_OWNER") {
+				org_owner = temp[i];
+			} else if(temp[i].role === "ADMIN") {
+				admins.push(temp[i]);
+			} else if(temp[i].role === "TEAM_LEADER") {
+				team_leaders.push(temp[i]);
+			} else {
+				team_members.push(temp[i]);
+			}
+		}
+		
+		// Sort the Arrays by Alphabetical Order
+		admins = admins.sort(this.sort_by_alphabetical_order);
+		team_leaders = team_leaders.sort(this.sort_by_alphabetical_order);
+		team_members = team_members.sort(this.sort_by_alphabetical_order);
+		
+		// Create the New this.state.members
+		let new_members = [];
+		new_members.push(org_owner);
+		for(let i=0; i<admins.length; i++){
+			new_members.push(admins[i]);
+		}
+		for(let i=0; i<team_leaders.length; i++){
+			new_members.push(team_leaders[i]);
+		}
+		for(let i=0; i<team_members.length; i++){
+			new_members.push(team_members[i]);
+		}
+		// Overrwrite the State
+		this.setState({
+			members: new_members
+		})
+	}
+	
+	sort_by_role_channels = () => {
+		for(let i=0; i<channels.length; i++){
+			let org_owner;
+			let admins = [];
+			let team_leaders = [];
+			let team_members = [];
 
+			let temp = channels[i].members;
+			
+			for(let j=0; j<temp.length; j++){
+				if(temp[j].role === "ORG_OWNER") {
+					org_owner = temp[j];
+				} else if(temp[j].role === "ADMIN") {
+					admins.push(temp[j]);
+				} else if(temp[j].role === "TEAM_LEADER") {
+					team_leaders.push(temp[j]);
+				} else {
+					team_members.push(temp[j]);
+				}
+			}
+			
+			// Sort the Arrays by Alphabetical Order
+			admins = admins.sort(this.sort_by_alphabetical_order);
+			team_leaders = team_leaders.sort(this.sort_by_alphabetical_order);
+			team_members = team_members.sort(this.sort_by_alphabetical_order);
+			
+			// Create the New this.state.members
+			let new_members = [];
+			if(org_owner != null) {
+				new_members.push(org_owner);
+			}
+			for(let k=0; k<admins.length; k++){
+				new_members.push(admins[k]);
+			}
+			for(let k=0; k<team_leaders.length; k++){
+				new_members.push(team_leaders[k]);
+			}
+			for(let k=0; k<team_members.length; k++){
+				new_members.push(team_members[k]);
+			}
+			// Replace the Members List in the Channel
+			channels[i].members = new_members;		
+		}
+	}
+	
+	sort_by_alphabetical_order = (a, b) => {
+		const user_a_name = org_member_details.get(a.username).name.toUpperCase();
+		const user_b_name = org_member_details.get(b.username).name.toUpperCase();
+		
+		let comparison; 
+		if(user_a_name > user_b_name) {
+			comparison = 1;
+		} else if(user_a_name < user_b_name) {
+			comparison = -1;
+		}
+		return comparison;
+	};
+	
+	load_org_member_details(){
+		// Create the Map for the Member Details
+		OrgsResources.retrieve_basic_users_in_orgs(this.state.members).then((response) => {
+			// Go through the Response Data which is the Basic User and Strip Data
+			for(let i=0; i<response.data.length; i++){
+				//console.log(response.data[i]);
+				let user_details = {
+					fname: response.data[i].fname,
+					lname: response.data[i].lname,
+					name: response.data[i].fname + " " +response.data[i].lname,
+					bio: response.data[i].bio,
+					image_path: response.data[i].image_path,
+				}
+				// Add them to the Details Map
+				org_member_details.set(response.data[i].username, user_details);
+			}
+			this.setState({
+				member_details_loaded: true,
+			});
+			// Sort this.state.members to correct Heirarchy
+			this.sort_by_role();
+			// Sort this.state.channel[i].members to correct Heirarchy
+			this.sort_by_role_channels();
+			this.forceUpdate();
+		});
+	};
+	
+	// Maps all the OrgUsers
+	mapOrgUsers(mapper) {
+		let retDiv;
+		// Ensure the Map Has Data
+		if(org_member_details.size > 0) {
+			retDiv = mapper.map((member) => {
+				return (
+					<ListGroup.Item
+						key={member.username}
+						variant={this.setRoleStyling(member.role)}>
+						{org_member_details.get(member.username).name}
+					</ListGroup.Item>
+				);
+			});
+		} else {
+			retDiv = null;
+		}
+		return retDiv;
+	}
+	
 	render() {
 		console.log("System - Rendering Page...");
 		return (
@@ -286,25 +432,14 @@ class UpdateOrgsComponent extends Component {
 											<h3>Member List</h3>
 										</Col>
 										<Col md={1}>
-											<Button
-												variant="outline-dark"
-											>
+											<Button variant="outline-dark">
 												<i className="fas fa-plus"></i>
 											</Button>
 										</Col>
 									</Row>
 
 									<ListGroup className="overflow-auto">
-										{this.state.members.map((member) => {
-											// {console.log(this.setRoleClassName(member.role))}
-											return (
-												<ListGroup.Item
-													key={member.username}
-													variant={this.setRoleStyling(member.role)}>
-													{member.username}
-												</ListGroup.Item>
-											);
-										})}
+									{this.mapOrgUsers(this.state.members)}
 									</ListGroup>
 								</Container>
 							</Col>
@@ -325,7 +460,7 @@ class UpdateOrgsComponent extends Component {
 									<Row>
 										<Col>
 											<ListGroup className="overflow-auto">
-												{this.state.channels.map((ch) => (
+												{channels.map((ch) => (
 													<ListGroup.Item
 														key={ch.channel_title}
 														className="channels"
@@ -344,7 +479,7 @@ class UpdateOrgsComponent extends Component {
 																	{this.state.memberListOpen[
 																		ch.channel_title
 																	] ? (
-																		<i class="fas fa-angle-up"></i>
+																		<i className="fas fa-angle-up"></i>
 																	) : (
 																		<i className="fas fa-caret-down"></i>
 																	)}
@@ -381,17 +516,7 @@ class UpdateOrgsComponent extends Component {
 																	? "flex"
 																	: "none",
 															}}>
-															{ch.members.map((member) => {
-																return (
-																	<ListGroup.Item
-																		key={member.username}
-																		variant={this.setRoleStyling(
-																			member.role
-																		)}>
-																		{member.username}
-																	</ListGroup.Item>
-																);
-															})}
+															{this.mapOrgUsers(ch.members)}
 														</ListGroup>
 													</ListGroup.Item>
 												))}
@@ -407,7 +532,7 @@ class UpdateOrgsComponent extends Component {
 									type="button"
 									variant="outline-primary"
 									onClick={this.handleCancel}>
-									Cancel
+									Go Back
 								</Button>
 							</Form.Group>
 							<Form.Group md="2" as={Col}>

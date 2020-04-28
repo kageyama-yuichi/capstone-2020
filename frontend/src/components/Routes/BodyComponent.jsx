@@ -55,7 +55,7 @@ class BodyComponent extends Component {
 
 							<AuthenticatedRoute path="/agenda" exact component={AgendaComponent} />
 
-                            <Route component={ErrorComponent} />
+                            <AuthenticatedRoute component={ErrorComponent} />
                         </Switch>
                         {/* <FooterComponent/> */}
                     </>

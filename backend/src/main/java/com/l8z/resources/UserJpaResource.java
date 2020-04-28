@@ -1,5 +1,6 @@
 package com.l8z.resources;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +12,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.l8z.GlobalVariable;
 import com.l8z.jparepository.PasswordRecoveryJpaRepository;
 import com.l8z.jparepository.UserJpaRepository;
+import com.l8z.user.BasicUser;
 import com.l8z.user.PasswordResetToken;
 import com.l8z.user.User;
 
@@ -58,11 +61,8 @@ public class UserJpaResource {
 		return ResponseEntity.noContent().build();
 	}
 	
-	/*
 	@PostMapping("/user/password/reset")
 	public boolean resetPassword(@RequestParam("email") String email) {
-	*/
-	public boolean resetPassword(String email) {
 	    // Ensure the User Exists
 		User user = repo.findUserByEmail(email);
 	    if (user == null) {
@@ -79,12 +79,12 @@ public class UserJpaResource {
         msg.setTo(email);
         // Set the Subject
         msg.setSubject("L8Z - Password Reset for "+user.getUsername());
-        String url = GlobalVariable.L8Z_URL + "/user/password/change?username="+user.getUsername()+"&token=" + token;
+        String url = GlobalVariable.L8Z_URL + "/user/password/change?username="+user.getUsername()+"&token="+token;
         // Set the Body Content
         msg.setText(
-    		"Hello "+user.getFname()+" "+user.getLname()+",\n"
+    		"Hello "+user.getFname()+" "+user.getLname()+",\n\n"
     		+ "Your L8Z account has requested a recovery of password. If this was not you, please ignore this email.\n"
-    		+ url + "\n"
+    		+ url + "\n\n"
     		+ "Thank you for choosing L8Z,\n L8Z Team."
     	);
         
@@ -92,5 +92,10 @@ public class UserJpaResource {
         mail.send(msg);
 	    return true;
 	    }
+	}
+	
+	@GetMapping("/jpa/retrieve/user/{name}")
+	public List<BasicUser> retrieve_all_basic_users_by_name(@PathVariable String name) {
+		return repo.searchByName(name.toLowerCase());
 	}
 }

@@ -21,6 +21,16 @@ class OrgsResources {
     delete_org(username, org_id) {
         return axios.delete(`${JPA_URL}/orgs/${username}/${org_id}`);
     }
+	// Found in UserJpaResource
+	retrieve_all_basic_users_by_name(name) {
+		return axios.get(`${JPA_URL}/retrieve/user/${name}`);
+	}
+	retrieve_basic_users_in_orgs(members) {
+		return axios.post(`${JPA_URL}/users/in/orgs`, members);
+	}
+	invite_to_org(inviter, invitee, org_id) {
+		return axios.post(`${JPA_URL}/invite/orgs/${inviter}/${org_id}`, invitee);
+	}
 	// Channel Related
 	retrieve_all_channel_titles(username, org_id) {
 		return axios.get(`${JPA_URL}/orgs/${username}/${org_id}/new`);

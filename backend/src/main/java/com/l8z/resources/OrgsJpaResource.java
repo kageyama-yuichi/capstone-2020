@@ -19,12 +19,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.l8z.GlobalVariable;
 import com.l8z.jparepository.OrgsJpaRepository;
 import com.l8z.jparepository.OrgsTodoJpaRepository;
+import com.l8z.jparepository.PendingInvitesJpaRepository;
+import com.l8z.jparepository.UserJpaRepository;
 import com.l8z.orgs.Channels;
 import com.l8z.orgs.Instances;
 import com.l8z.orgs.Members;
+import com.l8z.orgs.MembersStatus;
 import com.l8z.orgs.Orgs;
 import com.l8z.orgs.OrgsSQL;
 import com.l8z.todos.OrgTodo;
+import com.l8z.user.BasicUser;
+import com.l8z.user.User;
 
 @CrossOrigin(origins=GlobalVariable.L8Z_URL)
 @RestController
@@ -36,13 +41,15 @@ public class OrgsJpaResource {
 	private OrgsJpaRepository orgsjpa;
 	@Autowired
 	private OrgsTodoJpaRepository orgstodojpa;
-	// Used to Read a JSON Document and Convert to Object
-	private ObjectMapper json_mapper = new ObjectMapper();
+	@Autowired
+	private UserJpaRepository userjpa;
 	// Used for Saving Organisation ID to the User's Name
 	@Autowired
 	private UserMetaDataJpaResource user_meta_data_jpa_resouce = new UserMetaDataJpaResource();
 	@Autowired
-	private UserJpaResource user_jpa_resouce = new UserJpaResource();
+	private PendingInvitesJpaRepository pendingjpa;
+	// Used to Read a JSON Document and Convert to Object
+	private ObjectMapper json_mapper = new ObjectMapper();
 	
 	///////////////////////////////////////////////////////////////////////////
 	///////////////// O R G A N I S A T I O N   R E L A T E D /////////////////
@@ -133,9 +140,7 @@ public class OrgsJpaResource {
 		orgsjpa.save(sql);
 		// Add the Organsiation ID to the User's Name
 		user_meta_data_jpa_resouce.user_joined_org(username, org.get_org_id());
-////////////////////////////////////////////////////////////////////////Testing 
-		user_jpa_resouce.resetPassword("s3662507@student.rmit.edu.au");
-///////////////////////////////////////////////////////////////////////////////
+
 		return ResponseEntity.noContent().build();
 	}
 	
@@ -207,6 +212,37 @@ public class OrgsJpaResource {
 			}
 			
 		}
+		return ResponseEntity.noContent().build();
+	}
+	// Get all the Users Details in the Orgs
+    @PostMapping("jpa/users/in/orgs")
+    public List<BasicUser> retrieve_basic_users_in_orgs(@RequestBody List<Members> users) {    	
+    	// Send the Basic User information Back to Frontend, Ignore Status
+    	List<BasicUser> members = new ArrayList<BasicUser>();
+    	
+		// Get the @users Details
+		for(int i=0; i<users.size(); i++) {
+			Members m = users.get(i);
+			User user = userjpa.findByUsername(m.get_username());
+			if(user == null) continue; // Go Next
+			// Add the User's Details
+			members.add(new BasicUser(user));
+		}
+		
+    	if(members.size() > 0) {
+    		return members;
+    	} else {
+    		return null;
+    	}
+    }
+	@PostMapping("jpa/invite/orgs/{inviter}/{org_id}")
+	public ResponseEntity<Void> invite_to_org(
+			@PathVariable String inviter, 
+			@PathVariable String org_id, 
+			@RequestBody String invitee
+		) {
+		String unique = org_id+"."+invitee;
+		//pendingjpa.save(new PendingInvites(unique, inviter, invitee, org_id));
 		return ResponseEntity.noContent().build();
 	}
 	///////////////////////////////////////////////////////////////////////////
