@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,6 +50,8 @@ public class OrgsJpaResource {
 	private UserMetaDataJpaResource user_meta_data_jpa_resouce = new UserMetaDataJpaResource();
 	@Autowired
 	private PendingInvitesJpaRepository pendingjpa;
+	@Autowired
+    private JavaMailSender mail;
 	// Used to Read a JSON Document and Convert to Object
 	private ObjectMapper json_mapper = new ObjectMapper();
 	
@@ -217,7 +221,7 @@ public class OrgsJpaResource {
 	// Get all the Users Details in the Orgs
     @PostMapping("jpa/users/in/orgs")
     public List<BasicUser> retrieve_basic_users_in_orgs(@RequestBody List<Members> users) {    	
-    	// Send the Basic User information Back to Frontend, Ignore Status
+    	// Send the Basic User information Back to Frontend
     	List<BasicUser> members = new ArrayList<BasicUser>();
     	
 		// Get the @users Details
@@ -235,6 +239,28 @@ public class OrgsJpaResource {
     		return null;
     	}
     }
+    // Get all the Users Details in the Orgs
+    @PostMapping("jpa/users/pending/{org_id}")
+    public List<BasicUser> retrieve_pending_users_in_orgs(@PathVariable String org_id) {    	
+    	// Send the Pending Basic User information to Frontend
+    	List<BasicUser> invitees = new ArrayList<BasicUser>();
+    	// Retrieve all the Pending Invites
+    	List<PendingInvites> org_invites = pendingjpa.findByOrgId(org_id);
+    	
+		// Get the @users Details
+		for(int i=0; i<org_invites.size(); i++) {
+			User user = userjpa.findByUsername(org_invites.get(i).getInvitee());
+			if(user == null) continue; // Go Next
+			// Add the User's Details
+			invitees.add(new BasicUser(user));
+		}
+		
+    	if(invitees.size() > 0) {
+    		return invitees;
+    	} else {
+    		return null;
+    	}
+    }
 	@PostMapping("jpa/invite/orgs/{inviter}/{org_id}/{invitee}")
 	public ResponseEntity<Void> invite_to_org(
 			@PathVariable String inviter, 
@@ -243,6 +269,35 @@ public class OrgsJpaResource {
 		) {
 		String unique = org_id+"."+invitee;
 		pendingjpa.save(new PendingInvites(unique, inviter, invitee, org_id));
+		/*
+		// Create the Simple Mail Message and Set the Email, Subject and Message
+	    SimpleMailMessage msg = new SimpleMailMessage();
+	    User user = userjpa.findByUsername(invitee);
+	    // Set the Email
+        msg.setTo(user.getEmail());
+        // Set the Subject
+        msg.setSubject("L8Z - New Organisation Invite");
+        // Set the Body Content
+        msg.setText(
+    		"Hello "+user.getFname()+" "+user.getLname()+",\n\n"
+    		+ "Your L8Z account has received a new organisation invite! You currently have "
+    		+  pendingjpa.findByInvitee(invitee).size()+ " pending invites.\n\n"
+    		+ "Thank you for choosing L8Z,\n L8Z Team."
+    	);
+        
+        // Send the Email
+        mail.send(msg);
+        */
+		return ResponseEntity.noContent().build();
+	}
+	@PostMapping("jpa/invite/removal/orgs/{remover}/{unique_id}")
+	public ResponseEntity<Void> remove_invited_user_from_org(
+			@PathVariable String remover, 
+			@PathVariable String unique_id
+		) {		
+		System.out.println(unique_id);
+		pendingjpa.deleteByUniqueId(unique_id);
+		
 		return ResponseEntity.noContent().build();
 	}
 	///////////////////////////////////////////////////////////////////////////
@@ -395,6 +450,40 @@ public class OrgsJpaResource {
 		if(channel_was_deleted) {
 			orgsjpa.save(sql);
 		}
+		return ResponseEntity.noContent().build();
+	}
+	@PostMapping("/jpa/members/{username}/orgs/{org_id}/{channel_title}/add")
+	public ResponseEntity<Void> add_users_to_channel(
+			@PathVariable String username, 
+			@PathVariable String org_id,
+			@PathVariable String channel_title,
+			@RequestBody List<Members> added_members
+		) {
+		OrgsSQL sql = null;
+		Orgs temp_org = null;
+
+		try {
+			sql = orgsjpa.getByOrgId(org_id); 
+			temp_org = json_mapper.readValue(sql.get_data(), Orgs.class);
+			// Grabs Recent Date Time From Chat
+			String recent_date_time = orgsjpa.getByOrgId(org_id).get_recent_date_time();
+			// Get the Old Channel
+			Channels temp_channel = temp_org.retrieve_channel(channel_title);
+			// Remove the Old Channel
+			temp_org.remove_channel(temp_channel);
+			// Add the Users to the Channel
+			for(int i=0; i<added_members.size(); i++) {
+				temp_channel.add_member(added_members.get(i));	
+			}
+			// Add the Channel Back to the Org
+			temp_org.add_channel(temp_channel);
+			
+			// Save the Org
+			orgsjpa.save(new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org), recent_date_time));
+		} catch (JsonProcessingException e) {
+			System.out.println("System - Error Updating Org");
+		}
+		
 		return ResponseEntity.noContent().build();
 	}
 	///////////////////////////////////////////////////////////////////////////

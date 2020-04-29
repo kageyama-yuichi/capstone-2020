@@ -24,8 +24,14 @@ class OrgsResources {
 	retrieve_basic_users_in_orgs(members) {
 		return axios.post(`${JPA_URL}/users/in/orgs`, members);
 	}
+	retrieve_pending_users_in_orgs(org_id) {
+		return axios.post(`${JPA_URL}/users/pending/${org_id}`);
+	}
 	invite_to_org(inviter, invitee, org_id) {
 		return axios.post(`${JPA_URL}/invite/orgs/${inviter}/${org_id}/${invitee}`);
+	}
+	remove_invited_user_from_org(remover, unique_id) {
+		return axios.post(`${JPA_URL}/invite/removal/orgs/${remover}/${unique_id}`);
 	}
 	// Found in UserJpaResource
 	retrieve_all_basic_users_by_name(name) {
@@ -66,6 +72,9 @@ class OrgsResources {
     delete_org_todo(username, org_id, channel_title, id) {
         return axios.delete(`${JPA_URL}/orgs/todos/${username}/${org_id}/${channel_title}/${id}`);
     }
+	add_users_to_channel(username, org_id, channel_title, added_members) {
+		return axios.post(`${JPA_URL}/members/${username}/orgs/${org_id}/${channel_title}/add`, added_members)
+	}
 	// Instance Related
 	retrieve_all_instance_titles(username, org_id, channel_title) {
 	return axios.get(`${JPA_URL}/orgs/${username}/${org_id}/${channel_title}/new`);

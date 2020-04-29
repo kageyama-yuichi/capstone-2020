@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import OrgsResources from "./OrgsResources.js";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
+	import AddUserToChannelComponent from "./Channels/AddUserToChannelComponent.jsx";
 import "./UpdateOrgsComponent.css";
 
 import {Container, Form, Button, ButtonGroup, Row, Col, ListGroup} from "react-bootstrap";
@@ -14,8 +15,10 @@ import {Container, Form, Button, ButtonGroup, Row, Col, ListGroup} from "react-b
 	Fix all the this.on_submit() validation
 */
 var channels = [];
+var current_members_in_channel = [];
 var current_namespace = [];
 var searched_users = [];
+var pending_users = [];
 const org_member_details = new Map();
 
 class UpdateOrgsComponent extends Component {
@@ -33,10 +36,14 @@ class UpdateOrgsComponent extends Component {
 			memberListOpen: [],
 			errors: [],
 			member_details_loaded: false,
+			invite_sent: false,
+			show_add_users: false,
+			temp_channel_title: "",
 		};
 		this.on_submit = this.on_submit.bind(this);
 		this.handleCancel = this.handleCancel.bind(this);
 		this.invite_user = this.invite_user.bind(this);
+		this.add_users_to_channel = this.add_users_to_channel.bind(this);
 	}
 
 	handleValidation(e) {
@@ -122,13 +129,6 @@ class UpdateOrgsComponent extends Component {
 
 		this.setState({validated: true});
 	};
-	handle_typing_org_id = (event) => {
-		// Organisation ID Must Be Lowercase and have NO SPACES and Special Characters
-		this.setState({
-			org_id: event.target.value.toLowerCase().trim().replace(/[^\w\s]/gi, ""),
-			error: false,
-		});
-	};
 	handle_typing_org_title = (event) => {
 		this.setState({
 			org_title: event.target.value,
@@ -167,6 +167,20 @@ class UpdateOrgsComponent extends Component {
 	}
 
 	componentDidUpdate() {
+		// Update the Pending Users List
+		if(this.state.invite_sent === true){
+			OrgsResources.retrieve_pending_users_in_orgs(this.state.org_id).then((response) => {
+				// if there is no Data, Don't Sort
+				if(response.data != ""){
+					pending_users = response.data.sort(this.sort_by_alphabetical_order_pending);
+				} else {
+					pending_users = response.data;
+				}
+				this.setState({
+					invite_sent: false,
+				})
+			});
+		}
 		// console.log(this.state.org_id);
 		// console.log(this.state.org_title);
 		// console.log(this.state.channels);
@@ -174,6 +188,14 @@ class UpdateOrgsComponent extends Component {
 	}
 
 	componentDidMount() {
+		OrgsResources.retrieve_pending_users_in_orgs(this.state.org_id).then((response) => {
+			// if there is no Data, Don't Sort
+			if(response.data != ""){
+				pending_users = response.data.sort(this.sort_by_alphabetical_order_pending);
+			} else {
+				pending_users = response.data;
+			}
+		});
 		// Retrieves All the Current Organisations IDs
 		OrgsResources.retrieve_all_orgs(this.state.username).then((response) => {
 			for (let i = 0; i < response.data.length; i++) {
@@ -221,9 +243,14 @@ class UpdateOrgsComponent extends Component {
 			OrgsResources.retrieve_all_basic_users_by_name(this.state.search_key).then((response) => {
 				// Assign the Searched Users that Are Not in the Org to the Array
 				searched_users = [];
-				var temp = response.data.sort();
-				for(let i = 0; i<temp.length; i++){
-					if(!org_member_details.has(temp[i].username)){
+				// Create a Temporary Map for the Pending Users
+				const temp_map = new Map();
+				for(let i=0; i<pending_users.length; i++){
+					temp_map.set(pending_users[i].username, pending_users[i]);
+				}
+				var temp = response.data.sort(this.sort_by_alphabetical_order_pending);
+				for(let i=0; i<temp.length; i++){
+					if(!org_member_details.has(temp[i].username) && !temp_map.has(temp[i].username)){
 						searched_users.push(temp[i]);
 					}
 				}
@@ -355,6 +382,18 @@ class UpdateOrgsComponent extends Component {
 		}
 		return comparison;
 	};
+	sort_by_alphabetical_order_pending = (a, b) => {
+		const user_a_name = a.fname.toUpperCase()+" "+a.lname.toUpperCase();
+		const user_b_name = b.fname.toUpperCase()+" "+b.lname.toUpperCase();
+		
+		let comparison; 
+		if(user_a_name > user_b_name) {
+			comparison = 1;
+		} else if(user_a_name < user_b_name) {
+			comparison = -1;
+		}
+		return comparison;
+	};
 	
 	load_org_member_details(){
 		// Create the Map for the Member Details
@@ -389,15 +428,48 @@ class UpdateOrgsComponent extends Component {
 			searched_users = [];
 			// Resetting Fields
 			this.setState({
-				search_key: ""
+				search_key: "",
+				invite_sent: true,
 			})
 		});
 	};
+	remove_invited_user = (unique_id) => {
+		OrgsResources.remove_invited_user_from_org(this.state.username, unique_id).then((response) => {
+			pending_users = [];
+			// Re-render the Page
+			this.setState({
+				invite_sent: true
+			});
+		});
+	};
+	
+	add_users_to_channel(channel_title) {
+		current_members_in_channel = [];
+		// Get the Current Channel Members
+		for(let i=0; i<channels.length; i++){
+			if(channels[i].channel_title === channel_title){
+				current_members_in_channel = channels[i].members;
+				break;
+			}
+		}
+		this.setState({
+			show_add_users: !this.state.show_add_users,
+			temp_channel_title: channel_title,
+		});
+	}
+	add_users_to_channel_exit = () => {
+		current_members_in_channel = [];
+		this.setState({
+			show_add_users: !this.state.show_add_users,
+			temp_channel_title: "",
+		});
+	}
 	
 	// Maps all the OrgUsers
 	mapOrgUsers(mapper) {
 		let retDiv;
 		// Ensure the Map Has Data
+		console.log(org_member_details);
 		if(org_member_details.size > 0) {
 			retDiv = mapper.map((member) => {
 				return (
@@ -414,16 +486,50 @@ class UpdateOrgsComponent extends Component {
 		return retDiv;
 	}
 	
-	// Maps all the OrgUsers
-	mapSearchedUsers() {
+	// Maps all the Searched and Pending Users
+	mapNonOrgUsers(mapper) {
+		let retDiv;
+		// Ensure the Array Has Data
+		if(mapper.length > 0) {
+			retDiv = mapper.map((usr) => {
+				return (
+					<ListGroup.Item key={usr.username}>
+						{usr.fname} {usr.lname}
+					</ListGroup.Item>
+				);
+			});
+		} else {
+			retDiv = null;
+		}
+		return retDiv;
+	}
+	// Maps all the Searched User Buttons
+	mapSearchedUsersButtons() {
 		let retDiv;
 		// Ensure the Array Has Data
 		if(searched_users.length > 0) {
-			retDiv = searched_users.map((new_user) => {
+			retDiv = searched_users.map((usr, c) => {
 				return (
-					<ListGroup.Item key={new_user.username} action onClick={e => {e.preventDefault(); this.invite_user(new_user.username)}}>
-						{new_user.fname} {new_user.lname} bio: {new_user.bio}
-					</ListGroup.Item>
+					<Button key={usr.username} size="lg" variant="outline-dark" onClick={() => this.invite_user(usr.username)}>
+						<i className="fas fa-plus"></i>
+					</Button>
+				);
+			});
+		} else {
+			retDiv = null;
+		}
+		return retDiv;
+	}
+	// Maps all the Searched User Buttons
+	mapPendingUsersButtons() {
+		let retDiv;
+		// Ensure the Array Has Data
+		if(pending_users.length > 0) {
+			retDiv = pending_users.map((usr) => {
+				return (
+					<Button key={usr.username} size="lg" variant="outline-dark" onClick={() => this.remove_invited_user(this.state.org_id+"."+usr.username)}>
+						<i className="fas fa-minus"></i>
+					</Button>
 				);
 			});
 		} else {
@@ -445,14 +551,14 @@ class UpdateOrgsComponent extends Component {
 						<Row>
 							<Col>
 								<Form.Group>
-									<Form.Label>Change Org ID</Form.Label>
+									<Form.Label>Org ID</Form.Label>
 									<Form.Control
 										type="text"
 										name="id"
 										id="org_id"
 										value={this.state.org_id}
-										onChange={this.handle_typing_org_id}
 										placeholder="Organisation ID"
+										disabled
 									/>
 									<Form.Control.Feedback type="invalid">
 										{this.state.errors.id}
@@ -480,14 +586,7 @@ class UpdateOrgsComponent extends Component {
 							<Col>
 								<Container>
 									<Row>
-										<Col>
-											<h3>Member List</h3>
-										</Col>
-										<Col md={1}>
-											<Button variant="outline-dark">
-												<i className="fas fa-plus"></i>
-											</Button>
-										</Col>
+										<h3>Member List</h3>
 									</Row>
 
 									<ListGroup className="overflow-auto">
@@ -539,6 +638,12 @@ class UpdateOrgsComponent extends Component {
 																<Button
 																	variant="dark"
 																	className="btn-sm"
+																	onClick={() => this.add_users_to_channel(ch.channel_title)}>
+																	<i class="fas fa-user-plus"></i>
+																</Button>
+																<Button
+																	variant="dark"
+																	className="btn-sm"
 																	onClick={() =>
 																		this.handle_update_channel(
 																			ch.channel_title
@@ -582,7 +687,9 @@ class UpdateOrgsComponent extends Component {
 							<Col>
 								<Container>
 									<Row>
-										<h3>Invite a New User to <strong>{this.state.org_title}</strong></h3>
+										<h3>Invite a <strong>New User</strong></h3>
+									</Row>
+									<Row>
 										<input
 											type="text"
 											id="search_user"
@@ -596,12 +703,38 @@ class UpdateOrgsComponent extends Component {
 											}}
 										/>
 									</Row>
-									<ListGroup className="overflow-auto">
-									{this.mapSearchedUsers()}
-									</ListGroup>
+									<Row>
+										<Col>
+											<ListGroup className="overflow-auto">
+												{this.mapNonOrgUsers(searched_users)}
+											</ListGroup>
+										</Col>
+										<Col md={0.5}>
+											<ButtonGroup vertical>
+												{this.mapSearchedUsersButtons()}
+											</ButtonGroup>
+										</Col>
+									</Row>
 								</Container>
 							</Col>
 							<Col>
+								<Container>
+									<Row>
+										<h3>Pending User Invites</h3>
+									</Row>
+									<Row>
+										<Col>
+											<ListGroup className="overflow-auto">
+												{this.mapNonOrgUsers(pending_users)}
+											</ListGroup>
+										</Col>
+										<Col md={0.5}>
+											<ButtonGroup vertical>
+												{this.mapPendingUsersButtons()}
+											</ButtonGroup>
+										</Col>
+									</Row>
+								</Container>
 							</Col>
 						</Row>
 						<Row className="fixed-bottom justify-content-end">
@@ -619,7 +752,7 @@ class UpdateOrgsComponent extends Component {
 									type="button"
 									variant="secondary"
 									style={{whiteSpace: "nowrap"}}
-									onClick={this.on_submit.bind(this)}
+									onClick={() => this.on_submit.bind(this)}
 									>
 									Update Organisation
 								</Button>
@@ -627,6 +760,16 @@ class UpdateOrgsComponent extends Component {
 						</Row>
 					</Form>
 				</Container>
+				{this.state.show_add_users ? (
+					<AddUserToChannelComponent
+						handler={this.add_users_to_channel_exit}
+						org_id={this.state.org_id}
+						channel_title={this.state.temp_channel_title}
+						members={this.state.members}
+						org_member_details={org_member_details}
+						current_members_in_channel={current_members_in_channel}
+					/>
+				) : null}
 			</div>
 		);
 	}
