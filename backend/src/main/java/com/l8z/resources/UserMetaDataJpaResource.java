@@ -123,9 +123,9 @@ public class UserMetaDataJpaResource {
 	public void contact_added(String username, String org_id) {
 		System.out.println("System - Saving Contact");
 		// Stores all the org_ids of the User
-		List<String> org_ids = new ArrayList<String>();
+		String org_ids = "[]";
 		// Stores all the org_channels of the User
-		List<String> org_channels = new ArrayList<String>();
+		String org_channels = "[]";
 		// Stores the users contact_list
 		List<String> contact_list = new ArrayList<String>();
 		// Used to Store Retrieved Data from Database
@@ -137,11 +137,9 @@ public class UserMetaDataJpaResource {
 			// If its they haven't got any friends or joined any orgs, it will return null
     		if(sql != null) {
     			// Convert to List of Strings Object
-        		org_ids = json_mapper.readValue(sql.get_org_ids(), 
-        				json_mapper.getTypeFactory().constructCollectionType(List.class, String.class));
+        		org_ids = sql.get_org_ids();
         		// Get the Current String
-        		org_channels = json_mapper.readValue(sql.get_org_channels(), 
-        				json_mapper.getTypeFactory().constructCollectionType(List.class, String.class));
+        		org_channels = sql.get_org_channels();
         		// Get the Current String
         		contact_list = json_mapper.readValue(sql.get_contact_list(), 
         				json_mapper.getTypeFactory().constructCollectionType(List.class, String.class));
@@ -154,8 +152,8 @@ public class UserMetaDataJpaResource {
     		// Save it
     		repo.save(new UserMetaData(
 				username, 
-				json_mapper.writeValueAsString(org_ids), 
-				json_mapper.writeValueAsString(org_channels),
+				org_ids, 
+				org_channels,
 				json_mapper.writeValueAsString(contact_list)
 			));
 		}  catch (JsonMappingException e) {
