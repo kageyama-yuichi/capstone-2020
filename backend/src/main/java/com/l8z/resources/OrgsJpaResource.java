@@ -486,6 +486,40 @@ public class OrgsJpaResource {
 		
 		return ResponseEntity.noContent().build();
 	}
+	@PostMapping("/jpa/members/{username}/orgs/{org_id}/{channel_title}/remove")
+	public ResponseEntity<Void> remove_users_from_channel(
+			@PathVariable String username, 
+			@PathVariable String org_id,
+			@PathVariable String channel_title,
+			@RequestBody List<Members> removed_members_from_channel
+		) {
+		OrgsSQL sql = null;
+		Orgs temp_org = null;
+
+		try {
+			sql = orgsjpa.getByOrgId(org_id); 
+			temp_org = json_mapper.readValue(sql.get_data(), Orgs.class);
+			// Grabs Recent Date Time From Chat
+			String recent_date_time = orgsjpa.getByOrgId(org_id).get_recent_date_time();
+			// Get the Old Channel
+			Channels temp_channel = temp_org.retrieve_channel(channel_title);
+			// Remove the Old Channel
+			temp_org.remove_channel(temp_channel);
+			// Add the Users to the Channel
+			for(int i=0; i<removed_members_from_channel.size(); i++) {
+				temp_channel.remove_member(removed_members_from_channel.get(i));	
+			}
+			// Add the Channel Back to the Org
+			temp_org.add_channel(temp_channel);
+			
+			// Save the Org
+			orgsjpa.save(new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org), recent_date_time));
+		} catch (JsonProcessingException e) {
+			System.out.println("System - Error Updating Org");
+		}
+		
+		return ResponseEntity.noContent().build();
+	}
 	///////////////////////////////////////////////////////////////////////////
 	///////////////// C H A N N E L   T O D O   R E L A T E D /////////////////
 	///////////////////////////////////////////////////////////////////////////

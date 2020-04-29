@@ -1,7 +1,8 @@
 import React, {Component} from "react";
 import OrgsResources from "./OrgsResources.js";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
-	import AddUserToChannelComponent from "./Channels/AddUserToChannelComponent.jsx";
+import AddUserToChannelComponent from "./Channels/AddUserToChannelComponent.jsx";
+import RemoveUserFromChannelComponent from "./Channels/RemoveUserFromChannelComponent.jsx";
 import "./UpdateOrgsComponent.css";
 
 import {Container, Form, Button, ButtonGroup, Row, Col, ListGroup} from "react-bootstrap";
@@ -38,6 +39,7 @@ class UpdateOrgsComponent extends Component {
 			member_details_loaded: false,
 			invite_sent: false,
 			show_add_users: false,
+			show_remove_users: false,
 			temp_channel_title: "",
 		};
 		this.on_submit = this.on_submit.bind(this);
@@ -154,6 +156,7 @@ class UpdateOrgsComponent extends Component {
 			// Retrieves All Channels from the Org Data
 			OrgsResources.retrieve_org(this.state.username, this.state.old_org_id).then((response) => {
 				channels = response.data.channels;
+				this.forceUpdate();
 			});
 		});
 	};
@@ -457,10 +460,25 @@ class UpdateOrgsComponent extends Component {
 			temp_channel_title: channel_title,
 		});
 	}
-	add_users_to_channel_exit = () => {
+	remove_users_from_channel(channel_title) {
+		current_members_in_channel = [];
+		// Get the Current Channel Members
+		for(let i=0; i<channels.length; i++){
+			if(channels[i].channel_title === channel_title){
+				current_members_in_channel = channels[i].members;
+				break;
+			}
+		}
+		this.setState({
+			show_remove_users: !this.state.show_remove_users,
+			temp_channel_title: channel_title,
+		});
+	}
+	on_exit = () => {
 		current_members_in_channel = [];
 		this.setState({
-			show_add_users: !this.state.show_add_users,
+			show_add_users: false,
+			show_remove_users: false,
 			temp_channel_title: "",
 		});
 	}
@@ -469,7 +487,6 @@ class UpdateOrgsComponent extends Component {
 	mapOrgUsers(mapper) {
 		let retDiv;
 		// Ensure the Map Has Data
-		console.log(org_member_details);
 		if(org_member_details.size > 0) {
 			retDiv = mapper.map((member) => {
 				return (
@@ -636,10 +653,16 @@ class UpdateOrgsComponent extends Component {
 																	)}
 																</Button>
 																<Button
-																	variant="dark"
+																	variant="success"
 																	className="btn-sm"
 																	onClick={() => this.add_users_to_channel(ch.channel_title)}>
-																	<i class="fas fa-user-plus"></i>
+																	<i className="fas fa-user-plus"></i>
+																</Button>
+																<Button
+																	variant="danger"
+																	className="btn-sm"
+																	onClick={() => this.remove_users_from_channel(ch.channel_title)}>
+																	<i className="fas fa-user-minus"></i>
 																</Button>
 																<Button
 																	variant="dark"
@@ -762,10 +785,19 @@ class UpdateOrgsComponent extends Component {
 				</Container>
 				{this.state.show_add_users ? (
 					<AddUserToChannelComponent
-						handler={this.add_users_to_channel_exit}
+						handler={this.on_exit}
 						org_id={this.state.org_id}
 						channel_title={this.state.temp_channel_title}
 						members={this.state.members}
+						org_member_details={org_member_details}
+						current_members_in_channel={current_members_in_channel}
+					/>
+				) : null}
+				{this.state.show_remove_users ? (
+					<RemoveUserFromChannelComponent
+						handler={this.on_exit}
+						org_id={this.state.org_id}
+						channel_title={this.state.temp_channel_title}
 						org_member_details={org_member_details}
 						current_members_in_channel={current_members_in_channel}
 					/>

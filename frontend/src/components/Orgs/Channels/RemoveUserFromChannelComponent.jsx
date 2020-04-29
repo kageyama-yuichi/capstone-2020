@@ -4,9 +4,7 @@ import AuthenticationService from "../../Authentication/AuthenticationService.js
 import "../OrgsComponent.css";
 import {Container, Button, ButtonGroup, ToggleButton, ToggleButtonGroup, Row, Col, ListGroup} from "react-bootstrap";
 
-var member_difference = [];
-
-class AddUserToChannelComponent extends Component {
+class RemoveUserFromChannelComponent extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -15,58 +13,38 @@ class AddUserToChannelComponent extends Component {
 		};
 		this.mapOrgUsers = this.mapOrgUsers.bind(this);
 		this.onChange = this.onChange.bind(this);
-		this.add_users_to_channel = this.add_users_to_channel.bind(this);
+		this.remove_the_users_from_channel = this.remove_the_users_from_channel.bind(this);
 	}
 	
 	onChange = (value) => {
 		this.setState({ value });
 	};
 	
-	add_users_to_channel = () => {
-		let new_users_to_channels = [];
-		// Go through this.props.members and get the Role and Push
-		for(let i=0; i<this.props.members.length; i++){
+	remove_the_users_from_channel = () => {
+		let removed_users_from_channel = [];
+		// Go through this.props.current_members_in_channel and get the Role and Push
+		for(let i=0; i<this.props.current_members_in_channel.length; i++){
 			for(let j=0; j<this.state.value.length; j++){
 				// if they are in the Value, Push
-				if(this.props.members[i].username === this.state.value[j]){
-					new_users_to_channels.push(this.props.members[i]);
+				if(this.props.current_members_in_channel[i].username === this.state.value[j]){
+					removed_users_from_channel.push(this.props.current_members_in_channel[i]);
 					break; // Speed up Execution
 				}
 			}
 		}
-		OrgsResources.add_users_to_channel(
+		console.log(removed_users_from_channel);
+		OrgsResources.remove_users_from_channel(
 			this.state.username, 
 			this.props.org_id, 
 			this.props.channel_title, 
-			new_users_to_channels
+			removed_users_from_channel
 		).then((response) => {
-			alert("Users Added to Channel ", this.props.channel_title);
+			alert("Users Removed from Channel ", this.props.channel_title);
 			// Exit the Window and Refresh Page
 			window.location.reload(false);
 		});
 	};
 
-	componentDidMount() {
-		// Make a Temporary Map
-		const temp_map = new Map([...this.props.org_member_details.entries()]);
-		// Reset the Array for Consistency
-		member_difference = [];
-		
-		// Calculate the Member Difference
-		for(let i=0; i<this.props.current_members_in_channel.length; i++){
-			if(temp_map.has(this.props.current_members_in_channel[i].username)){
-				temp_map.delete(this.props.current_members_in_channel[i].username);
-			}
-		}
-		// Linear Map to Variable with Sorting Already Completed
-		for(let i=0; i<this.props.members.length; i++){
-			if(temp_map.has(this.props.members[i].username)){
-				member_difference.push(this.props.members[i]);
-			}
-		}
-		this.forceUpdate();
-	}
-	
 	setSelected = (username, role) => {
 		var ret = "light";
 
@@ -91,7 +69,7 @@ class AddUserToChannelComponent extends Component {
 	mapOrgUsers() {
 		let retDiv;
 		
-		retDiv = member_difference.map((member) => {
+		retDiv = this.props.current_members_in_channel.map((member) => {
 			return (
 				<ToggleButton 
 					key={member.username} 
@@ -113,10 +91,10 @@ class AddUserToChannelComponent extends Component {
 			<div className="wrapper">
 				<div className="bg" onClick={this.props.handler}></div>
 
-				<div className="overlay" style={{width: "400px", height: "400px"}}>
+				<div className="overlay" style={{width: "600px", height: "400px"}}>
 					<Container className="h-100 pt-5 pb-5 w-75 d-flex  justify-content-center align-items-center flex-column">
 						<Row>
-							<h1>Add Users to {this.props.channel_title}</h1>
+							<h1>Remove Users from {this.props.channel_title}</h1>
 						</Row>
 						<Row>
 							<ToggleButtonGroup className="overflow-auto" type="checkbox" value={this.state.value} onChange={this.onChange} vertical>
@@ -126,7 +104,7 @@ class AddUserToChannelComponent extends Component {
 						<Row>
 							<ButtonGroup>
 								<Button onClick={this.props.handler} className="mt-auto" variant="secondary">Cancel</Button>
-								<Button onClick={() => this.add_users_to_channel()} className="mt-auto" variant="primary">Add Users</Button>
+								<Button onClick={() => this.remove_the_users_from_channel()} className="mt-auto" variant="primary">Remove Users</Button>
 							</ButtonGroup>
 						</Row>
 					</Container>
@@ -136,4 +114,4 @@ class AddUserToChannelComponent extends Component {
 	}		
 }
 
-export default AddUserToChannelComponent;
+export default RemoveUserFromChannelComponent;

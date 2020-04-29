@@ -75,6 +75,9 @@ class OrgsResources {
 	add_users_to_channel(username, org_id, channel_title, added_members) {
 		return axios.post(`${JPA_URL}/members/${username}/orgs/${org_id}/${channel_title}/add`, added_members)
 	}
+	remove_users_from_channel(username, org_id, channel_title, removed_members) {
+		return axios.post(`${JPA_URL}/members/${username}/orgs/${org_id}/${channel_title}/remove`, removed_members)
+	}
 	// Instance Related
 	retrieve_all_instance_titles(username, org_id, channel_title) {
 	return axios.get(`${JPA_URL}/orgs/${username}/${org_id}/${channel_title}/new`);
