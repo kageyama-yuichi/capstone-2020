@@ -12,8 +12,11 @@ import com.l8z.user.User;
 @Repository
 public interface UserJpaRepository extends JpaRepository<User, Long> {
 	User findByUsername(String username);
-	User findUserByEmail(String email);
+	BasicUser getByUsername(String username);
 	
+	User findUserByEmail(String email);
+	BasicUser getByEmail(String email);
+
 	// A Custom Query to Return All Users Name for Auto Complete
 	@Query("SELECT CONCAT(u.fname, ' ',u.lname) FROM User u")
 	List<String> retrieveAllNames();

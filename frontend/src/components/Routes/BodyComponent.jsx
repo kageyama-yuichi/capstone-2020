@@ -25,6 +25,7 @@ import SidebarComponent from '../Sidebar/SidebarComponent.jsx'
 import AgendaComponent from '../Agenda/AgendaComponent.jsx'
 import ProfileComponent from '../Profile/ProfileComponent.jsx'
 
+import InvitesComponent from '../Invites/InvitesComponent.jsx'
 class BodyComponent extends Component {
     render() {
         return (
@@ -50,6 +51,7 @@ class BodyComponent extends Component {
 							<AuthenticatedRoute path="/private/:receiver" exact component={PrivateChatComponent} />
 
 							<AuthenticatedRoute path="/dashboard" exact component={DashboardComponent} />
+							<AuthenticatedRoute path="/dashboard2" exact component={InvitesComponent} />
 
 							<AuthenticatedRoute path="/profile" exact component={ProfileComponent} />
 

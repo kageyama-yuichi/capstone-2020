@@ -1,5 +1,6 @@
 package com.l8z.resources;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.l8z.GlobalVariable;
 import com.l8z.jparepository.PasswordRecoveryJpaRepository;
+import com.l8z.jparepository.PendingInvitesJpaRepository;
 import com.l8z.jparepository.UserJpaRepository;
+import com.l8z.pending.PendingInvites;
 import com.l8z.user.BasicUser;
 import com.l8z.user.PasswordResetToken;
 import com.l8z.user.User;
@@ -29,6 +32,8 @@ public class UserJpaResource {
 	private UserJpaRepository repo;
 	@Autowired
 	private PasswordRecoveryJpaRepository prrepo;
+	@Autowired
+	private PendingInvitesJpaRepository pendingjpa;
 	@Autowired
     private JavaMailSender mail;
 	
@@ -102,4 +107,18 @@ public class UserJpaResource {
 	public List<String> retrieve_all_name_space(){
 		return repo.retrieveAllNames();
 	}
+	 // Get all the Users' Pending Invites
+    @GetMapping("jpa/user/{username}/pending/invites")
+    public List<PendingInvites> retrieve_pending_invites_for_user(@PathVariable String username) {    	
+    	// Retrieve all the Pending Invites
+    	return pendingjpa.findByInvitee(username);
+    }
+    @PostMapping("jpa/basic/users")
+    public List<BasicUser> retrieve_basic_user(@RequestBody String[] usernames) {
+    	List<BasicUser> inviter_basic_users = new ArrayList<BasicUser>();
+    	for(int i=0; i<usernames.length; i++) {
+    		inviter_basic_users.add(repo.getByUsername(usernames[i]));
+    	}
+    	return inviter_basic_users;
+    }
 }

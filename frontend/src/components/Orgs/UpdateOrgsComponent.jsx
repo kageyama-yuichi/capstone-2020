@@ -9,9 +9,8 @@ import {Container, Form, Button, ButtonGroup, Row, Col, ListGroup} from "react-b
 
 /*
 	Left to do:
-	Work out how to Delete Members
-	Work out how to Delete Channels
-	Work out how to Invite Members Here
+	Styling the Search User Textbox
+	Completing the Autocomplete for the Search User Textbook using the current_namespace
 	Work out how to Update a Member Role
 	Fix all the this.on_submit() validation
 */

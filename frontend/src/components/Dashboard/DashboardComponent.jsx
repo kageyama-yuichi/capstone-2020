@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import "./DashboardComponent.css";
-import TodoComponent from "../Todo/TodoComponent";
+import TodoComponent from "../Todo/TodoComponent.jsx";
+import InvitesComponent from "../Invites/InvitesComponent.jsx";
 import {Container, Row, Col} from "react-bootstrap";
 
 class DashboardComponent extends Component {
@@ -11,7 +12,12 @@ class DashboardComponent extends Component {
 					<Row>
 						<Col></Col>
 						<Col>
-							<TodoComponent />
+							<Row>
+								<InvitesComponent />
+							</Row>
+							<Row>
+								<TodoComponent />
+							</Row>
 						</Col>
 					</Row>
 					

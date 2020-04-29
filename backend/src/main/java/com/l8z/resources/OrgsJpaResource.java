@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -507,7 +506,7 @@ public class OrgsJpaResource {
 			temp_org.remove_channel(temp_channel);
 			// Add the Users to the Channel
 			for(int i=0; i<removed_members_from_channel.size(); i++) {
-				temp_channel.remove_member(removed_members_from_channel.get(i));	
+				temp_channel.add_member(removed_members_from_channel.get(i));	
 			}
 			// Add the Channel Back to the Org
 			temp_org.add_channel(temp_channel);
