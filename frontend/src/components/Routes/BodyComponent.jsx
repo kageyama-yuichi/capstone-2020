@@ -24,6 +24,9 @@ import DashboardComponent from '../Dashboard/DashboardComponent.jsx'
 import SidebarComponent from '../Sidebar/SidebarComponent.jsx'
 import AgendaComponent from '../Agenda/AgendaComponent.jsx'
 import ProfileComponent from '../Profile/ProfileComponent.jsx'
+import PasswordChangeComponent from "../PasswordChange/PasswordChangeComponent.jsx";
+
+
 
 class BodyComponent extends Component {
     render() {
@@ -52,6 +55,7 @@ class BodyComponent extends Component {
 							<AuthenticatedRoute path="/dashboard" exact component={DashboardComponent} />
 
 							<AuthenticatedRoute path="/profile" exact component={ProfileComponent} />
+                            <AuthenticatedRoute path="/profile/password" exact component={PasswordChangeComponent}/>
 
 							<AuthenticatedRoute path="/agenda" exact component={AgendaComponent} />
 
