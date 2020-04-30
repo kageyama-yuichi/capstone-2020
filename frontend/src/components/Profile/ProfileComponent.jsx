@@ -1,10 +1,10 @@
 import React, {Component} from "react";
 import ProfileResources from "./ProfileResources.js";
 import "./ProfileComponent.css";
-import {Form, Col, Row, Button, Image, Container, Spinner} from "react-bootstrap";
+import {Form, Col, Button, Image, Container} from "react-bootstrap";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
 import PlacesAutoComplete from "../Places/PlacesAutoComplete.jsx";
-
+import {Link} from "react-router-dom"
 //TODO: Prevent XSS
 
 class ProfileComponent extends Component {
@@ -101,13 +101,13 @@ class ProfileComponent extends Component {
 			formIsValid = false;
 			this.setState({addressError: "Address Cannot be empty"});
 		}
-		console.log(formIsValid)
+		console.log(formIsValid);
 		return formIsValid;
 	}
 
 	onSubmit = (e) => {
 		e.preventDefault();
-		
+
 		if (this.handleValidation()) {
 			let prof = {
 				id: this.state.id,
@@ -186,6 +186,9 @@ class ProfileComponent extends Component {
 										<div className="image-upload-error">
 											{this.state.imageError}
 										</div>
+										<Link to="/profile/password">
+											<Button variant="info">Update your password</Button>
+										</Link>
 									</div>
 
 									<input
@@ -194,8 +197,6 @@ class ProfileComponent extends Component {
 										ref={(input) => (this.imageInputElement = input)}
 										onChange={this.handleImageChange}
 									/>
-
-									<div className="cancel-button-container"></div>
 								</Form.Group>
 							</Container>
 						</Col>
