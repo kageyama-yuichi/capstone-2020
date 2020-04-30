@@ -17,12 +17,12 @@ public interface PendingInvitesJpaRepository extends JpaRepository<PendingInvite
 	List<PendingInvites> findByOrgId(String orgId);
 	// Get By UniqueID
 	PendingInvites findByUniqueId(String uniqueId);
+	// Get By ChannelUniqueId
+	PendingInvites findByChannelUniqueId(String channelUniqueId);
 	
 	// Deleting by the Unique Field
 	@Transactional
 	@Modifying
 	@Query("delete from PendingInvites p where p.uniqueId = ?1")
 	void deleteByUniqueId(String uniqueId);
-	
-	
 }

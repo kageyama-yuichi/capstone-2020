@@ -54,7 +54,7 @@ class AddInstancesComponent extends Component {
 				console.log("System - Creating New Instance");
 				let instance = {
 					instance_title: this.state.instance_title,
-					instances: []
+					instances: []				
 				}
 				console.log(instance);
 				OrgsResources.create_instance(this.state.username, this.state.org_id, this.state.channel_title, instance).then(() => this.props.history.goBack());

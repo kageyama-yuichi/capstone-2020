@@ -15,6 +15,8 @@ public class PendingInvites {
 	private Long id;
 	// A Field to Locate the Correct Record by orgId+"."invitee
 	private String uniqueId;
+	// A Field to Locate the Correct Record for Channel Invites
+	private String channelUniqueId;
 	// Person's Username who is Inviting the Invitee
 	private String inviter;
 	// Person who is being Invited to the Organisation
@@ -27,8 +29,9 @@ public class PendingInvites {
 		
 	}
 	// Override Constructor
-	public PendingInvites(String uniqueId, String inviter, String invitee, String orgId) {
+	public PendingInvites(String uniqueId, String channelUniqueId, String inviter, String invitee, String orgId) {
 		this.uniqueId = uniqueId;
+		this.channelUniqueId = channelUniqueId;
 		this.inviter = inviter;
 		this.invitee = invitee;
 		this.orgId = orgId;
@@ -40,6 +43,9 @@ public class PendingInvites {
 	}
 	public String getUniqueId() {
 		return uniqueId;
+	}
+	public String getChannelUniqueId() {
+		return channelUniqueId;
 	}
 	public String getInviter() {
 		return inviter;
@@ -57,6 +63,9 @@ public class PendingInvites {
 	}
 	public void setUniqueId(String uniqueId) {
 		this.uniqueId = uniqueId;
+	}
+	public void setChannelUniqueId(String channelUniqueId) {
+		this.channelUniqueId = channelUniqueId;
 	}
 	public void setInviter(String inviter) {
 		this.inviter = inviter;
