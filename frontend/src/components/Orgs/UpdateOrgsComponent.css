@@ -17,3 +17,7 @@
 .team_member {
 	color: var(--gray);
 }
+.org-new-users {
+	width: 100%;
+	height: fit-content;
+}

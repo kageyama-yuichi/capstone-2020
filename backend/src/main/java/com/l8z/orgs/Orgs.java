@@ -107,8 +107,25 @@ public class Orgs {
 	public void clear_channel() {
 		channels.clear();
 	}
-	
-	
+	public void remove_member(Members old_member) {
+		// Removes the Old Member
+		members.remove(old_member);
+		
+		// Go through All Channels and Remove that Member
+		for(int i=0; i<channels.size(); i++) {
+			// Checking if the Member Exists in that Channel
+			if(channels.get(i).has_member(old_member)) {
+				// Store the Inner Channel Temporarily
+				Channels inner_channel = channels.get(i);
+				// Remove the Old Channel Details
+				channels.remove(inner_channel);
+				// Update this Channel for the Updated Member
+				inner_channel.remove_member(old_member);
+				// Insert the Channel Back
+				channels.add(inner_channel);
+			}
+		}
+	}
 	public boolean manage_member(Members auth, Members member, Members.Role new_role) {
 		boolean change_status = false;
 		// ORG_OWNER cannot have their Role adjusted and ORG_OWNER cannot be Given Here
