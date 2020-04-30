@@ -31,32 +31,32 @@ class SidebarComponent extends Component {
 						</li>
 							
 						<li className={(window.location.pathname === `/profile` ? "current-window" : "") + " sidebar-item"}>
-							<Link to="/profile" className="sidebar-link unselectable">
+							<Link to="/profile" className="sidebar-link nav-link unselectable">
 								<img src={ProfileIcon} className="unselectable" alt="ProfileIcon"></img>
 								<span className="link-text">Profile</span>
 							</Link>
 						</li>
 						<li className={(window.location.pathname === `/orgs` ? "current-window": "") + " sidebar-item"}>
-							<Link to="/orgs" className="sidebar-link unselectable">
+							<Link to="/orgs" className="sidebar-link nav-link unselectable">
 								<img src={TeamsIcon} className="unselectable" alt="TeamsIcon"></img>
 								<span className="link-text">Orgs</span>
 							</Link>
 						</li>
 						<li className="sidebar-item">
-							<Link to="/agenda" className="sidebar-link unselectable">
+							<Link to="/agenda" className="sidebar-link nav-link unselectable">
 								<img src={AgendaIcon} className="unselectable" alt="AgendaIcon"></img>
 								<span className="link-text">Agenda</span>
 							</Link>
 						</li>
 						<li className={(window.location.pathname === `/private` ? "current-window": "") + " sidebar-item"}>
-							<Link to="/private" className="sidebar-link unselectable">
+							<Link to="/private" className="sidebar-link nav-link unselectable">
 								<img src={ChatIcon} className="unselectable" alt="ChatIcon"></img>
 								<span className="link-text">Private</span>
 							</Link>
 						</li>
 
 						<li className="sidebar-item">
-							<Link to="/" className="sidebar-link unselectable" onClick={this.onClick}>
+							<Link to="/" className="sidebar-link nav-link unselectable" onClick={this.onClick}>
 								<img src={LogoutIcon} className="unselectable" alt="LogoutIcon"></img>
 								<span className="link-text">Logout</span>
 							</Link>
