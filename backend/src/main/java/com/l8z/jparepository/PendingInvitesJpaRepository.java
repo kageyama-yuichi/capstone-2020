@@ -15,6 +15,9 @@ public interface PendingInvitesJpaRepository extends JpaRepository<PendingInvite
 	List<PendingInvites> findByInvitee(String invitee);
 	// Get all the Organisations Current Invites for Updating Orgs
 	List<PendingInvites> findByOrgId(String orgId);
+	// Get By UniqueID
+	PendingInvites findByUniqueId(String uniqueId);
+	
 	// Deleting by the Unique Field
 	@Transactional
 	@Modifying

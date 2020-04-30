@@ -7,6 +7,8 @@ import {Button, ButtonGroup, Container, Row, Col, ListGroup} from "react-bootstr
 
 const inviter_details = new Map();
 var invites = [];
+var accepted = "TRUE";
+var rejected = "FALSE";
 
 class InvitesComponent extends Component {
 	constructor(props) {
@@ -22,10 +24,17 @@ class InvitesComponent extends Component {
 	// Function to Update the Organisation that the User clicked
 	handle_accept_invite = (unique_id) => {
 		console.log("Accept");
+		InvitesResources.user_decision_on_invite(unique_id, accepted).then((response) => {
+			// Redirect the User to the Orgs Tap
+			this.props.history.push("/orgs");
+		});
 	};
 	// Function to Allow the User to Reject an Organisational Invite
 	handle_reject_invite = (unique_id) => {
 		console.log("Reject");
+		InvitesResources.user_decision_on_invite(unique_id, rejected).then((response) => {
+			this.refresh_invites();
+		});
 	};
 
 	componentDidUpdate() {
@@ -80,19 +89,11 @@ class InvitesComponent extends Component {
 		if(invites.length > 0 && inviter_details.size > 0) {
 			retDiv = invites.map((inv) => {
 				let temp_inviter = inviter_details.get(inv.inviter);
-				console.log(inviter_details);
 				return (
-				<>	
-					<Row>
-						<Col sm={9}>
-							<ListGroup.Item
-								key={inv.uniqueId}
-								variant="light">
-								{inviter_details.get(inv.inviter).name} invites you to <strong>{inv.orgId}</strong>
-							</ListGroup.Item>
-						</Col>
-						<Col sm={1}>
-							<ButtonGroup>
+					<ListGroup.Item key={inv.uniqueId} className="invites bg-light text-dark">
+						<div className="d-flex justify-content-between">
+							<p>{inviter_details.get(inv.inviter).name} invites you to <strong>{inv.orgId}</strong></p>
+							<ButtonGroup className="align-self-end">
 								<Button
 									key={inv.uniqueId+"accept"}
 									variant="success"
@@ -106,9 +107,8 @@ class InvitesComponent extends Component {
 									<i className="fas fa-times"></i>
 								</Button>
 							</ButtonGroup>
-						</Col>
-					</Row>
-				</>
+						</div>
+					</ListGroup.Item>
 				);
 			});
 		} else {
@@ -119,9 +119,12 @@ class InvitesComponent extends Component {
 	
 	render() {
 		return (
-			<div>
+			<div className="invites-component">
 				<Container fluid className="h-100">
-					<ListGroup>
+					<div className="d-flex title-header border-bottom mb-3 w-100 justify-content-between">
+						<h1 style={{height: "fit-content"}}>Pending Invites</h1>
+					</div>
+					<ListGroup className="overflow-auto">
 						{this.mapInvites()}
 					</ListGroup>
 				</Container>

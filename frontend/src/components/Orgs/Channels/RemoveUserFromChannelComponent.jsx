@@ -32,7 +32,6 @@ class RemoveUserFromChannelComponent extends Component {
 				}
 			}
 		}
-		console.log(removed_users_from_channel);
 		OrgsResources.remove_users_from_channel(
 			this.state.username, 
 			this.props.org_id, 

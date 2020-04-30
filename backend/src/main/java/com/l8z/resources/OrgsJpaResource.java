@@ -25,6 +25,7 @@ import com.l8z.jparepository.UserJpaRepository;
 import com.l8z.orgs.Channels;
 import com.l8z.orgs.Instances;
 import com.l8z.orgs.Members;
+import com.l8z.orgs.MembersStatus;
 import com.l8z.orgs.Orgs;
 import com.l8z.orgs.OrgsSQL;
 import com.l8z.pending.PendingInvites;
@@ -210,18 +211,18 @@ public class OrgsJpaResource {
 			for(int i=0; i<members.size(); i++) {
 				// Remove the Organsiation ID from the User's Name
 				user_meta_data_jpa_resouce.user_leaves_org(username, org_id);
-				// Remove the Organisation ID from the OrgTodo Table
-				// Method
 			}
+			// Remove the Organisation ID from the OrgTodo Table
+			// Method
 			
 		}
 		return ResponseEntity.noContent().build();
 	}
 	// Get all the Users Details in the Orgs
     @PostMapping("jpa/users/in/orgs")
-    public List<BasicUser> retrieve_basic_users_in_orgs(@RequestBody List<Members> users) {    	
+    public List<MembersStatus> retrieve_basic_users_in_orgs(@RequestBody List<Members> users) {    	
     	// Send the Basic User information Back to Frontend
-    	List<BasicUser> members = new ArrayList<BasicUser>();
+    	List<MembersStatus> members = new ArrayList<MembersStatus>();
     	
 		// Get the @users Details
 		for(int i=0; i<users.size(); i++) {
@@ -229,7 +230,7 @@ public class OrgsJpaResource {
 			User user = userjpa.findByUsername(m.get_username());
 			if(user == null) continue; // Go Next
 			// Add the User's Details
-			members.add(new BasicUser(user));
+			members.add(new MembersStatus(user, m.get_role()));
 		}
 		
     	if(members.size() > 0) {
@@ -289,14 +290,89 @@ public class OrgsJpaResource {
         */
 		return ResponseEntity.noContent().build();
 	}
+	@GetMapping("jpa/user/invite/orgs/{unique_id}/{user_has_accepted}")
+	public ResponseEntity<Void> user_decision_on_invite( 
+			@PathVariable String unique_id,
+			@PathVariable String user_has_accepted
+		) {
+		System.out.println("System - Pending Invite: "+unique_id+" is "+user_has_accepted);
+		// if the User Accepted the Request
+		if(user_has_accepted.equals("TRUE")) {
+			// Gets the Current Invite
+			PendingInvites pending = pendingjpa.findByUniqueId(unique_id);
+			OrgsSQL temp_sql = null; 
+			Orgs temp_org = null;
+			String org_id = pending.getOrgId();
+			try {
+				// Convert the Sql Object
+				temp_sql = orgsjpa.getByOrgId(org_id); 
+				temp_org = json_mapper.readValue(temp_sql.get_data(), Orgs.class);
+				// Grabs Recent Date Time From Chat
+				String recent_date_time = temp_sql.get_recent_date_time();
+				
+				// Add the New User to the Organisation
+				temp_org.add_member(new Members(pending.getInvitee(), Members.Role.TEAM_MEMBER));
+				
+				// Save the Organisation
+				orgsjpa.save(new OrgsSQL(org_id, json_mapper.writeValueAsString(temp_org), recent_date_time));
+				// Adds to the User's Meta Data
+				user_meta_data_jpa_resouce.user_joined_org(pending.getInvitee(), org_id);
+			} catch (JsonMappingException e) {
+				System.out.println("System - Error Retrieving Organisations");
+			} catch (JsonProcessingException e) {
+				System.out.println("System - Error Retrieving Organisations");
+			}
+		} 
+		
+		// if the User Accepted or Declined the Request
+		pendingjpa.deleteByUniqueId(unique_id);
+		
+		return ResponseEntity.noContent().build();
+	}
 	@PostMapping("jpa/invite/removal/orgs/{remover}/{unique_id}")
 	public ResponseEntity<Void> remove_invited_user_from_org(
 			@PathVariable String remover, 
 			@PathVariable String unique_id
 		) {		
-		System.out.println(unique_id);
 		pendingjpa.deleteByUniqueId(unique_id);
 		
+		return ResponseEntity.noContent().build();
+	}
+	@PostMapping("jpa/user/manage/orgs/{org_id}")
+	public ResponseEntity<Void> manage_users_in_org(
+			@PathVariable String org_id, 
+			@RequestBody List<Members> body
+		){
+		// Ensure the 3 Elements Exist
+		if(body.size() == 3) {
+			// First Member is the Authenticator
+			Members auth = body.get(0);
+			// Second Member is the Managed Original User
+			Members member = body.get(1);
+			// Last Member contains  the Managed User Role
+			Members.Role new_role = body.get(2).get_role();
+			
+			// Setting up SQL Transaction
+			OrgsSQL temp_sql = null; 
+			Orgs temp_org = null;
+			try {
+				// Convert the Sql Object
+				temp_sql = orgsjpa.getByOrgId(org_id); 
+				temp_org = json_mapper.readValue(temp_sql.get_data(), Orgs.class);
+				// Grabs Recent Date Time From Chat
+				String recent_date_time = temp_sql.get_recent_date_time();
+				
+				// Manage the Member
+				temp_org.manage_member(auth, member, new_role);
+				
+				// Save the Organisation
+				orgsjpa.save(new OrgsSQL(org_id, json_mapper.writeValueAsString(temp_org), recent_date_time));
+			} catch (JsonMappingException e) {
+				System.out.println("System - Error Retrieving Organisations");
+			} catch (JsonProcessingException e) {
+				System.out.println("System - Error Retrieving Organisations");
+			}
+		}
 		return ResponseEntity.noContent().build();
 	}
 	///////////////////////////////////////////////////////////////////////////
@@ -504,9 +580,9 @@ public class OrgsJpaResource {
 			Channels temp_channel = temp_org.retrieve_channel(channel_title);
 			// Remove the Old Channel
 			temp_org.remove_channel(temp_channel);
-			// Add the Users to the Channel
+			// Remove the Users from the Channel
 			for(int i=0; i<removed_members_from_channel.size(); i++) {
-				temp_channel.add_member(removed_members_from_channel.get(i));	
+				temp_channel.remove_member(removed_members_from_channel.get(i));	
 			}
 			// Add the Channel Back to the Org
 			temp_org.add_channel(temp_channel);
