@@ -235,6 +235,7 @@ class UpdateOrgsComponent extends Component {
 		);
 		OrgsResources.retrieve_all_name_space().then((response) => {
 			current_namespace = response.data.sort();
+			console.log(current_namespace);
 		});
 	}
 
@@ -509,7 +510,16 @@ class UpdateOrgsComponent extends Component {
 	};
 	// Completely Removing a User from the Org
 	remove_member = (username) => {
-		
+		let old_member = {
+			username: username,
+			role: org_member_details.get(username).role,
+		};
+		// Push Request to Server
+		OrgsResources.remove_user_from_org(this.state.org_id, old_member).then((response) => {
+			alert("The User has been Removed");
+			// Reload the Page as Alot of Modifications can Occur
+			window.location.reload(false);
+		});
 	};
 	
 	// Maps all the OrgUsers

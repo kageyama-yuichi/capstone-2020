@@ -375,6 +375,34 @@ public class OrgsJpaResource {
 		}
 		return ResponseEntity.noContent().build();
 	}
+	@PostMapping("jpa/user/remove/from/orgs/{org_id}")
+	public ResponseEntity<Void> remove_user_from_org(
+			@PathVariable String org_id, 
+			@RequestBody Members old_member
+		){
+		
+		// Setting up SQL Transaction
+		OrgsSQL temp_sql = null; 
+		Orgs temp_org = null;
+		try {
+			// Convert the Sql Object
+			temp_sql = orgsjpa.getByOrgId(org_id); 
+			temp_org = json_mapper.readValue(temp_sql.get_data(), Orgs.class);
+			// Grabs Recent Date Time From Chat
+			String recent_date_time = temp_sql.get_recent_date_time();
+			
+			// Manage the Member
+			temp_org.remove_member(old_member);
+			
+			// Save the Organisation
+			orgsjpa.save(new OrgsSQL(org_id, json_mapper.writeValueAsString(temp_org), recent_date_time));
+		} catch (JsonMappingException e) {
+			System.out.println("System - Error Retrieving Organisations");
+		} catch (JsonProcessingException e) {
+			System.out.println("System - Error Retrieving Organisations");
+		}
+		return ResponseEntity.noContent().build();
+	}
 	///////////////////////////////////////////////////////////////////////////
 	////////////////////// C H A N N E L   R E L A T E D //////////////////////
 	///////////////////////////////////////////////////////////////////////////

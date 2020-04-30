@@ -36,6 +36,9 @@ class OrgsResources {
 	manage_users_in_org(org_id, body) {
 		return axios.post(`${JPA_URL}/user/manage/orgs/${org_id}`, body);
 	}
+	remove_user_from_org(org_id, old_member) {
+		return axios.post(`${JPA_URL}/user/remove/from/orgs/${org_id}`, old_member);
+	}
 	// Found in UserJpaResource
 	retrieve_all_basic_users_by_name(name) {
 		return axios.get(`${JPA_URL}/retrieve/user/${name}`);
