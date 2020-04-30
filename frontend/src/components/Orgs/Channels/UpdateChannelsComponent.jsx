@@ -24,7 +24,7 @@ class UpdateChannelsComponent extends Component {
 		console.log(this.state.channel_title);
 		var internal_error = false;
 		var error = "";
-		var str2 = new String(this.state.channel_title);
+		var str2 = this.state.channel_title;
 		
 		// Ensure Length is 3 or Greater
 		if (this.state.channel_title.length < 3 || this.state.channel_title === "new") {
@@ -36,9 +36,9 @@ class UpdateChannelsComponent extends Component {
 		if (!internal_error) {
 			// Check if the ID Exists
 			for (let i = 0; i < this.state.owned_ids.length; i++) {
-				var str1 = new String(this.state.owned_ids[i].channel_title);
+				var str1 = this.state.owned_ids[i].channel_title;
 				// Compare the String Values
-				if (str1.valueOf() == str2.valueOf()) {
+				if (str1.valueOf() === str2.valueOf()) {
 					internal_error = true;
 				}
 			}
@@ -90,7 +90,7 @@ class UpdateChannelsComponent extends Component {
 		{
 			for(let i=0; i<response.data.length; i++){
 				// They Can Claim the Same ID
-				if(this.state.channel_title != response.data[i]){
+				if(this.state.channel_title !== response.data[i]){
 					this.state.owned_ids.push({
 					channel_title: response.data[i],
 					})
@@ -128,7 +128,7 @@ class UpdateChannelsComponent extends Component {
 							</Form.Control.Feedback>
 						</Form.Group>
 						<Button id="channel_create" type="submit">
-							Create Channel
+							Update
 						</Button>
 					</Form>
 				</Container>

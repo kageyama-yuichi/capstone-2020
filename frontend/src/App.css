@@ -12,6 +12,13 @@
     font-size: 16px;
 }
 
+.title-header{
+    height: 50px;
+}
+.window-body{
+    height: calc(100% - 50px);
+}
+
 /* To override user agent stylesheet */
 * {
     margin:0px;
@@ -35,6 +42,16 @@ label{
 
 a, button, input[type=button], input[type=submit]{
     cursor: pointer;
+}
+
+.unselectable {
+    
+    -moz-user-select: none; 
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    -webkit-user-drag: none; 
 }
 
 @font-face {

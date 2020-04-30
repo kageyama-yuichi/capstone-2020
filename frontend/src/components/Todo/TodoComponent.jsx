@@ -3,15 +3,17 @@ import TodoResources from "./TodoResources.js";
 import "./TodoComponent.css";
 import moment from "moment";
 import TodoEditComponent from "./TodoEditComponent.jsx";
-import {Container, Col, Row, Button} from "react-bootstrap";
-import AuthenticationService from '../Authentication/AuthenticationService.js'
+import {Container, Button} from "react-bootstrap";
+import AuthenticationService from "../Authentication/AuthenticationService.js";
+import equal from 'fast-deep-equal'
+
 
 class TodoComponent extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			username: AuthenticationService.getLoggedInUserName(),
-			todos: [],
+			todos: props.todos ? props.todos : [],
 			showOverlay: false,
 			editTodo: "",
 		};
@@ -52,35 +54,42 @@ class TodoComponent extends Component {
 	};
 
 	handleCreateClick() {
-		this.setState({ editTodo: "" });
+		this.setState({editTodo: ""});
 		this.toggleOverlay();
 	}
 
-	componentDidUpdate() {
-		//console.log(this.state.todos);
+	componentDidUpdate(prevProps) {
+		if (!equal(this.props.todos, prevProps.todos)) {
+			// Check if it's a new user, you can also use some unique property, like the ID  (this.props.user.id !== prevProps.user.id)
+			this.setState({todos: this.props.todos})
+		}
 	}
 
 	refresh_todos = () => {
-		this.setState({
-			todos: [],
-		});
-		// Retrieves the Todos for the User from the Server
-		TodoResources.retrieve_todos(this.state.username).then((response) => {
-			let todos = [];
-			// Maps the Response Data (Todo.class) to JSObject
-			for (let i = 0; i < response.data.length; i++) {
-				todos.push({
-					id: response.data[i].id,
-					username: response.data[i].username,
-					desc: response.data[i].desc,
-					date: response.data[i].date,
-					status: response.data[i].status,
-				});
-			}
-			todos.sort((a, b) => new moment(a.date) - new moment(b.date));
-			this.setState({todos: todos});
-		});
-		this.forceUpdate();
+		if (this.props.callback) { 
+			this.props.callback()
+		}else{
+			this.setState({
+				todos: [],
+			});
+			// Retrieves the Todos for the User from the Server
+			TodoResources.retrieve_todos(this.state.username).then((response) => {
+				let todos = [];
+				// Maps the Response Data (Todo.class) to JSObject
+				for (let i = 0; i < response.data.length; i++) {
+					todos.push({
+						id: response.data[i].id,
+						username: response.data[i].username,
+						desc: response.data[i].desc,
+						date: response.data[i].date,
+						status: response.data[i].status,
+					});
+				}
+				todos.sort((a, b) => new moment(a.date) - new moment(b.date));
+				this.setState({ todos: todos });
+			});
+			this.forceUpdate();
+		}
 	};
 
 	componentDidMount() {
@@ -91,18 +100,17 @@ class TodoComponent extends Component {
 		return (
 			<div className="todo-component">
 				<Container fluid>
-					<Row  className="border-bottom mb-3 align-items-center">
-						<Col>
-							<h1 style={{height: "fit-content"}}>Todo List</h1>
-						</Col>
-						<Col md={2} style={{height: "100%"}} className="justify-content-end">
-							<Button variant="outline-primary"  onClick={this.handleCreateClick}>
-								New Todo
-							</Button>
-						</Col>
-					</Row>
+					<div className="d-flex title-header border-bottom mb-3 w-100 justify-content-between">
+						<h1 style={{height: "fit-content"}}>Todo List</h1>
 
-					<div className="todo-container">
+						<Button className="align-self-center" variant="outline-primary" onClick={this.handleCreateClick}>
+							New Todo
+						</Button>
+					</div>
+
+					{/* <Col style={{height: "100%"}} style={{whiteSpace: "nowrap"}} className="justify-content-end"> */}
+
+					<div className="window-body todo-container">
 						<table cellSpacing="0" className="todo-table">
 							<tbody>
 								{this.state.todos.map((todo) => (
@@ -150,37 +158,7 @@ class TodoComponent extends Component {
 			</div>
 		);
 	}
-	// render() {
-	// 	console.log("System - Rendering Page...");
-	//     return (
-	//         <div className="todo-component">
-	// 			<h1>{this.state.username}'s Todos</h1>
-	// 			<input
-	// 				className="new_todo"
-	// 				type="button"
-	// 				value="+"
-	// 				onClick={this.handle_create_todo}
-	// 			/>
-	// 			{this.state.todos.map(todo =>
-	// 				<div key={todo.id} className='todos'>
-	// 					<input
-	// 						className="delete_todo"
-	// 						type="button"
-	// 						value="-"
-	// 						onClick={() => this.handle_delete_todo(todo.id)}
-	// 					/>
-	// 					<input
-	// 						className="update_todo"
-	// 						type="button"
-	// 						value="#"
-	// 						onClick={() => this.handle_update_todo(todo.id)}
-	// 					/>
-	// 					<p key={todo.id}>{todo.desc}, {todo.status.toString()}, {todo.date}</p>
-	// 				</div>
-	// 			)}
-	// 		</div>
-	//     )
-	// }
+	
 }
 
 export default TodoComponent;

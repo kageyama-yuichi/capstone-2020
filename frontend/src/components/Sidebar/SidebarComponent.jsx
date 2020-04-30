@@ -11,6 +11,11 @@ import { Link } from "react-router-dom";
 import AuthenticationService from '../Authentication/AuthenticationService.js'
 
 class SidebarComponent extends Component {
+	onClick() {
+		AuthenticationService.logout();
+		this.props.history.replaceState("/")
+	}
+
 	render() {
 		//Do not load sidebar on landing page
 		if (window.location.pathname === '/') {
@@ -19,40 +24,40 @@ class SidebarComponent extends Component {
 			return (
 				<nav className="sidebar">
 					<ul className="sidebar-nav">
-						<li className={(window.location.pathname == `/dashboard` ? "current-window": "") + " sidebar-item logo-item"}>
-							<Link to="/dashboard" className="nav-link">
-								<img className="logo-img" src={LogoIcon}></img>
+						<li className={(window.location.pathname === `/dashboard` ? "current-window": "") + " sidebar-item logo-item"}>
+							<Link to="/dashboard" className="nav-link unselectable">
+								<img className="logo-img unselectable " src={LogoIcon} alt="DashboardIcon"></img>
 							</Link>
 						</li>
 							
-						<li className={(window.location.pathname == `/profile` ? "current-window" : "") + " sidebar-item"}>
-							<Link to="/profile" className="nav-link">
-								<img src={ProfileIcon}></img>
+						<li className={(window.location.pathname === `/profile` ? "current-window" : "") + " sidebar-item"}>
+							<Link to="/profile" className="nav-link unselectable">
+								<img src={ProfileIcon} className="unselectable" alt="ProfileIcon"></img>
 								<span className="link-text">Profile</span>
 							</Link>
 						</li>
-						<li className={(window.location.pathname == `/orgs` ? "current-window": "") + " sidebar-item"}>
-							<Link to="/orgs" className="nav-link">
-								<img src={TeamsIcon}></img>
+						<li className={(window.location.pathname === `/orgs` ? "current-window": "") + " sidebar-item"}>
+							<Link to="/orgs" className="nav-link unselectable">
+								<img src={TeamsIcon} className="unselectable" alt="TeamsIcon"></img>
 								<span className="link-text">Orgs</span>
 							</Link>
 						</li>
 						<li className="sidebar-item">
-							<Link to="/agenda" className="nav-link">
-								<img src={AgendaIcon}></img>
+							<Link to="/agenda" className="nav-link unselectable">
+								<img src={AgendaIcon} className="unselectable" alt="AgendaIcon"></img>
 								<span className="link-text">Agenda</span>
 							</Link>
 						</li>
-						<li className={(window.location.pathname == `/private` ? "current-window": "") + " sidebar-item"}>
-							<Link to="/dashboard" className="nav-link">
-								<img src={ChatIcon}></img>
+						<li className={(window.location.pathname === `/private` ? "current-window": "") + " sidebar-item"}>
+							<Link to="/private" className="nav-link unselectable">
+								<img src={ChatIcon} className="unselectable" alt="ChatIcon"></img>
 								<span className="link-text">Private</span>
 							</Link>
 						</li>
 
 						<li className="sidebar-item">
-							<Link to="/" className="nav-link" onClick={AuthenticationService.logout}>
-								<img src={LogoutIcon}></img>
+							<Link to="/" className="nav-link unselectable" onClick={this.onClick}>
+								<img src={LogoutIcon} className="unselectable" alt="LogoutIcon"></img>
 								<span className="link-text">Logout</span>
 							</Link>
 						</li>

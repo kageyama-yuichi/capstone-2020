@@ -3,7 +3,8 @@ import OrgsResources from "./OrgsResources.js";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
 import "./UpdateOrgsComponent.css";
 
-import {Container, Form, Button, ButtonGroup, Row, Col, ListGroup, Collapse} from "react-bootstrap";
+import {getRoleIconClassName} from "./OrgHelpers.js";
+import {Container, Form, Button, ButtonGroup, Row, Col, ListGroup} from "react-bootstrap";
 
 /*
 	Left to do:
@@ -34,19 +35,18 @@ class UpdateOrgsComponent extends Component {
 	}
 
 	handleValidation(e) {
-		
 		var formIsValid = true;
-		var str2 = new String(this.state.org_id);
-		var errors = new Object();
+		var str2 = this.state.org_id;
+		var errors = {};
 		if (this.state.org_id.length < 3 || this.state.org_id === "new") {
 			errors.id = "Org ID is too short";
 			formIsValid = false;
 		} else {
 			// Check if the ID Exists
 			for (let i = 0; i < this.state.owned_ids.length; i++) {
-				var str1 = new String(this.state.owned_ids[i].org_id);
+				var str1 = this.state.owned_ids[i].org_id;
 				// Compare the String Values
-				if (str1.valueOf() == str2.valueOf()) {
+				if (str1.valueOf() === str2.valueOf()) {
 					formIsValid = false;
 					errors.id = "Org ID already used";
 					break;
@@ -86,7 +86,6 @@ class UpdateOrgsComponent extends Component {
 				ele.setCustomValidity("invalid");
 			} else {
 				ele.setCustomValidity("");
-				
 			}
 		});
 
@@ -107,7 +106,6 @@ class UpdateOrgsComponent extends Component {
 				members: this.state.members,
 			};
 			console.log(org_push);
-			var url = "/orgs/" + this.state.username;
 			OrgsResources.update_org(
 				this.state.username,
 				this.state.old_org_id,
@@ -182,7 +180,7 @@ class UpdateOrgsComponent extends Component {
 		OrgsResources.retrieve_all_orgs(this.state.username).then((response) => {
 			for (let i = 0; i < response.data.length; i++) {
 				// They Can Claim the Same ID
-				if (this.state.org_id != response.data[i]) {
+				if (this.state.org_id !== response.data[i]) {
 					this.state.owned_ids.push({
 						org_id: response.data[i],
 					});
@@ -224,11 +222,11 @@ class UpdateOrgsComponent extends Component {
 		var ret = "light";
 
 		if (role === "ORG_OWNER") {
-			ret = "danger";
+			ret = "owner";
 		} else if (role === "ADMIN") {
-			ret = "warning";
+			ret = "admin";
 		} else if (role === "TEAM_LEADER") {
-			ret = "info";
+			ret = "leader";
 		}
 
 		return ret;
@@ -244,18 +242,19 @@ class UpdateOrgsComponent extends Component {
 						validated={this.state.validated}
 						onSubmit={this.on_submit.bind(this)}
 						className="update-org-form">
-						<h1>Update: {this.state.org_title}</h1>
+						<h1>
+							Update: <strong>{this.state.org_title}</strong>
+						</h1>
 						<Row>
 							<Col>
 								<Form.Group>
-									<Form.Label>Change Org ID</Form.Label>
+									<Form.Label>Org ID</Form.Label>
 									<Form.Control
 										type="text"
 										name="id"
 										id="org_id"
+										disabled="true"
 										value={this.state.org_id}
-										onChange={this.handle_typing_org_id}
-										placeholder="Organisation ID"
 									/>
 									<Form.Control.Feedback type="invalid">
 										{this.state.errors.id}
@@ -287,9 +286,7 @@ class UpdateOrgsComponent extends Component {
 											<h3>Member List</h3>
 										</Col>
 										<Col md={1}>
-											<Button
-												variant="outline-dark"
-											>
+											<Button variant="outline-dark">
 												<i className="fas fa-plus"></i>
 											</Button>
 										</Col>
@@ -297,12 +294,22 @@ class UpdateOrgsComponent extends Component {
 
 									<ListGroup className="overflow-auto">
 										{this.state.members.map((member) => {
-											// {console.log(this.setRoleClassName(member.role))}
+											//Render member list
 											return (
 												<ListGroup.Item
 													key={member.username}
-													variant={this.setRoleStyling(member.role)}>
-													{member.username}
+													className="bg-light text-dark"
+													// variant={this.setRoleStyling(member.role)}
+												>
+													{member.username}{" "}
+													{member.role === "TEAM_MEMBER" ? null : (
+														<i
+															className={getRoleIconClassName(
+																member.role
+															)}>
+															{" "}
+														</i>
+													)}
 												</ListGroup.Item>
 											);
 										})}
@@ -329,8 +336,7 @@ class UpdateOrgsComponent extends Component {
 												{this.state.channels.map((ch) => (
 													<ListGroup.Item
 														key={ch.channel_title}
-														className="channels"
-														variant="dark">
+														className="channels bg-primary text-white">
 														<div className="d-flex justify-content-between">
 															{ch.channel_title}
 															<ButtonGroup className="align-self-end">
@@ -345,7 +351,7 @@ class UpdateOrgsComponent extends Component {
 																	{this.state.memberListOpen[
 																		ch.channel_title
 																	] ? (
-																		<i class="fas fa-angle-up"></i>
+																		<i className="fas fa-angle-up"></i>
 																	) : (
 																		<i className="fas fa-caret-down"></i>
 																	)}
@@ -386,10 +392,19 @@ class UpdateOrgsComponent extends Component {
 																return (
 																	<ListGroup.Item
 																		key={member.username}
-																		variant={this.setRoleStyling(
-																			member.role
-																		)}>
-																		{member.username}
+																		className="bg-light text-dark"
+																		// variant={this.setRoleStyling(member.role)}
+																	>
+																		{member.username}{" "}
+																		{member.role ===
+																		"TEAM_MEMBER" ? null : (
+																			<i
+																				className={getRoleIconClassName(
+																					member.role
+																				)}>
+																				{" "}
+																			</i>
+																		)}
 																	</ListGroup.Item>
 																);
 															})}
@@ -416,8 +431,7 @@ class UpdateOrgsComponent extends Component {
 									id="org_update"
 									type="submit"
 									variant="secondary"
-									style={{whiteSpace: "nowrap"}}
-									>
+									style={{whiteSpace: "nowrap"}}>
 									Update Organisation
 								</Button>
 							</Form.Group>

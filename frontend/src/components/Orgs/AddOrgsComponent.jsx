@@ -21,8 +21,8 @@ class AddOrgsComponent extends Component {
 	handleValidation(e) {
 		e.preventDefault();
 		var formIsValid = true;
-		var str2 = new String(this.state.org_id);
-		var errors = new Object();
+		var str2 = this.state.org_id;
+		var errors = {};
 		if (this.state.org_id.length < 3 || this.state.org_id === "new") {
 			errors.id = "Org ID is too short";
 			formIsValid = false;
@@ -36,9 +36,9 @@ class AddOrgsComponent extends Component {
 		if (formIsValid) {
 			// Check if the ID Exists
 			for (let i = 0; i < this.state.owned_ids.length; i++) {
-				var str1 = new String(this.state.owned_ids[i].org_id);
+				var str1 = this.state.owned_ids[i].org_id;
 				// Compare the String Values
-				if (str1.valueOf() == str2.valueOf()) {
+				if (str1.valueOf() === str2.valueOf()) {
 					formIsValid = false;
 				}
 			}
@@ -79,9 +79,8 @@ class AddOrgsComponent extends Component {
 				members: [],
 			};
 			console.log(org);
-			var url = "/orgs/" + this.state.username;
 			OrgsResources.create_org(this.state.username, org).then(() =>
-				this.props.history.push(url)
+				this.props.history.goBack()
 			);
 		}
 

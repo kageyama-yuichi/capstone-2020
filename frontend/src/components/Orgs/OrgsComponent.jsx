@@ -20,18 +20,20 @@ class OrgsComponent extends Component {
 			username: AuthenticationService.getLoggedInUserName(),
 			orgs: [],
 		};
+		this.handle_create_org = this.handle_create_org.bind(this);
+		this.handle_update_org = this.handle_update_org.bind(this);
 		this.handle_delete_org = this.handle_delete_org.bind(this);
-		this.handleCreateClick = this.handleCreateClick.bind(this);
 	}
 
 	handle_goto_channel = (org_id) => {
 		var url = this.props.history.location.pathname + "/" + org_id + "/channels";
 		this.props.history.push(url);
 	};
-	handle_create_org = () => {
-		var url = this.props.history.location.pathname + "/new";
-		this.props.history.push(url);
-	};
+	// Function to Send the User to the Create Organisation Screen
+	handle_create_org() {
+		this.props.history.push("/orgs/new");
+	}
+	// Function to Delete the Organisation that the User has Clicked
 	handle_delete_org = (org_id) => {
 		OrgsResources.delete_org(this.state.username, org_id).then((response) => {
 			// Reset using this.refresh_orgs in Callback to Force
@@ -45,6 +47,7 @@ class OrgsComponent extends Component {
 			);
 		});
 	};
+	// Function to Update the Organisation that the User clicked
 	handle_update_org = (org_id) => {
 		var url = this.props.history.location.pathname + "/" + org_id;
 		this.props.history.push(url);
@@ -96,32 +99,26 @@ class OrgsComponent extends Component {
 		});
 	};
 
-	handleCreateClick() {
-		this.props.history.push("/orgs/new");
-	}
-
 	componentDidMount() {
 		this.refresh_orgs();
 	}
 
 	renderButtons(org) {
-		if (org.user_role == "ORG_OWNER") {
+		if (org.user_role === "ORG_OWNER") {
 			console.log("calling render for org owner");
 			return (
 				<Card.Footer>
 					<ButtonGroup>
-						<Button variant="dark">Edit</Button>
-						<Button onClick={() => this.handle_delete_org(org.id)} variant="danger">
-							Delete
-						</Button>
+						<Button onClick={() => this.handle_update_org(org.org_id)} variant="dark">Edit</Button>
+						<Button onClick={() => this.handle_delete_org(org.org_id)} variant="danger">Delete</Button>
 					</ButtonGroup>
 				</Card.Footer>
 			);
-		} else if (org.user_role == "ADMIN") {
+		} else if (org.user_role === "ADMIN") {
 			return (
 				<Card.Footer>
 					<ButtonGroup>
-						<Button variant="dark">Edit</Button>
+						<Button onClick={() => this.handle_update_org(org.org_id)} variant="dark">Edit</Button>
 					</ButtonGroup>
 				</Card.Footer>
 			);
@@ -133,23 +130,21 @@ class OrgsComponent extends Component {
 	render() {
 		return (
 			<div className="app-window org-component">
-				<Container fluid>
+				<Container fluid className="h-100">
 					<Row
 						style={{height: "fit-content"}}
-						className="border-bottom mb-3 align-items-center">
+						className="header-title border-bottom mb-3 align-items-center">
 						<Col style={{height: "fit-content"}}>
 							<h1>Organisations</h1>
 						</Col>
 						<Col  md={1} sm={3} style={{height: "fit-content"}}>
-							<Button style={{whiteSpace: "nowrap"}} variant="primary" onClick={this.handleCreateClick}>
-								New org
-							</Button>
+							<Button style={{whiteSpace: "nowrap"}} variant="primary" onClick={this.handle_create_org}>New org</Button>
 						</Col>
 					</Row>
-					<CardDeck style={{height: "auto"}}>
+					<CardDeck className="window-body" style={{height: "auto", overflowY: "scroll"}}>
 						{this.state.orgs.map((org) => (
 							<Card className="org-card" key={org.org_id}>
-								<Link to={"orgs/" + org.org_id} className="cards-fix">
+								<Link to={"orgs/" + org.org_id + "/channels"} className="cards-fix">
 									<Card.Img variant="top" src={tempImg} />
 									<Card.Body>
 										<Card.Title>{org.org_title}</Card.Title>
@@ -162,43 +157,7 @@ class OrgsComponent extends Component {
 					</CardDeck>
 				</Container>
 			</div>
-			/*{ <header className="title-container">
-					<div className="title-flex">
-						<div className="title-div">Organisations</div>
-						<Button onClick={this.handleCreateClick}>
-							Create a new org
-						</Button>
-					</div>
-				</header>
-
-				{this.state.orgs.map((org) => (
-					<div key={org.org_id} className="orgs">
-						<input
-							className="delete_organisation"
-							type="button"
-							value="-"
-							onClick={() => this.handle_delete_org(org.org_id)}
-						/>
-						<input
-							className="go_channels"
-							type="button"
-							value="o"
-							onClick={() => this.handle_goto_channel(org.org_id)}
-						/>
-						<input
-							className="update_organisation"
-							type="button"
-							value="#"
-							onClick={() => this.handle_update_org(org.org_id)}
-						/>
-						<h3 key={org.org_id}>{org.org_title}</h3>
-						<div>
-							{org.members.map((member) => (
-								<p key={member.username}>{member.username}</p>
-							))}
-						</div>
-					</div>
-				))} }*/
+			
 		);
 	}
 }
