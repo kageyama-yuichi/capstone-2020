@@ -25,6 +25,8 @@ import SidebarComponent from '../Sidebar/SidebarComponent.jsx'
 import AgendaComponent from '../Agenda/AgendaComponent.jsx'
 import ProfileComponent from '../Profile/ProfileComponent.jsx'
 
+import ContactComponent from '../Contacts/ContactComponent.jsx'
+
 class BodyComponent extends Component {
     render() {
         return (
@@ -47,7 +49,8 @@ class BodyComponent extends Component {
                             <AuthenticatedRoute path="/chat/:orgs_id/:channel_title/:instance_title" exact component={ChatComponent} />
                             <AuthenticatedRoute path="/orgs/:org_id/:channel_title/:instance_title" exact component={UpdateInstancesComponent} />
 
-							<AuthenticatedRoute path="/private/:receiver" exact component={PrivateChatComponent} />
+                            <AuthenticatedRoute path="/private" exact component={ContactComponent}/>
+							<AuthenticatedRoute path="/private/:receiver" component={PrivateChatComponent} />
 
 							<AuthenticatedRoute path="/dashboard" exact component={DashboardComponent} />
 
