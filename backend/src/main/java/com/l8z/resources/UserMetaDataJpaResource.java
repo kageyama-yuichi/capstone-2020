@@ -127,48 +127,10 @@ public class UserMetaDataJpaResource {
 			System.out.println("System - Error Updating Database");
 		}
 	}
-
-	public void contact_added(String username1, String username2) {
-		System.out.println("System - Saving Contact");
-		// Stores all the org_ids of the User
-		String org_ids = "[]";
-		// Stores all the org_channels of the User
-		String org_channels = "[]";
-		// Stores the users contact_list
-		List<String> contact_list = new ArrayList<String>();
-		// Stores the favourite channel of the User
-		String fav_channel = "[]";
-		// Used to Store Retrieved Data from Database
-		UserMetaData sql = null;
-
-		try {
-			// Get the Current Data from Database if it Exists
-			sql = repo.findByUsername(username1);
-			// If its they haven't got any friends or joined any orgs, it will return null
-			if (sql != null) {
-				// Convert to List of Strings Object
-				org_ids = sql.get_org_ids();
-				// Get the Current String
-				org_channels = sql.get_org_channels();
-				// Get the Current String
-				contact_list = json_mapper.readValue(sql.get_contact_list(),
-						json_mapper.getTypeFactory().constructCollectionType(List.class, Contact.class));
-				// Get Favourite Channel
-				fav_channel = sql.get_fav_channel();
-
-			}
-
-			// Add the new contact
-			contact_list.add(new String(username2));
-
-			// Save it
-			repo.save(new UserMetaData(username1, org_ids, org_channels, json_mapper.writeValueAsString(contact_list), fav_channel));
-		} catch (JsonMappingException e) {
-			System.out.println("System - Error Updating Database");
-		} catch (JsonProcessingException e) {
-			System.out.println("System - Error Updating Database");
-		}
-	}
+	
+/////////////////////
+//Channel Related //
+/////////////////////		
 	
 	public void channel_added(String username, String org_channel) {
 		System.out.println("System - Adding Channel into User's Name");
@@ -250,7 +212,72 @@ public class UserMetaDataJpaResource {
 			System.out.println("System - Error Updating Database");
 		}
 	}
+	
+	@PostMapping(value = "jpa/orgs/favchannels/{username}/{fav_channel}")
+	public ResponseEntity<Void> add_fav_channel(@PathVariable String username, @PathVariable String fav_channel) {
+		System.out.println("System - Creating Contact List");
+	
+		favourite_channel_added(username,fav_channel);
 
+		return ResponseEntity.noContent().build();
+	}
+	
+	@PostMapping(value = "jpa/orgs/channels/{username}/{channel}")
+	public ResponseEntity<Void> add_channel(@PathVariable String username, @PathVariable String org_channels) {
+		System.out.println("System - Creating Contact List");
+	
+		favourite_channel_added(username,org_channels);
+
+		return ResponseEntity.noContent().build();
+	}
+	
+	
+/////////////////////
+// Contact Related //
+/////////////////////	
+	
+	public void contact_added(String username1, String username2) {
+		System.out.println("System - Saving Contact");
+		// Stores all the org_ids of the User
+		String org_ids = "[]";
+		// Stores all the org_channels of the User
+		String org_channels = "[]";
+		// Stores the users contact_list
+		List<String> contact_list = new ArrayList<String>();
+		// Stores the favourite channel of the User
+		String fav_channel = "[]";
+		// Used to Store Retrieved Data from Database
+		UserMetaData sql = null;
+
+		try {
+			// Get the Current Data from Database if it Exists
+			sql = repo.findByUsername(username1);
+			// If its they haven't got any friends or joined any orgs, it will return null
+			if (sql != null) {
+				// Convert to List of Strings Object
+				org_ids = sql.get_org_ids();
+				// Get the Current String
+				org_channels = sql.get_org_channels();
+				// Get the Current String
+				contact_list = json_mapper.readValue(sql.get_contact_list(),
+						json_mapper.getTypeFactory().constructCollectionType(List.class, Contact.class));
+				// Get Favourite Channel
+				fav_channel = sql.get_fav_channel();
+
+			}
+
+			// Add the new contact
+			contact_list.add(new String(username2));
+
+			// Save it
+			repo.save(new UserMetaData(username1, org_ids, org_channels, json_mapper.writeValueAsString(contact_list), fav_channel));
+		} catch (JsonMappingException e) {
+			System.out.println("System - Error Updating Database");
+		} catch (JsonProcessingException e) {
+			System.out.println("System - Error Updating Database");
+		}
+	}
+	
 	@PostMapping(value = "jpa/private/contacts/{username_one}/{username_two}")
 	public ResponseEntity<Void> create_contact(@PathVariable String username_one, @PathVariable String username_two) {
 		System.out.println("System - Creating Contact List");
@@ -307,24 +334,6 @@ public class UserMetaDataJpaResource {
 		}
 		
 		return contact_list_namespace;
-	}
-	
-	@PostMapping(value = "jpa/orgs/favchannels/{username}/{fav_channel}")
-	public ResponseEntity<Void> add_fav_channel(@PathVariable String username, @PathVariable String fav_channel) {
-		System.out.println("System - Creating Contact List");
-	
-		favourite_channel_added(username,fav_channel);
-
-		return ResponseEntity.noContent().build();
-	}
-	
-	@PostMapping(value = "jpa/orgs/channels/{username}/{channel}")
-	public ResponseEntity<Void> add_channel(@PathVariable String username, @PathVariable String org_channels) {
-		System.out.println("System - Creating Contact List");
-	
-		favourite_channel_added(username,org_channels);
-
-		return ResponseEntity.noContent().build();
 	}
 
 }
