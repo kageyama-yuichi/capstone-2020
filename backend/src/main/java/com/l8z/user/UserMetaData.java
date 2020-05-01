@@ -20,17 +20,20 @@ public class UserMetaData {
 	@JsonProperty("org_channels") String org_channels;
 	@Column(length = 200000) // Store the contact list of the User
 	@JsonProperty("contact_list") String contact_list;
+	@Column(length = 200000) // Store the favourite channel of the User
+	@JsonProperty("fav_channel") String fav_channel;
 	
 	// Default Constructor
 	public UserMetaData() {
 		
 	}
 	// Override Constructor
-	public UserMetaData(String username, String org_ids, String org_channels, String contact_list) {
+	public UserMetaData(String username, String org_ids, String org_channels, String contact_list, String fav_channel) {
 		this.username = username;
 		this.org_ids = org_ids;
 		this.org_channels = org_channels;
 		this.contact_list = contact_list;
+		this.fav_channel = fav_channel;
 	}
 	
 	// Getters
@@ -46,7 +49,10 @@ public class UserMetaData {
 	public String get_contact_list() {
 		return contact_list;
 	}
-	
+	public String get_fav_channel() {
+		return fav_channel;
+	}
+
 	// Setters
 	public void set_username(String username) {
 		this.username = username;
@@ -59,6 +65,9 @@ public class UserMetaData {
 	}
 	public void set_contact_list(String contact_list) {
 		this.contact_list = contact_list;
+	}
+	public void set_fav_channel(String fav_channel) {
+		this.fav_channel = fav_channel;
 	}
 	
 	// Comparison 

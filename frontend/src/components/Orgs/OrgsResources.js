@@ -33,6 +33,9 @@ class OrgsResources {
     }
 	delete_channel(username, org_id, channel_title) {
         return axios.delete(`${JPA_URL}/orgs/${username}/${org_id}/${channel_title}`);
+	}
+	addFavChannel(username, fav_channel) {
+        return axios.post(`${JPA_URL}/orgs/favchannels/${username}/${fav_channel}`);
     }
 	// Channel Todo Related
 	retrieve_org_todos(username, org_id, channel_title) {
