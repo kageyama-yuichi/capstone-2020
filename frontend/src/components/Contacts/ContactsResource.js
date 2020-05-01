@@ -8,7 +8,7 @@ class ContactsResource {
     }
 
     getContactList(username) {
-        return axios.get(`${JPA_URL}/private/contacts/${username}`);
+        return axios.get(`${JPA_URL}/private/contacts/${username}/new`);
     }
 
     removeContact(username, target) {
