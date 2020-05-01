@@ -1,11 +1,11 @@
 import React, {Component} from "react";
-import OrgsResources from "./OrgsResources.js";
-import AuthenticationService from "../Authentication/AuthenticationService.js";
-import AddUserToChannelComponent from "./Channels/AddUserToChannelComponent.jsx";
-import RemoveUserFromChannelComponent from "./Channels/RemoveUserFromChannelComponent.jsx";
+import OrgsResources from "../OrgsResources.js";
+import AuthenticationService from "../../Authentication/AuthenticationService.js";
+import AddUserToChannelComponent from "../Channels/AddUserToChannelComponent.jsx";
+import RemoveUserFromChannelComponent from "../Channels/RemoveUserFromChannelComponent.jsx";
 import "./UpdateOrgsComponent.css";
-
-import {getRoleIconClassName} from "./OrgHelpers.js";
+import MemberListComponent from "./MemberListComponent.jsx";
+import ChannelListComponent from "./ChannelListComponent.jsx";
 import {
 	Container,
 	Form,
@@ -59,6 +59,7 @@ class UpdateOrgsComponent extends Component {
 		this.handleCancel = this.handleCancel.bind(this);
 		this.invite_user = this.invite_user.bind(this);
 		this.add_users_to_channel = this.add_users_to_channel.bind(this);
+		this.remove_users_from_channel = this.remove_users_from_channel.bind(this)
 	}
 
 	handleValidation(e) {
@@ -175,9 +176,12 @@ class UpdateOrgsComponent extends Component {
 			}
 		);
 	};
-	handle_update_channel = (channel_title) => {
-		var url = this.props.history.location.pathname + "/" + channel_title;
-		this.props.history.push(url);
+	handle_update_channel = (channel) => {
+		var url = this.props.history.location.pathname + "/" + channel.channel_title;
+		this.props.history.push({
+			pathname: url, 
+			state: {channel: channel}
+		});
 	};
 
 	handleCancel() {
@@ -443,19 +447,22 @@ class UpdateOrgsComponent extends Component {
 			this.sort_by_role();
 			// Sort this.state.channel[i].members to correct Heirarchy
 			this.sort_by_role_channels();
-			
+
 			// Check if they are in the Organisation
-			if(org_member_details.has(this.state.username)){
+			if (org_member_details.has(this.state.username)) {
 				// Check if they have Sufficient Permissions
-				if(org_member_details.get(this.state.username).role === "ORG_OWNER" || org_member_details.get(this.state.username).role === "ADMIN"){
+				if (
+					org_member_details.get(this.state.username).role === "ORG_OWNER" ||
+					org_member_details.get(this.state.username).role === "ADMIN"
+				) {
 					this.setState({
-						is_verifed: true
+						is_verifed: true,
 					});
 				} else {
 					alert("You don't have permissions to view this page");
 					this.props.history.goBack();
 				}
-			} 
+			}
 		});
 	}
 
@@ -560,146 +567,6 @@ class UpdateOrgsComponent extends Component {
 			window.location.reload(false);
 		});
 	};
-	
-	// Maps all the OrgUsers
-	mapOrgUsers(mapper, show_buttons) {
-		let retDiv;
-		// Ensure the Map Has Data
-		if (org_member_details.size > 0) {
-			retDiv = mapper.map((member) => {
-				return (
-					<ListGroup.Item key={member.username} className="bg-light text-dark">
-						<div className="d-flex justify-content-between">
-							<p>
-								{org_member_details.get(member.username).name}{" "}
-								{member.role === "TEAM_MEMBER" ? null : (
-									<i className={getRoleIconClassName(member.role)}> </i>
-								)}
-							</p>
-							{show_buttons
-								? this.mapOrgMemberButtons(member.username, member.role)
-								: null}
-						</div>
-					</ListGroup.Item>
-				);
-			});
-		} else {
-			retDiv = null;
-		}
-		return retDiv;
-	}
-	// Maps all the Member Buttons for Promoting, Demoting and Removing
-	mapOrgMemberButtons(username, role) {
-		let ret;
-		// if the Managing User is an Organisation Owner
-		if (org_member_details.get(this.state.username).role === "ORG_OWNER") {
-			// Member Button Loading from Input
-			if (role === "ORG_OWNER") {
-				// Display Nothing
-			} else if (role === "ADMIN") {
-				ret = (
-					<ButtonGroup className="align-self-end">
-						<Button
-							key={username + "demote"}
-							variant="warning"
-							onClick={() => this.manage_member(username, "TEAM_LEADER")}>
-							<i className="fas fa-chevron-down"></i>
-						</Button>
-						<Button
-							key={username + "remove"}
-							variant="danger"
-							onClick={() => this.remove_member(username)}>
-							<i className="fas fa-times"></i>
-						</Button>
-					</ButtonGroup>
-				);
-			} else if (role === "TEAM_LEADER") {
-				ret = (
-					<ButtonGroup className="align-self-end">
-						<Button
-							key={username + "promote"}
-							variant="success"
-							onClick={() => this.manage_member(username, "ADMIN")}>
-							<i className="fas fa-chevron-up"></i>
-						</Button>
-						<Button
-							key={username + "demote"}
-							variant="warning"
-							onClick={() => this.manage_member(username, "TEAM_MEMBER")}>
-							<i className="fas fa-chevron-down"></i>
-						</Button>
-						<Button
-							key={username + "remove"}
-							variant="danger"
-							onClick={() => this.remove_member(username)}>
-							<i className="fas fa-times"></i>
-						</Button>
-					</ButtonGroup>
-				);
-			} else {
-				ret = (
-					<ButtonGroup className="align-self-end">
-						<Button
-							key={username + "promote"}
-							variant="success"
-							onClick={() => this.manage_member(username, "TEAM_LEADER")}>
-							<i className="fas fa-chevron-up"></i>
-						</Button>
-						<Button
-							key={username + "remove"}
-							variant="danger"
-							onClick={() => this.remove_member(username)}>
-							<i className="fas fa-times"></i>
-						</Button>
-					</ButtonGroup>
-				);
-			}
-		} else if (org_member_details.get(this.state.username).role === "ADMIN") {
-			// Member Button Loading from Input
-			if (role === "ORG_OWNER") {
-				// Display Nothing
-			} else if (role === "ADMIN") {
-				// Display Nothing
-			} else if (role === "TEAM_LEADER") {
-				ret = (
-					<ButtonGroup className="align-self-end">
-						<Button
-							key={username + "demote"}
-							variant="warning"
-							onClick={() => this.manage_member(username, "TEAM_MEMBER")}>
-							<i className="fas fa-chevron-down"></i>
-						</Button>
-						<Button
-							key={username + "remove"}
-							variant="danger"
-							onClick={() => this.remove_member(username)}>
-							<i className="fas fa-times"></i>
-						</Button>
-					</ButtonGroup>
-				);
-			} else {
-				ret = (
-					<ButtonGroup className="align-self-end">
-						<Button
-							key={username + "promote"}
-							variant="success"
-							onClick={() => this.manage_member(username, "TEAM_LEADER")}>
-							<i className="fas fa-chevron-up"></i>
-						</Button>
-						<Button
-							key={username + "remove"}
-							variant="danger"
-							onClick={() => this.remove_member(username)}>
-							<i className="fas fa-times"></i>
-						</Button>
-					</ButtonGroup>
-				);
-			}
-		} else {
-			// Return No Buttons
-		}
-		return ret;
-	}
 
 	// Maps all the Searched and Pending Users
 	mapNonOrgUsers(mapper, is_searched) {
@@ -755,8 +622,7 @@ class UpdateOrgsComponent extends Component {
 	render() {
 		console.log("System - Rendering Page...");
 
-		return (
-		!this.state.is_verifed ? null : (
+		return !this.state.is_verifed ? null : (
 			<div className="app-window update-org-component">
 				<Container fluid>
 					<Form noValidate validated={this.state.validated} className="update-org-form">
@@ -809,34 +675,41 @@ class UpdateOrgsComponent extends Component {
 													<h3>Member List</h3>
 												</Col>
 											</Row>
-
-											<ListGroup className="overflow-auto">
-												{this.mapOrgUsers(this.state.members, true)}
-											</ListGroup>
+											{this.state.members.length > 0 &&
+											org_member_details.size > 0 ? (
+												<MemberListComponent
+													show_buttons={true}
+													username={this.state.username}
+													members={this.state.members}
+													org_member_details={org_member_details}
+													manage_member={this.manage_member}
+													remove_member={this.remove_member}
+												/>
+											) : null}
 										</Col>
 										<Col>
-											<Container fluid className="org-new-users overflow-auto">
+											<Container
+												fluid
+												className="org-new-users overflow-auto">
 												<Row className="org-new-users">
 													<h3>
 														Invite a <strong>New User</strong>
 													</h3>
 												</Row>
 												<Row>
-													<InputGroup className="mb-3">
-														<FormControl
-															className="org-new-users"
-															type="text"
-															id="search_user"
-															value={this.state.search_key}
-															onChange={this.handle_typing_search_key}
-															placeholder="Enter the Name of the User"
-															onKeyPress={(event) => {
-																if (event.key === "Enter") {
-																	this.handle_search_new_users();
-																}
-															}}
-														/>
-													</InputGroup>
+													<FormControl
+														className="org-new-users"
+														type="text"
+														id="search_user"
+														value={this.state.search_key}
+														onChange={this.handle_typing_search_key}
+														placeholder="Enter the Name of the User"
+														onKeyPress={(event) => {
+															if (event.key === "Enter") {
+																this.handle_search_new_users();
+															}
+														}}
+													/>
 												</Row>
 												<Row>
 													<ListGroup className="org-new-users">
@@ -864,7 +737,17 @@ class UpdateOrgsComponent extends Component {
 									</Row>
 									<Row>
 										<Col>
-											<ListGroup className="overflow-auto">
+											<ChannelListComponent
+												channels={channels}
+												username={this.state.username}
+												org_member_details={org_member_details}
+												handle_delete_channel={this.handle_delete_channel}
+												add_users_to_channel={this.add_users_to_channel}
+												remove_users_from_channel={this.remove_users_from_channel}
+												handle_update_channel={this.handle_update_channel}
+											/>
+
+											{/* <ListGroup className="overflow-auto">
 												{channels.map((ch) => (
 													<ListGroup.Item
 														key={ch.channel_title}
@@ -940,11 +823,20 @@ class UpdateOrgsComponent extends Component {
 																	? "flex"
 																	: "none",
 															}}>
-															{this.mapOrgUsers(ch.members, false)}
+															<MemberListComponent
+																show_buttons={false}
+																username={this.state.username}
+																members={ch.members}
+																org_member_details={
+																	org_member_details
+																}
+																manage_member={this.manage_member}
+																remove_member={this.remove_member}
+															/>
 														</ListGroup>
 													</ListGroup.Item>
 												))}
-											</ListGroup>
+											</ListGroup> */}
 										</Col>
 									</Row>
 								</Container>
@@ -962,7 +854,7 @@ class UpdateOrgsComponent extends Component {
 								</Container>
 							</Tab>
 						</Tabs>
-						
+
 						<Row className="fixed-bottom justify-content-end">
 							<Form.Group md="0.5" as={Col}>
 								<Button
@@ -1005,7 +897,7 @@ class UpdateOrgsComponent extends Component {
 					/>
 				) : null}
 			</div>
-		));
+		);
 	}
 }
 

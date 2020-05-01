@@ -2,9 +2,9 @@ import React, {Component} from "react";
 import {API_URL} from "../../Constants";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
 import "./ChatComponent.css";
-import Encryption from './Encryption.js';
+import Encryption from "./Encryption.js";
 import {Container, Row, Col, Button} from "react-bootstrap";
-import MessageComponent from "./Message/MessageComponent.jsx"
+import MessageComponent from "./Message/MessageComponent.jsx";
 
 var stomp_client = null;
 var orgs_id = null;
@@ -30,21 +30,24 @@ class ChatComponent extends Component {
 			message: "",
 			error: "",
 			member_list: [],
-		
+
 			joined: false,
 			current_time: "",
 			open_members: false,
 			bell_ring: false,
 			is_typing: false,
 			bottom: true,
+			org_id: props.org_id,
+			channel_title: props.channel_title,
+			instance_title: props.instance_title,
 		};
 	}
-
 	// Function to Connect the User to the Server
 	my_connect = () => {
-		orgs_id = "/" + this.props.match.params.orgs_id;
-		channel_title = "/" + this.props.match.params.channel_title;
-		instance_title = "/" + this.props.match.params.instance_title;
+		console.log("myconnect called");
+		orgs_id = "/" + this.props.org_id;
+		channel_title = "/" + this.props.channel_title;
+		instance_title = "/" + this.props.instance_title;
 		extension = orgs_id + channel_title + instance_title;
 
 		console.log("System - Trying to Connect...");
@@ -56,7 +59,7 @@ class ChatComponent extends Component {
 		stomp_client = Stomp.over(socket);
 		//console.log(stomp_client);
 		// Disables Console Messages
-		stomp_client.debug = null
+		stomp_client.debug = null;
 		// Connect the User
 		stomp_client.connect({}, this.on_connected, this.on_error);
 	};
@@ -69,10 +72,18 @@ class ChatComponent extends Component {
 		});
 		// Subscribe to Fetching History and Members
 		// This has changed to Subscribe based on your Username so that when others join
-		// messages are not given to you. This will also allow for later chat loads 
+		// messages are not given to you. This will also allow for later chat loads
 		// e.g., load 20 per page and then using javascript .unshift() push the new chat
-		stomp_client.subscribe("/group/members" + extension + "/" + this.state.username, this.on_members_received, {});
-		stomp_client.subscribe("/group/history" + extension + "/" + this.state.username, this.on_history_received, {});
+		stomp_client.subscribe(
+			"/group/members" + extension + "/" + this.state.username,
+			this.on_members_received,
+			{}
+		);
+		stomp_client.subscribe(
+			"/group/history" + extension + "/" + this.state.username,
+			this.on_history_received,
+			{}
+		);
 		// Subscribing to the public Group
 		stomp_client.subscribe("/group" + extension, this.on_message_received, {});
 		// Subscribe to the Join and Leave for Live Feedback
@@ -100,9 +111,10 @@ class ChatComponent extends Component {
 
 	// Handles Chat History
 	on_history_received = (payload) => {
+		
 		var obj = JSON.parse(payload.body);
-		// Iterate over 
-		for (let i = obj.length-1; i >= 0; i--) {
+		// Iterate over
+		for (let i = obj.length - 1; i >= 0; i--) {
 			// Use Unshift to Push objects from back to front
 			messages.unshift({
 				message: Encryption.decrypt_message(obj[i].content),
@@ -112,15 +124,21 @@ class ChatComponent extends Component {
 			});
 			counter++;
 		}
+		
 		// Might need to Change this so that we can load e.g., 20 Messages per Request
 		stomp_client.unsubscribe("/group/history" + extension + "/" + this.state.username, {});
-		if(!this.state.joined){
+		if (!this.state.joined) {
 			// Registering user to server as a Organisation User
-			stomp_client.send("/app/existing_user", {}, JSON.stringify({type: "JOIN", sender: this.state.username}));
+			stomp_client.send(
+				"/app/existing_user",
+				{},
+				JSON.stringify({type: "JOIN", sender: this.state.username})
+			);
 			this.setState({
-				joined: true
+				joined: true,
 			});
 		}
+		console.log("got messages")
 	};
 
 	// Handles Member Loading
@@ -132,7 +150,7 @@ class ChatComponent extends Component {
 		for (let i = 0; i < obj.length; i++) {
 			// Checks if the User Exists
 			does_exist = instance_member_details.has(obj[i].username);
-		
+
 			if (!does_exist) {
 				// Used for Storing in the Map
 				let user_details = {
@@ -140,19 +158,19 @@ class ChatComponent extends Component {
 					role: obj[i].role,
 					fname: obj[i].fname,
 					lname: obj[i].lname,
-					name: obj[i].fname + " " +obj[i].lname,
+					name: obj[i].fname + " " + obj[i].lname,
 					bio: obj[i].bio,
 					image_path: obj[i].image_path,
 					date_time: "",
-				}
+				};
 				// Add them to the Members
 				instance_member_details.set(obj[i].username, user_details);
 			}
 		}
 		// Sort the Members Map
 		this.sort_instance_member_details_map();
-		
-		// Unsubscribe from Retrieving Members for Server Stability 
+
+		// Unsubscribe from Retrieving Members for Server Stability
 		stomp_client.unsubscribe("/group/members" + extension + "/" + this.state.username, {});
 		// Now Fetch the History
 		return this.fetch_history();
@@ -164,13 +182,13 @@ class ChatComponent extends Component {
 		var does_require_sorting = false;
 		// This gets the Original Contents in the Map
 		let temp = instance_member_details.get(message_text.sender);
-		
+
 		if (message_text.type === "JOIN") {
 			// Assign User to Online
 			temp.status = "online";
 			temp.date_time = message_text.date_time;
 			does_require_sorting = true;
-			
+
 			this.setState({
 				bell_ring: true,
 			});
@@ -179,7 +197,7 @@ class ChatComponent extends Component {
 			temp.status = "offline";
 			temp.date_time = message_text.date_time;
 			does_require_sorting = true;
-			
+
 			this.setState({
 				bell_ring: true,
 			});
@@ -187,7 +205,6 @@ class ChatComponent extends Component {
 			// Assign User to Typing or Online depending on State
 			if (message_text.content) temp.status = "typing...";
 			if (message_text.content === "Stopped Typing") temp.status = "online";
-			
 		} else if (message_text.type === "CHAT") {
 			console.log("System - Chat Message Received");
 			temp.status = "online";
@@ -202,47 +219,46 @@ class ChatComponent extends Component {
 			if (message_text.sender === this.state.username) {
 				this.scroll_to_bottom();
 			}
-			
 		} else {
 			// do nothing...
 		}
 		// Overwrite the Old Contents
 		instance_member_details.set(message_text.sender, temp);
 
-		if(does_require_sorting){
+		if (does_require_sorting) {
 			// Sort the Members Map
 			this.sort_instance_member_details_map();
 		}
 		// Re-renders the Users List
 		this.forceUpdate();
 	};
-	
+
 	// Handles Server Responses Accordingly
 	on_channel_connect = (payload) => {
 		var message_text = JSON.parse(payload.body);
 		// Checks if the Message was for this Org/Channel
-		if(instance_member_details.has(message_text.sender)){
+		if (instance_member_details.has(message_text.sender)) {
 			// This gets the Original Contents in the Map
 			let temp = instance_member_details.get(message_text.sender);
-			
+
 			if (message_text.type === "JOIN") {
 				// Assign User to Online
 				temp.status = "online";
 				temp.date_time = message_text.date_time;
-				
+
 				this.setState({
 					bell_ring: true,
 				});
 			} else {
 				if (message_text.type === "LEAVE") {
-				// Assign User to Offline
-				temp.status = "offline";
-				temp.date_time = message_text.date_time;
-				
-				this.setState({
-					bell_ring: true,
-				});
-				} 
+					// Assign User to Offline
+					temp.status = "offline";
+					temp.date_time = message_text.date_time;
+
+					this.setState({
+						bell_ring: true,
+					});
+				}
 			}
 			// Overwrite the Old Contents
 			instance_member_details.set(message_text.sender, temp);
@@ -252,7 +268,7 @@ class ChatComponent extends Component {
 			this.forceUpdate();
 		}
 	};
-	
+
 	on_error = (error) => {
 		this.setState({
 			error:
@@ -334,31 +350,64 @@ class ChatComponent extends Component {
 		}
 		return comparison;
 	};
-	
+
 	// Function to Keep the Members Map Sorted
 	sort_instance_member_details_map = () => {
 		// Create the Temporary Sorted Map
-		const map_sorted_temp = new Map([...instance_member_details.entries()].sort((this.sort_by_online_names)));
+		const map_sorted_temp = new Map(
+			[...instance_member_details.entries()].sort(this.sort_by_online_names)
+		);
 		// Clear the Old Map
 		instance_member_details.clear();
 		// Assign the Temporary Sorted Map to the Members Map
 		for (let [key, value] of map_sorted_temp) {
 			instance_member_details.set(key, value);
-		}		
+		}
+	};
+
+	resetLocalVariables() {
+		stomp_client.disconnect();
+		stomp_client = null;
+		orgs_id = null;
+		channel_title = null;
+		instance_title = null;
+		extension = null;
+		counter = 0;
+		messageCounter = 0;
+		messages = [];
+		instance_member_details.clear();
 	}
 
-	componentDidUpdate() {
+	componentDidUpdate(prevProps) {
 		//let renderedMessages = document.getElementsByClassName("message").length;
-		//console.log("Counter", counter, "Message Counter", messageCounter);
-		if (counter === messageCounter && messageCounter > 0 && this.state.bottom) {
-			console.log("How many rendered", messageCounter, messages.length);
-			this.scroll_to_bottom();
-			console.log("Called scroll");
+		console.log("Counter", counter, "Message Counter", messageCounter);
+		if (
+			prevProps.channel_title !== this.props.channel_title ||
+			prevProps.instance_title !== this.props.instance_title
+		) {
+			this.resetLocalVariables();
+			this.setState(
+				{
+					channel_title: this.props.channel_title,
+					instance_title: this.props.instance_title,
+					joined: false,
+					bottom: true
+				},
+				this.my_connect()
+			);
+		} else {
+			if (counter === messageCounter && messageCounter > 0 && this.state.bottom) {
+				console.log("How many rendered", messageCounter, messages.length);
+				this.scroll_to_bottom();
+				console.log("Called scroll");
+			}
 		}
 	}
+
 	componentWillUnmount() {
 		window.location.reload(false);
 	}
+
 	componentDidMount() {
 		this.my_connect();
 		this.setState({
@@ -374,38 +423,49 @@ class ChatComponent extends Component {
 			10000
 		);
 	}
-	
+
 	mapMessages() {
 		let retDiv;
 		messageCounter = 0;
-		//console.log(messages);
+		console.log("messages", messages);
+
 		retDiv = messages.map((old_msg) => {
 			messageCounter++;
 			return (
-				<MessageComponent key={messageCounter} sender={instance_member_details.get(old_msg.sender)} msg={old_msg}/>
+				<MessageComponent
+					key={messageCounter}
+					sender={instance_member_details.get(old_msg.sender)}
+					msg={old_msg}
+				/>
 			);
 		});
 		return retDiv;
 	}
-	
+
 	mapUsers() {
 		let retDiv;
-		retDiv = [...instance_member_details.keys()].map(key => {
+		retDiv = [...instance_member_details.keys()].map((key) => {
 			return (
-				<p key={key}>{instance_member_details.get(key).name} ({instance_member_details.get(key).status}) @{key}</p>
+				<p key={key}>
+					{instance_member_details.get(key).name} (
+					{instance_member_details.get(key).status}) @{key}
+				</p>
 			);
 		});
 		return retDiv;
 	}
 
 	render() {
-		console.log("System - Rendering Page... Connection Status to Server: " + this.state.channel_connected);
-		
+		console.log(
+			"System - Rendering Page... Connection Status to Server: " +
+				this.state.channel_connected
+		);
+
 		return (
-			<div className="app-window chat-component">
+			<div className="chat-component">
 				<Container fluid style={{height: "100%"}} className="pr-0">
 					<Row className="title-header border-bottom">
-						<h1>{this.props.match.params.instance_title} - Chat Room</h1>
+						<h1>{this.state.instance_title} - Chat Room</h1>
 					</Row>
 					<Row className="window-body">
 						<Col xs={10} className="h-100 inline-block">
@@ -416,17 +476,14 @@ class ChatComponent extends Component {
 									id="scrollable-chat"
 									style={{overflowY: "scroll"}}>
 									{this.mapMessages()}
-									
 
-												{/* <div className="message-date">
+									{/* <div className="message-date">
 											July 3rd 2020 at 12:30am
 										</div> */}
-									
 								</Container>
 							</Container>
 							<div className="d-flex flex-row justify-content-center">
 								<input
-									
 									className="form-control rounded-left w-75"
 									type="msg"
 									id="msg"
@@ -454,9 +511,7 @@ class ChatComponent extends Component {
 							<Container fluid className="pr-0 mr-0 h-100">
 								<div className="user-container h-100">
 									<h1 className="user-title">Users</h1>
-									<div className="user-list">
-									{this.mapUsers()}
-									</div>
+									<div className="user-list">{this.mapUsers()}</div>
 								</div>
 							</Container>
 						</Col>

@@ -123,9 +123,10 @@ class AddInstancesComponent extends Component {
 								{this.state.instance_title_error}
 							</Form.Control.Feedback>
 						</Form.Group>
-						<Button id="instance_create" type="submit">
+						<Button variant="secondary" id="instance_create" type="submit">
 							Create Instance
 						</Button>
+						<Button onClick={() => this.props.history.goBack()} variant="outline-primary">Cancel</Button>
 					</Form>
 				</Container>
 			</div>
