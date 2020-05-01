@@ -30,6 +30,9 @@ class OrgsResources {
 	invite_to_org(inviter, invitee, org_id) {
 		return axios.post(`${JPA_URL}/invite/orgs/${inviter}/${org_id}/${invitee}`);
 	}
+	invite_to_channel_org(inviter, invitee, org_id, channel_title) {
+		return axios.post(`${JPA_URL}/invite/orgs/${inviter}/${org_id}/${channel_title}/${invitee}`);
+	}
 	remove_invited_user_from_org(remover, unique_id) {
 		return axios.post(`${JPA_URL}/invite/removal/orgs/${remover}/${unique_id}`);
 	}
