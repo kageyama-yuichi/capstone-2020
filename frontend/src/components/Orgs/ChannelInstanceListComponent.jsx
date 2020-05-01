@@ -54,6 +54,11 @@ class ChannelListComponent extends Component {
 		});
 	};
 
+	handle_create_channel = () => {
+		var url = "/orgs/"+ this.state.org_id + "/new";
+		this.props.history.push(url);
+	};
+
 	componentDidMount() {
 		this.refresh_channels();
 		this.refresh_instances();
@@ -83,7 +88,7 @@ class ChannelListComponent extends Component {
 		let url = "/orgs/" + this.state.org_id + "/" + ch.channel_title;
 		this.props.history.push({
 			pathname: url,
-			state: {channel: ch}
+			state: {channel: ch},
 		});
 	}
 
@@ -92,16 +97,21 @@ class ChannelListComponent extends Component {
 		return (
 			<div className="side-channel-list">
 				<Container fluid>
-					<h3 className="text-light">{this.state.org_id}</h3>
+					<div className="d-flex justify-content-between">
+						<h3 className="text-light">{this.state.org_id}</h3>
+						<Button size="sm" className="align-self-center"style={{height: "fit-content"}} variant="outline-dark" onClick={this.handle_create_channel}>
+							<i className="fas fa-plus"></i>
+						</Button>
+					</div>
 
 					{this.state.channels.map((ch) => (
-						<Accordion>
+						<Accordion key={ch.channel_title}>
 							<Card className="rounded-0" key={ch.channel_title}>
-								<div className="d-flex justify-content-between">
+								<div className="bg-white d-flex justify-content-between">
 									<Accordion.Toggle
 										as={Card.Header}
 										eventKey={ch.channel_title}
-										className="unselectable pr-0 flex-fill border-bottom-0"
+										className="bg-white unselectable pl-2 pr-0 flex-fill border-bottom-0"
 										onClick={() => {
 											this.handleHeaderClick(ch.channel_title);
 										}}>
@@ -112,20 +122,25 @@ class ChannelListComponent extends Component {
 												<i className="fas fa-angle-right"></i>
 											)}
 											{ch.channel_title}
-											
 										</div>
 									</Accordion.Toggle>
-									<ButtonGroup>
+									<ButtonGroup
+										size="sm"
+										className="mt-auto mb-auto"
+										style={{height: "fit-content"}}>
+										<Button variant="light">
+											<i className="text-warning fas fa-star"></i>
+										</Button>
 										<Button
 											variant="light"
 											onClick={() =>
 												this.handleAddInstanceClick(ch.channel_title)
 											}>
-											<i className="fas fa-plus"></i>
+											<i className="text-success fas fa-plus"></i>
 										</Button>
-										<Button variant="light"
-											onClick={() => this.handleChannelSettingsClick(ch)}
-										>
+										<Button
+											variant="light"
+											onClick={() => this.handleChannelSettingsClick(ch)}>
 											<i className="fas fa-cog"></i>
 										</Button>
 									</ButtonGroup>
