@@ -121,4 +121,20 @@ public class UserJpaResource {
     	}
     	return inviter_basic_users;
     }
+    @GetMapping("/jpa/profile/{username}/{password}") 
+	public User receiveUserPassword(@PathVariable String password){		
+		return repo.findPassword(password);
+	}
+    @PostMapping("/jpa/profile/{username}/{password}")
+	public ResponseEntity<Void> updateUserPassword(
+			@PathVariable String username, 
+			@RequestBody User profile
+		){
+		User userUpdate = repo.getOne(profile.getID());
+		userUpdate.setPassword(profile.getPassword());
+		
+		// Update Profile
+		repo.save(userUpdate);
+		return ResponseEntity.noContent().build();
+	} 
 }
