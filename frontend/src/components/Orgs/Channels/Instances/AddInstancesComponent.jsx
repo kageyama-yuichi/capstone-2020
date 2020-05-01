@@ -54,7 +54,7 @@ class AddInstancesComponent extends Component {
 				console.log("System - Creating New Instance");
 				let instance = {
 					instance_title: this.state.instance_title,
-					instances: []
+					instances: []				
 				}
 				console.log(instance);
 				OrgsResources.create_instance(this.state.username, this.state.org_id, this.state.channel_title, instance).then(() => this.props.history.goBack());
@@ -123,9 +123,10 @@ class AddInstancesComponent extends Component {
 								{this.state.instance_title_error}
 							</Form.Control.Feedback>
 						</Form.Group>
-						<Button id="instance_create" type="submit">
+						<Button variant="secondary" id="instance_create" type="submit">
 							Create Instance
 						</Button>
+						<Button onClick={() => this.props.history.goBack()} variant="outline-primary">Cancel</Button>
 					</Form>
 				</Container>
 			</div>

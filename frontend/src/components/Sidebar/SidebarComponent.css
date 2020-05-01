@@ -43,7 +43,7 @@
 }
 
 
-.nav-link {
+.sidebar-link {
 	display: flex;
     align-items: center;
     flex-direction: column;
@@ -52,18 +52,18 @@
     text-decoration: none !important;
 }
 
-.nav-link span{
+.sidebar-link span{
     width: fit-content;
 }
 
-.nav-link img{
+.sidebar-link img{
     min-width: 3rem;
     width: 80%;
     height: auto;
 
 }
 
-.nav-link .logo-img{
+.sidebar-link .logo-img{
     width: 100%;
 }
 

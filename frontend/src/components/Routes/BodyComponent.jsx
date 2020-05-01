@@ -10,7 +10,7 @@ import PrivateChatComponent from '../Chat/PrivateChatComponent.jsx'
 
 import OrgsComponent from '../Orgs/OrgsComponent.jsx'
 import AddOrgsComponent from '../Orgs/AddOrgsComponent.jsx'
-import UpdateOrgsComponent from '../Orgs/UpdateOrgsComponent.jsx'
+import UpdateOrgsComponent from '../Orgs/UpdateOrgs/UpdateOrgsComponent.jsx'
 
 import ChannelsComponent from '../Orgs/Channels/ChannelsComponent.jsx'
 import AddChannelsComponent from '../Orgs/Channels/AddChannelsComponent.jsx'
@@ -24,9 +24,17 @@ import DashboardComponent from '../Dashboard/DashboardComponent.jsx'
 import SidebarComponent from '../Sidebar/SidebarComponent.jsx'
 import AgendaComponent from '../Agenda/AgendaComponent.jsx'
 import ProfileComponent from '../Profile/ProfileComponent.jsx'
+import PasswordChangeComponent from "../PasswordChange/PasswordChangeComponent.jsx";
+import OrgWrapperComponent from '../Orgs/OrgWrapperComponent.jsx'
 
+<<<<<<< HEAD
 import ContactComponent from '../Contacts/ContactComponent.jsx'
 
+=======
+
+
+import InvitesComponent from '../Invites/InvitesComponent.jsx'
+>>>>>>> adbc20a242c1e638b3a156721c8a35960f7379fb
 class BodyComponent extends Component {
     render() {
         return (
@@ -40,7 +48,7 @@ class BodyComponent extends Component {
 							<AuthenticatedRoute path="/orgs/" exact component={OrgsComponent} />
 							<AuthenticatedRoute path="/orgs/new" exact component={AddOrgsComponent} />
 							<AuthenticatedRoute path="/orgs/:org_id" exact component={UpdateOrgsComponent} />
-							<AuthenticatedRoute path="/orgs/:org_id/channels" exact component={ChannelsComponent} />
+							<AuthenticatedRoute path="/orgs/:org_id/channels" exact component={OrgWrapperComponent} />
 							<AuthenticatedRoute path="/orgs/:org_id/new" exact component={AddChannelsComponent} />
 							<AuthenticatedRoute path="/orgs/:org_id/:channel_title" exact component={UpdateChannelsComponent} />
 							<AuthenticatedRoute path="/orgs/:org_id/:channel_title/instances" exact component={InstancesComponent} />
@@ -53,8 +61,10 @@ class BodyComponent extends Component {
 							<AuthenticatedRoute path="/private/:receiver" component={PrivateChatComponent} />
 
 							<AuthenticatedRoute path="/dashboard" exact component={DashboardComponent} />
+							<AuthenticatedRoute path="/dashboard2" exact component={InvitesComponent} />
 
 							<AuthenticatedRoute path="/profile" exact component={ProfileComponent} />
+                            <AuthenticatedRoute path="/profile/password" exact component={PasswordChangeComponent}/>
 
 							<AuthenticatedRoute path="/agenda" exact component={AgendaComponent} />
 

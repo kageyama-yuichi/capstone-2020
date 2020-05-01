@@ -13,7 +13,7 @@ class AddChannelsComponent extends Component {
 			channel_title: "",
 			channel_title_error: "",
 			owned_ids: [],
-			validated: false
+			validated: false,
 		};
 		this.on_submit = this.on_submit.bind(this);
 	}
@@ -27,7 +27,6 @@ class AddChannelsComponent extends Component {
 
 		// Ensure Length is 3 or Greater
 		if (this.state.channel_title.length < 3 || this.state.channel_title === "new") {
-			
 			error = "Channel title too short";
 			internal_error = true;
 		}
@@ -44,7 +43,7 @@ class AddChannelsComponent extends Component {
 
 			if (internal_error) {
 				console.log("System - ID Already Used");
-				
+
 				error = "Channel title already in use";
 			} else {
 				console.log("System - Creating New Channel");
@@ -65,8 +64,8 @@ class AddChannelsComponent extends Component {
 		if (error.length > 0) {
 			e.currentTarget.querySelector(".form-control").setCustomValidity("invalid");
 		}
-		
-		this.setState({ channel_title_error: error, validated: true });
+
+		this.setState({channel_title_error: error, validated: true});
 	};
 
 	handle_typing_channel_title = (event) => {
@@ -120,8 +119,13 @@ class AddChannelsComponent extends Component {
 								{this.state.channel_title_error}
 							</Form.Control.Feedback>
 						</Form.Group>
-						<Button id="channel_create" type="submit">
+						<Button id="channel_create" variant="secondary" type="submit">
 							Create Channel
+						</Button>
+						<Button
+							onClick={() => this.props.history.goBack()}
+							variant="outline-primary">
+							Cancel
 						</Button>
 					</Form>
 				</Container>
