@@ -55,7 +55,7 @@ class ChannelListComponent extends Component {
 	};
 
 	handle_create_channel = () => {
-		var url = "/orgs/"+ this.state.org_id + "/new";
+		var url = "/orgs/" + this.state.org_id + "/new";
 		this.props.history.push(url);
 	};
 
@@ -67,16 +67,8 @@ class ChannelListComponent extends Component {
 	//Change angle
 	handleHeaderClick(channel_title) {
 		const newIsExpanded = this.state.isExpanded;
-		for (var key in newIsExpanded) {
-			if (key === channel_title) {
-				newIsExpanded[key] = !newIsExpanded[key];
-			} else {
-				newIsExpanded[key] = false;
-			}
-		}
-
+		newIsExpanded[channel_title] = !newIsExpanded[channel_title]
 		this.setState({isExpanded: newIsExpanded});
-		console.log(this.state.isExpanded);
 	}
 
 	handleAddInstanceClick(channel_title) {
@@ -92,6 +84,16 @@ class ChannelListComponent extends Component {
 		});
 	}
 
+	//Returns true if the current logged in username is in the channel member list
+	isUserInChannel(ch) {
+		for (var i in ch.members) {
+			if (ch.members[i].username === this.state.username) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	render() {
 		console.log(this.state.channels);
 		return (
@@ -99,74 +101,81 @@ class ChannelListComponent extends Component {
 				<Container fluid>
 					<div className="d-flex justify-content-between">
 						<h3 className="text-light">{this.state.org_id}</h3>
-						<Button size="sm" className="align-self-center"style={{height: "fit-content"}} variant="outline-dark" onClick={this.handle_create_channel}>
+						<Button
+							size="sm"
+							className="align-self-center"
+							style={{height: "fit-content"}}
+							variant="outline-dark"
+							onClick={this.handle_create_channel}>
 							<i className="fas fa-plus"></i>
 						</Button>
 					</div>
 
-					{this.state.channels.map((ch) => (
-						<Accordion key={ch.channel_title}>
-							<Card className="rounded-0" key={ch.channel_title}>
-								<div className="bg-white d-flex justify-content-between">
-									<Accordion.Toggle
-										as={Card.Header}
-										eventKey={ch.channel_title}
-										className="bg-white unselectable pl-2 pr-0 flex-fill border-bottom-0"
-										onClick={() => {
-											this.handleHeaderClick(ch.channel_title);
-										}}>
-										<div className="d-flex align-items-center">
-											{this.state.isExpanded[ch.channel_title] ? (
-												<i className="fas fa-angle-down"></i>
-											) : (
-												<i className="fas fa-angle-right"></i>
-											)}
-											{ch.channel_title}
-										</div>
-									</Accordion.Toggle>
-									<ButtonGroup
-										size="sm"
-										className="mt-auto mb-auto"
-										style={{height: "fit-content"}}>
-										<Button variant="light">
-											<i className="text-warning fas fa-star"></i>
-										</Button>
-										<Button
-											variant="light"
-											onClick={() =>
-												this.handleAddInstanceClick(ch.channel_title)
-											}>
-											<i className="text-success fas fa-plus"></i>
-										</Button>
-										<Button
-											variant="light"
-											onClick={() => this.handleChannelSettingsClick(ch)}>
-											<i className="fas fa-cog"></i>
-										</Button>
-									</ButtonGroup>
-								</div>
-
-								<Accordion.Collapse eventKey={ch.channel_title}>
-									<ListGroup variant="flush">
-										{ch.instances.map((instance) => (
-											<ListGroup.Item
-												className="pt-1 pb-1"
-												action
+					{this.state.channels.map((ch) =>
+						this.isUserInChannel(ch) ? (
+							<Accordion key={ch.channel_title}>
+								<Card className="rounded-0" key={ch.channel_title}>
+									<div className="bg-white d-flex justify-content-between">
+										<Accordion.Toggle
+											as={Card.Header}
+											eventKey={ch.channel_title}
+											className="bg-white unselectable pl-2 pr-0 flex-fill border-bottom-0"
+											onClick={() => {
+												this.handleHeaderClick(ch.channel_title);
+											}}>
+											<div className="d-flex align-items-center">
+												{this.state.isExpanded[ch.channel_title] ? (
+													<i className="fas fa-angle-down"></i>
+												) : (
+													<i className="fas fa-angle-right"></i>
+												)}
+												{ch.channel_title}
+											</div>
+										</Accordion.Toggle>
+										<ButtonGroup
+											size="sm"
+											className="mt-auto mb-auto"
+											style={{height: "fit-content"}}>
+											<Button variant="light">
+												<i className="text-warning fas fa-star"></i>
+											</Button>
+											<Button
+												variant="light"
 												onClick={() =>
-													this.props.callback(
-														ch.channel_title,
-														instance.instance_title
-													)
-												}
-												key={instance.instance_title}>
-												{instance.instance_title}
-											</ListGroup.Item>
-										))}
-									</ListGroup>
-								</Accordion.Collapse>
-							</Card>
-						</Accordion>
-					))}
+													this.handleAddInstanceClick(ch.channel_title)
+												}>
+												<i className="text-success fas fa-plus"></i>
+											</Button>
+											<Button
+												variant="light"
+												onClick={() => this.handleChannelSettingsClick(ch)}>
+												<i className="fas fa-cog"></i>
+											</Button>
+										</ButtonGroup>
+									</div>
+
+									<Accordion.Collapse eventKey={ch.channel_title}>
+										<ListGroup variant="flush">
+											{ch.instances.map((instance) => (
+												<ListGroup.Item
+													className="pt-1 pb-1"
+													action
+													onClick={() =>
+														this.props.callback(
+															ch.channel_title,
+															instance.instance_title
+														)
+													}
+													key={instance.instance_title}>
+													{instance.instance_title}
+												</ListGroup.Item>
+											))}
+										</ListGroup>
+									</Accordion.Collapse>
+								</Card>
+							</Accordion>
+						) : null
+					)}
 				</Container>
 			</div>
 		);
