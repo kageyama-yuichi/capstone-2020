@@ -132,10 +132,10 @@ public class UserMetaDataJpaResource {
 //Channel Related //
 /////////////////////		
 	
-	public void channel_added(String username, String org_channel) {
+	public void channel_added(String username, String org_id, String org_channel) {
 		System.out.println("System - Adding Channel into User's Name");
 		// Stores all the org_ids of the User
-		String org_ids = "[]";
+		List<String> org_ids =  new ArrayList<String>();
 		// Stores all the org_channels of the User
 		List<String> org_channels = new ArrayList<String>();
 		// Stores the users contact_list
@@ -149,7 +149,8 @@ public class UserMetaDataJpaResource {
 			// Get the Current Data from Database if it Exists
 			sql = repo.findByUsername(username);
 			// Convert to List of Strings Object
-			org_ids = sql.get_org_ids();
+			org_ids = json_mapper.readValue(sql.get_org_ids(),
+					json_mapper.getTypeFactory().constructCollectionType(List.class, String.class));
 			// Convert to List of Strings Object
 			org_channels = json_mapper.readValue(sql.get_org_channels(),
 					json_mapper.getTypeFactory().constructCollectionType(List.class, String.class));
@@ -159,10 +160,10 @@ public class UserMetaDataJpaResource {
 			fav_channel = sql.get_fav_channel();
 
 			// Add the channel 
-			org_channels.add(new String (org_channel));
+			org_channels.add(new String (org_id + "." + org_channel));
 
 			// Save it
-			repo.save(new UserMetaData(username, org_ids, json_mapper.writeValueAsString(org_channels), contact_list, fav_channel));
+			repo.save(new UserMetaData(username, json_mapper.writeValueAsString(org_ids), json_mapper.writeValueAsString(org_channels), contact_list, fav_channel));
 		} catch (JsonMappingException e) {
 			System.out.println("System - Error Updating Database");
 		} catch (JsonProcessingException e) {
@@ -260,14 +261,14 @@ public class UserMetaDataJpaResource {
 				org_channels = sql.get_org_channels();
 				// Get the Current String
 				contact_list = json_mapper.readValue(sql.get_contact_list(),
-						json_mapper.getTypeFactory().constructCollectionType(List.class, Contact.class));
+						json_mapper.getTypeFactory().constructCollectionType(List.class, String.class));
 				// Get Favourite Channel
 				fav_channel = sql.get_fav_channel();
 
 			}
 
 			// Add the new contact
-			contact_list.add(new String(username2));
+			contact_list.add(username2);
 
 			// Save it
 			repo.save(new UserMetaData(username1, org_ids, org_channels, json_mapper.writeValueAsString(contact_list), fav_channel));

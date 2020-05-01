@@ -17,7 +17,8 @@ class UserProfileOverlayComponent extends Component {
 
 	handleClick() {
 		let username = sessionStorage.getItem("authenticatedUser");
-		ContactsResource.addContact(username, this.state.username)
+		console.log(username); console.log(this.state.username);
+	    ContactsResource.addContact(username, this.state.username)
 	}
 
 	render() {
