@@ -291,15 +291,8 @@ public class UserMetaDataJpaResource {
 	public List<String> get_contact_list(@PathVariable String username) {
 		System.out.println("System - Retrieving Contact List");
 	
-		// Stores all the org_ids of the User
-		String org_ids = "[]";
-		// Stores all the org_channels of the User
-		String org_channels = "[]";
 		// Stores the users contact_list
-		List<UserMetaData> contact_list = new ArrayList<UserMetaData>();
-		List<String> contact_list_namespace = new ArrayList<String>();
-		// Stores the favourite channel of the User
-		String fav_channel = "[]";
+		List<String> contact_list = new ArrayList<String>();
 		// Used to Store Retrieved Data from Database
 		UserMetaData sql = null;
 
@@ -308,32 +301,17 @@ public class UserMetaDataJpaResource {
 			sql = repo.findByUsername(username);
 			// If its they haven't got any friends or joined any orgs, it will return null
 			if (sql != null) {
-				// Convert to List of Strings Object
-				org_ids = sql.get_org_ids();
-				// Get the Current String
-				org_channels = sql.get_org_channels();
-				// Get the Current String
 				contact_list = json_mapper.readValue(sql.get_contact_list(),
 						json_mapper.getTypeFactory().constructCollectionType(List.class, Contact.class));
-				// Get Favourite Channel
-				fav_channel = sql.get_fav_channel();
-
 			}
 
-			// Save it
-			repo.save(new UserMetaData(username, org_ids, org_channels, json_mapper.writeValueAsString(contact_list), fav_channel));
 		} catch (JsonMappingException e) {
 			System.out.println("System - Error Updating Database");
 		} catch (JsonProcessingException e) {
 			System.out.println("System - Error Updating Database");
 		}
 		
-		// Get the Namespace
-		for(int i=0; i<contact_list.size(); i++) {
-			contact_list_namespace.add(contact_list.get(i).get_contact_list());
-		}
-		
-		return contact_list_namespace;
+		return contact_list;
 	}
 
 }

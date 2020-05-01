@@ -2,7 +2,7 @@ import axios from 'axios'
 import { JPA_URL } from '../../Constants'
 
 class ContactsResource {
-    // Organisation Related
+    
     addContact(username, target) {
         return axios.post(`${JPA_URL}/private/contacts/${username}/${target}`);
     }
