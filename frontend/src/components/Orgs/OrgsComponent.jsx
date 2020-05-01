@@ -3,7 +3,7 @@ import OrgsResources from "./OrgsResources.js";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
 import "./OrgsComponent.css";
 import { Link } from "react-router-dom";
-import tempImg from "../../assests/tempImg.svg";
+import tempImg from "../../assests/orgImg.svg";
 
 import {Button, ButtonGroup, Container, Row, Col, Card, CardDeck} from "react-bootstrap";
 
@@ -145,7 +145,7 @@ class OrgsComponent extends Component {
 						{this.state.orgs.map((org) => (
 							<Card className="org-card" key={org.org_id}>
 								<Link to={"orgs/" + org.org_id + "/channels"} className="cards-fix">
-									<Card.Img variant="top" src={tempImg} />
+									<Card.Img variant="top" width="20rem" height="140px"src={tempImg} />
 									<Card.Body>
 										<Card.Title>{org.org_title}</Card.Title>
 									</Card.Body>
