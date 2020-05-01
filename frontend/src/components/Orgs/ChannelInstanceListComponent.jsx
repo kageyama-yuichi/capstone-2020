@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import {Accordion, Card, Container, ListGroup, Button, ButtonGroup} from "react-bootstrap";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
-import "./ChannelListComponent.css";
+import "./ChannelInstanceListComponent.css";
 import OrgsResources from "./OrgsResources.js";
 
 class ChannelListComponent extends Component {
@@ -75,8 +75,16 @@ class ChannelListComponent extends Component {
 	}
 
 	handleAddInstanceClick(channel_title) {
-		let url = this.props.location.pathname + "/" + channel_title + "/new";
+		let url = "/orgs/" + this.state.org_id + "/" + channel_title + "/new";
 		this.props.history.push(url);
+	}
+
+	handleChannelSettingsClick(ch) {
+		let url = "/orgs/" + this.state.org_id + "/" + ch.channel_title;
+		this.props.history.push({
+			pathname: url,
+			state: {channel: ch}
+		});
 	}
 
 	render() {
@@ -86,9 +94,9 @@ class ChannelListComponent extends Component {
 				<Container fluid>
 					<h3 className="text-light">{this.state.org_id}</h3>
 
-					<Accordion activeKey={null}>
-						{this.state.channels.map((ch) => (
-							<Card key={ch.channel_title}>
+					{this.state.channels.map((ch) => (
+						<Accordion>
+							<Card className="rounded-0" key={ch.channel_title}>
 								<div className="d-flex justify-content-between">
 									<Accordion.Toggle
 										as={Card.Header}
@@ -103,8 +111,8 @@ class ChannelListComponent extends Component {
 											) : (
 												<i className="fas fa-angle-right"></i>
 											)}
-
 											{ch.channel_title}
+											
 										</div>
 									</Accordion.Toggle>
 									<ButtonGroup>
@@ -115,7 +123,9 @@ class ChannelListComponent extends Component {
 											}>
 											<i className="fas fa-plus"></i>
 										</Button>
-										<Button variant="light">
+										<Button variant="light"
+											onClick={() => this.handleChannelSettingsClick(ch)}
+										>
 											<i className="fas fa-cog"></i>
 										</Button>
 									</ButtonGroup>
@@ -125,6 +135,7 @@ class ChannelListComponent extends Component {
 									<ListGroup variant="flush">
 										{ch.instances.map((instance) => (
 											<ListGroup.Item
+												className="pt-1 pb-1"
 												action
 												onClick={() =>
 													this.props.callback(
@@ -139,8 +150,8 @@ class ChannelListComponent extends Component {
 									</ListGroup>
 								</Accordion.Collapse>
 							</Card>
-						))}
-					</Accordion>
+						</Accordion>
+					))}
 				</Container>
 			</div>
 		);

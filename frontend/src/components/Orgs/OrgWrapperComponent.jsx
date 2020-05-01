@@ -1,6 +1,5 @@
 import React, {Component} from "react";
-import {Col, Row, Container} from "react-bootstrap";
-import ChannelListComponent from "./ChannelListComponent";
+import ChannelListComponent from "./ChannelInstanceListComponent";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
 import ChatComponent from "../Chat/ChatComponent";
 

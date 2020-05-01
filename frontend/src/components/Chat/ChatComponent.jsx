@@ -390,7 +390,8 @@ class ChatComponent extends Component {
 				{
 					channel_title: this.props.channel_title,
 					instance_title: this.props.instance_title,
-					joined: false
+					joined: false,
+					bottom: true
 				},
 				this.my_connect()
 			);

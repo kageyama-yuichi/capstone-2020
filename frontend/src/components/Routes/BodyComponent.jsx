@@ -10,7 +10,7 @@ import PrivateChatComponent from '../Chat/PrivateChatComponent.jsx'
 
 import OrgsComponent from '../Orgs/OrgsComponent.jsx'
 import AddOrgsComponent from '../Orgs/AddOrgsComponent.jsx'
-import UpdateOrgsComponent from '../Orgs/UpdateOrgsComponent.jsx'
+import UpdateOrgsComponent from '../Orgs/UpdateOrgs/UpdateOrgsComponent.jsx'
 
 import ChannelsComponent from '../Orgs/Channels/ChannelsComponent.jsx'
 import AddChannelsComponent from '../Orgs/Channels/AddChannelsComponent.jsx'
