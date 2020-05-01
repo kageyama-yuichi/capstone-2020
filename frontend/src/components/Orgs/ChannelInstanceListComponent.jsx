@@ -16,6 +16,11 @@ class ChannelListComponent extends Component {
 
 		this.handleAddInstanceClick = this.handleAddInstanceClick.bind(this);
 	}
+	
+	componentDidMount() {
+		this.refresh_channels();
+		this.refresh_instances();
+	}
 
 	refresh_channels = () => {
 		// Retrieves All Channels from the Org Data
@@ -59,15 +64,10 @@ class ChannelListComponent extends Component {
 		this.props.history.push(url);
 	};
 
-	componentDidMount() {
-		this.refresh_channels();
-		this.refresh_instances();
-	}
-
 	//Change angle
 	handleHeaderClick(channel_title) {
 		const newIsExpanded = this.state.isExpanded;
-		newIsExpanded[channel_title] = !newIsExpanded[channel_title]
+		newIsExpanded[channel_title] = !newIsExpanded[channel_title];
 		this.setState({isExpanded: newIsExpanded});
 	}
 

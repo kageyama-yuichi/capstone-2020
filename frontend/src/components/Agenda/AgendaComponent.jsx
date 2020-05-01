@@ -22,7 +22,6 @@ class AgendaComponent extends Component {
 	}
 
 	refresh_todos = () => {
-		console.log("called");
 		this.setState({
 			todos: [],
 		});
