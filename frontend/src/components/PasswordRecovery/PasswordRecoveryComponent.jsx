@@ -1,5 +1,7 @@
 import React, {Component} from "react";
 import {Container, Button, Form} from "react-bootstrap";
+import PasswordRecoveryResources from "./PasswordRecoveryResources.js"
+
 class PasswordRecoveryComponent extends Component {
 	constructor(props) {
 		super(props);
@@ -48,10 +50,19 @@ class PasswordRecoveryComponent extends Component {
 	onSubmit(e) {
 		e.preventDefault();
 		if (this.handleValidation()) {
-			this.setState({valid: true})
-			//Do business logic here
+			console.log(this.state.email);
+			PasswordRecoveryResources.sendTokenForResetPassword(this.state.email).then((response) => {
+				if(response.data) {
+					this.setState({
+						valid: true,
+						validated: true
+					})
+				} else {
+					alert("No account is associated with that email");
+					this.setState({validated: false});
+				}
+			});
 		}
-		this.setState({validated: true});
 	}
 
 	render() {

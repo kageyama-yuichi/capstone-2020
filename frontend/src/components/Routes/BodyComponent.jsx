@@ -4,13 +4,14 @@ import AuthenticatedRoute from '../Authentication/AuthenticatedRoute.jsx'
 
 import ErrorComponent from '../Error/ErrorComponent.jsx'
 import LandingComponent from '../Landing/LandingComponent.jsx'
+import PasswordRecoveryChangeComponent from '../PasswordRecovery/PasswordRecoveryChangeComponent.jsx'
 
 import ChatComponent from '../Chat/ChatComponent.jsx'
 import PrivateChatComponent from '../Chat/PrivateChatComponent.jsx'
 
 import OrgsComponent from '../Orgs/OrgsComponent.jsx'
 import AddOrgsComponent from '../Orgs/AddOrgsComponent.jsx'
-import UpdateOrgsComponent from '../Orgs/UpdateOrgsComponent.jsx'
+import UpdateOrgsComponent from '../Orgs/UpdateOrgs/UpdateOrgsComponent.jsx'
 
 import ChannelsComponent from '../Orgs/Channels/ChannelsComponent.jsx'
 import AddChannelsComponent from '../Orgs/Channels/AddChannelsComponent.jsx'
@@ -25,6 +26,7 @@ import SidebarComponent from '../Sidebar/SidebarComponent.jsx'
 import AgendaComponent from '../Agenda/AgendaComponent.jsx'
 import ProfileComponent from '../Profile/ProfileComponent.jsx'
 import PasswordChangeComponent from "../PasswordChange/PasswordChangeComponent.jsx";
+import OrgWrapperComponent from '../Orgs/OrgWrapperComponent.jsx'
 
 
 
@@ -38,11 +40,12 @@ class BodyComponent extends Component {
                         {<SidebarComponent/>}
                         <Switch>
                             <Route path="/" exact component={LandingComponent} />
+							<Route path="/recover/password/:token" exact component={PasswordRecoveryChangeComponent} />
 							
 							<AuthenticatedRoute path="/orgs/" exact component={OrgsComponent} />
 							<AuthenticatedRoute path="/orgs/new" exact component={AddOrgsComponent} />
 							<AuthenticatedRoute path="/orgs/:org_id" exact component={UpdateOrgsComponent} />
-							<AuthenticatedRoute path="/orgs/:org_id/channels" exact component={ChannelsComponent} />
+							<AuthenticatedRoute path="/orgs/:org_id/channels" exact component={OrgWrapperComponent} />
 							<AuthenticatedRoute path="/orgs/:org_id/new" exact component={AddChannelsComponent} />
 							<AuthenticatedRoute path="/orgs/:org_id/:channel_title" exact component={UpdateChannelsComponent} />
 							<AuthenticatedRoute path="/orgs/:org_id/:channel_title/instances" exact component={InstancesComponent} />

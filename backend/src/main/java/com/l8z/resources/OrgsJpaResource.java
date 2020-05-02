@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -268,8 +269,8 @@ public class OrgsJpaResource {
 			@PathVariable String invitee
 		) {
 		String unique = org_id+"."+invitee;
-		pendingjpa.save(new PendingInvites(unique, inviter, invitee, org_id));
-		/*
+		pendingjpa.save(new PendingInvites(unique, "", inviter, invitee, org_id));
+	
 		// Create the Simple Mail Message and Set the Email, Subject and Message
 	    SimpleMailMessage msg = new SimpleMailMessage();
 	    User user = userjpa.findByUsername(invitee);
@@ -281,6 +282,37 @@ public class OrgsJpaResource {
         msg.setText(
     		"Hello "+user.getFname()+" "+user.getLname()+",\n\n"
     		+ "Your L8Z account has received a new organisation invite! You currently have "
+    		+  pendingjpa.findByInvitee(invitee).size()+ " pending invites.\n\n"
+    		+ "Thank you for choosing L8Z,\nL8Z Team."
+    	);
+        
+        // Send the Email
+        mail.send(msg);
+        
+		return ResponseEntity.noContent().build();
+	}
+	@PostMapping("jpa/invite/orgs/{inviter}/{org_id}/{channel_title}/{invitee}")
+	public ResponseEntity<Void> invite_to_channel_org(
+			@PathVariable String inviter, 
+			@PathVariable String org_id, 
+			@PathVariable String channel_title,
+			@PathVariable String invitee
+		) {
+		String unique = org_id+"."+invitee;
+		String unique_channel = org_id+"."+channel_title+"."+invitee;
+		pendingjpa.save(new PendingInvites(unique, unique_channel, inviter, invitee, org_id));
+		/*
+		// Create the Simple Mail Message and Set the Email, Subject and Message
+	    SimpleMailMessage msg = new SimpleMailMessage();
+	    User user = userjpa.findByUsername(invitee);
+	    // Set the Email
+        msg.setTo(user.getEmail());
+        // Set the Subject
+        msg.setSubject("L8Z - New Organisation Channel Invite");
+        // Set the Body Content
+        msg.setText(
+    		"Hello "+user.getFname()+" "+user.getLname()+",\n\n"
+    		+ "Your L8Z account has received a new organisation channel invite! You currently have "
     		+  pendingjpa.findByInvitee(invitee).size()+ " pending invites.\n\n"
     		+ "Thank you for choosing L8Z,\n L8Z Team."
     	);
