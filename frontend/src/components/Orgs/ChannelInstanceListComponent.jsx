@@ -80,7 +80,10 @@ class ChannelListComponent extends Component {
 		let url = "/orgs/" + this.state.org_id + "/" + ch.channel_title;
 		this.props.history.push({
 			pathname: url,
-			state: {channel: ch},
+			state: {
+				channel: ch,
+				org_id: this.state.org_id
+			},
 		});
 	}
 
@@ -102,6 +105,8 @@ class ChannelListComponent extends Component {
 		}
 		return "TEAM_MEMBER";
 	}
+
+
 
 	renderButtons(ch) {
 		let role = this.getRole(ch.members);
@@ -138,6 +143,7 @@ class ChannelListComponent extends Component {
 				<Container fluid>
 					<div className="d-flex justify-content-between">
 						<h3>{this.state.org_id}</h3>
+						
 						<Button
 							size="sm"
 							className="align-self-center"
