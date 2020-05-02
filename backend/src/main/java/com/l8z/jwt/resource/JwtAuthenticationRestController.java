@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.l8z.GlobalVariable;
 import com.l8z.jwt.JwtInMemoryUserDetailsService;
+import com.l8z.jwt.JwtPasswordDecryption;
 import com.l8z.jwt.JwtTokenUtil;
 import com.l8z.jwt.JwtUserDetails;
 import com.l8z.user.User;
@@ -48,7 +49,9 @@ public class JwtAuthenticationRestController {
 			throws AuthenticationException {
 
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
-
+		
+		System.out.println(authenticationRequest.getPassword());
+		
 		final UserDetails userDetails = jwtUserService.loadUserByUsername(authenticationRequest.getUsername());
 
 		final String token = jwtTokenUtil.generateToken(userDetails);
@@ -89,6 +92,9 @@ public class JwtAuthenticationRestController {
 	private void authenticate(String username, String password) {
 		Objects.requireNonNull(username);
 		Objects.requireNonNull(password);
+		System.out.println("Before Decryption: " + password);
+		password = JwtPasswordDecryption.decrypt(password, "L8Z");
+		System.out.println("After Decryption: " + password);
 
 		try {
 			authMang.authenticate(new UsernamePasswordAuthenticationToken(username, password));

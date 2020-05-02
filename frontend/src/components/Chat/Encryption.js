@@ -4,12 +4,12 @@ const CryptoJS = require("crypto-js");
 class Encryption {
     //Encrypt Messages
 	encrpyt_message = (value) => {
-		return CryptoJS.AES.encrypt(value, "L8ZL8ZL8ZL8ZL8Z1").toString();
+		return CryptoJS.AES.encrypt(value, "L8Z").toString();
 	}
 	
 	//Decrypt Message
 	decrypt_message = (value) => {
-		return CryptoJS.AES.decrypt(value, "L8ZL8ZL8ZL8ZL8Z1").toString(CryptoJS.enc.Utf8);
+		return CryptoJS.AES.decrypt(value, "L8Z").toString(CryptoJS.enc.Utf8);
 	}
 
 	/* //Test Encrypt

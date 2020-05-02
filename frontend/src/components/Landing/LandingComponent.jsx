@@ -64,10 +64,12 @@ class LandingComponent extends Component {
 
 	handleSubmit(e) {
 		e.preventDefault();
+		this.state.password = Encryption.encrpyt_message(this.state.password);
 		AuthenticationService.executeJwtAuthenticationService(
 			this.state.username,
 			this.state.password
 		).then((response) => {
+			console.log(this.state.password);
 			console.log("Inner Authetnication");
 			AuthenticationService.registerSuccessfulLoginForJwt(
 				this.state.username,
