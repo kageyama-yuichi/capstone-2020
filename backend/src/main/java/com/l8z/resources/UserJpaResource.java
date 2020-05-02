@@ -109,30 +109,49 @@ public class UserJpaResource {
         
         // Send the Email
         mail.send(msg);
+        
+        cleanupPasswordResetToken();
 	    return true;
 	    }
 	}
 	@PostMapping("/jpa/check/password/reset/token/{token}")
 	public PasswordResetToken checkPasswordResetToken(@PathVariable String token) {
+		boolean isValidToken = false;
 		PasswordResetToken check = prrepo.findByToken(token);
-		// Comparing the the Current Time Date and Token Time Date
-		String cTD = (new SimpleDateFormat("h:mm a (dd/MM/yyyy)").format(new Date())).toUpperCase();
-		String tTD = check.getExpiryDate();		
+		// if PasswordResetToken is null, it'll be returned as null
+		if(check != null) {
+			// Comparing the the Current Time Date and Token Time Date
+			String cTD = (new SimpleDateFormat("h:mm a (dd/MM/yyyy)").format(new Date())).toUpperCase();
+			isValidToken = checkTimeAbbDate(cTD, check.getExpiryDate());
+			
+			// if the Token is Not Valid, Delete it and Return null
+			if(!isValidToken) {
+				prrepo.deleteById(check.getId());
+			}
+		}
 		
-		return check;
+		// if it was Deleted above, return null
+		if(!isValidToken) {
+			return null;
+		} else {
+			return check;
+		}
 	}
-	@PostMapping("/jpa/profile/{username}/{password}/{token}")
+	@PostMapping("/jpa/profile/{username}/{password}/{id}")
 	public boolean updateUserPassword(
 			@PathVariable String username,
 			@PathVariable String password,
-			@PathVariable String token
+			@PathVariable Long id
 		) {
 		User user = repo.findByUsername(username);
 		boolean success = false;
 		
 		// if a Token was present, immediately update password
-		if(!token.equals("")) {
+		if(id != -1) {
+			// Overwrite the Current Password in the System
 			user.setPassword(bCryptEncoder.encode(password));
+			// Remove the Token from the Database
+			prrepo.deleteById(id);
 			success = true;
 		} else {
 			// Tyler's Jank Shit
@@ -172,49 +191,75 @@ public class UserJpaResource {
     }
     
     // Helper Method: Uses the Current/Token Time Dates to Determine Expiration of Token
-    public String checkTimeAbbDate(String cTD, String tTD) {
-    	String ret = "";
+    public boolean checkTimeAbbDate(String cTD, String tTD) {
+    	boolean isVaildToken = false;
     	// Compare the Dates of the Current Time vs Token Set Time
-		String dateOne = cTD.substring(cTD.length()-DATE_LEN, cTD.length());
-        String dateTwo = tTD.substring(tTD.length()-DATE_LEN, tTD.length());
+		String cDate = cTD.substring(cTD.length()-DATE_LEN, cTD.length());
+        String tDate = tTD.substring(tTD.length()-DATE_LEN, tTD.length());
         // Compare the Abbreivation (AM/PM)
-        String dateOneAbb = cTD.substring(cTD.length()-ABB_LEN, cTD.length()-DATE_LEN-1);
-        String dateTwoAbb = tTD.substring(tTD.length()-ABB_LEN, tTD.length()-DATE_LEN-1);
+        String cAbb = cTD.substring(cTD.length()-ABB_LEN, cTD.length()-DATE_LEN-1);
+        String tAbb = tTD.substring(tTD.length()-ABB_LEN, tTD.length()-DATE_LEN-1);
         // Compare the Times (0: Hour, 1: Minutes)
-        String[] dateOneTime = (cTD.substring(0, cTD.length()-TIME_LEN)).split(":");
-        String[] dateTwoTime = (tTD.substring(0, tTD.length()-TIME_LEN)).split(":");
+        String[] cTime = (cTD.substring(0, cTD.length()-TIME_LEN)).split(":");
+        String[] tTime = (tTD.substring(0, tTD.length()-TIME_LEN)).split(":");
+        int cHour = Integer.parseInt(cTime[0]);
+        int tHour = Integer.parseInt(tTime[0]);
+        int cMinutes = Integer.parseInt(cTime[1]);
+        int tMinutes = Integer.parseInt(tTime[1]);
+        // Comparison of Hours and Minutes
+        int compHours = tHour - cHour;
+		int compMinutes = cMinutes - tMinutes; 
         
         // if they are the Same Date, Check Abbreivation (AM/PM) 
-        if(dateOne.compareTo(dateTwo) == 0) {
+        if(cDate.compareTo(tDate) == 0) {
         	// If they are the Same Abbreviation, Check the Time
-        	if(dateOneAbb.compareTo(dateTwoAbb) == 0) {
+        	if(cAbb.compareTo(tAbb) == 0) {
+        		
         		// Check if the Hours are the Same
-        		if(dateOneTime[0].compareTo(dateTwoTime[0]) == 0) {
-        			// Check if the Ten's Minute is the Same
-        			if(dateOneTime[1].substring(0,1).compareTo(dateTwoTime[1].substring(0,1)) == 0) {
-        				ret = "valid";
-        			} else {
-        				
-        			}
+        		if(compHours == 0) {
+        			isVaildToken = (compMinutes >= -10 && compMinutes <= 0) ? true : false;
         		} 
         		// Boundary Condition for 1 Hour Difference (xx:59)
         		else {
-        			
+        			isVaildToken = (compMinutes >= 50 && compMinutes <= 59) ? true : false;
         		}
                 
         	} 
         	// Boundary Condition for Mid Day (AM -> PM)
         	else {
-        		
+        		// 12 (PM) - 11 (AM)
+        		if(compHours == 1) {
+        			isVaildToken = (compMinutes >= 50 && compMinutes <= 59) ? true : false;
+        		}
         	}
         }
         // Boundary Condition for Midnight
-        else if(dateOne.compareTo(dateTwo) == -1) {
-        	
+        else if(cDate.compareTo(tDate) == -1) {
+        	// 12 (AM) - 11 (PM)
+    		if(compHours == 1) {
+    			isVaildToken = (compMinutes >= 50 && compMinutes <= 59) ? true : false;
+    		}
         } else {
         	// The Current or Time Expiry Date is Invalid 
-        	ret = "invalid";
+        	isVaildToken = false;
         }
-        return ret;
+        return isVaildToken;
+    }
+    
+    // Helper Method: Cleans up the PasswordResetToken Table
+    public void cleanupPasswordResetToken(){
+    	// Clean-Up PasswordResetTable
+        List<PasswordResetToken> allRecords = prrepo.findAll();
+        boolean isValidToken;
+        for(int i=0; i<allRecords.size(); i++) {
+        	// Comparing the the Current Time Date and Token Time Date
+			String cTD = (new SimpleDateFormat("h:mm a (dd/MM/yyyy)").format(new Date())).toUpperCase();
+			isValidToken = checkTimeAbbDate(cTD, allRecords.get(i).getExpiryDate());
+			
+			// if the Token is Not Valid, Delete it
+			if(!isValidToken) {
+				prrepo.deleteById(allRecords.get(i).getId());
+			}
+        }
     }
 }
