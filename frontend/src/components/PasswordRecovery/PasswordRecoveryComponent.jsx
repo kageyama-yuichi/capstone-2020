@@ -61,9 +61,14 @@ class PasswordRecoveryComponent extends Component {
 					})
 				} else {
 					alert("No account is associated with that email");
-					this.setState({validated: false});
+					this.setState({
+						validated: false,
+						loading: false
+					});
 				}
 			});
+		} else {
+			this.setState({loading: false});
 		}
 	}
 
@@ -94,6 +99,7 @@ class PasswordRecoveryComponent extends Component {
 										<Form.Label>Email</Form.Label>
 										<Form.Control
 											onChange={this.handleChange.bind(this)}
+											className="email-control"
 											placeholder="Email"
 											id="email"
 											name="email"
