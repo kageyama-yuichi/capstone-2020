@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -269,7 +270,7 @@ public class OrgsJpaResource {
 		) {
 		String unique = org_id+"."+invitee;
 		pendingjpa.save(new PendingInvites(unique, "", inviter, invitee, org_id));
-		/*
+	
 		// Create the Simple Mail Message and Set the Email, Subject and Message
 	    SimpleMailMessage msg = new SimpleMailMessage();
 	    User user = userjpa.findByUsername(invitee);
@@ -282,12 +283,12 @@ public class OrgsJpaResource {
     		"Hello "+user.getFname()+" "+user.getLname()+",\n\n"
     		+ "Your L8Z account has received a new organisation invite! You currently have "
     		+  pendingjpa.findByInvitee(invitee).size()+ " pending invites.\n\n"
-    		+ "Thank you for choosing L8Z,\n L8Z Team."
+    		+ "Thank you for choosing L8Z,\nL8Z Team."
     	);
         
         // Send the Email
         mail.send(msg);
-        */
+        
 		return ResponseEntity.noContent().build();
 	}
 	@PostMapping("jpa/invite/orgs/{inviter}/{org_id}/{channel_title}/{invitee}")

@@ -18,7 +18,7 @@ class SidebarComponent extends Component {
 
 	render() {
 		//Do not load sidebar on landing page
-		if (window.location.pathname === '/') {
+		if (window.location.pathname === '/' || window.location.pathname.indexOf('/recover/password/') != -1) {
 			return null;
 		} else {
 			return (
