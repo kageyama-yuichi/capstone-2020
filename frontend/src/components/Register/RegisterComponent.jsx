@@ -3,6 +3,7 @@ import "./RegisterComponent.css";
 import {Form, Button, Col, Container, Spinner} from "react-bootstrap";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
 import PlacesAutoComplete from "../Places/PlacesAutoComplete.jsx";
+import Encryption from '../Chat/Encryption.js';
 
 // What's left to be done:
 // When they register, redirect to Dashboard/username
@@ -134,7 +135,7 @@ class RegisterComponent extends Component {
 				lname: this.state.lastname,
 				email: this.state.email,
 				address: this.state.address,
-				password: this.state.password,
+				password: Encryption.encrpyt_message(this.state.password),
 				bio: "",
 				imagePath: "",
 			};

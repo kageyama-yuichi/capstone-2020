@@ -8,7 +8,7 @@ class PasswordChangeComponent extends Component {
 		super(props);
 		this.state = {
 			username: AuthenticationService.getLoggedInUserName(),
-			oldPassword: "THING",
+			oldPassword: PasswordChangeResources.receiveUserPassword(this.state.username),
 			newPassword: "",
 			confirmPassword: "",
 		};
@@ -21,7 +21,7 @@ class PasswordChangeComponent extends Component {
 	}
 	
 	handleUpdate(){
-		if(this.state.oldPassword === PasswordChangeResources.receiveUserPassword(this.state.username)){
+		if(this.state.oldPassword === ""){
 			if(this.state.newPassword === this.state.confirmPassword){
 				PasswordChangeResources.updateUserPassword(this.username, this.newPassword)
 			}

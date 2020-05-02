@@ -123,7 +123,7 @@ public class UserJpaResource {
     }
     @GetMapping("/jpa/profile/{username}/{password}") 
 	public User receiveUserPassword(@PathVariable String password){		
-		return repo.findPassword(password);
+		return repo.findByPassword(password);
 	}
     @PostMapping("/jpa/profile/{username}/{password}")
 	public ResponseEntity<Void> updateUserPassword(

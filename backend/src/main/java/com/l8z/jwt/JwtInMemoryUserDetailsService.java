@@ -40,9 +40,9 @@ public class JwtInMemoryUserDetailsService implements UserDetailsService {
 		}
 	}
 
-	// Encrypt user password
+	// Encrypt user passwordbCryptEncoder.encode
 	public User save(User user) {		
-		user.setPassword(bCryptEncoder.encode(user.getPassword()));
+		user.setPassword(JwtPasswordDecryption.decrypt(user.getPassword(), "L8ZL8ZL8ZL8ZL8Z1"));
 		return repo.save(user);
 	}
 }
