@@ -150,12 +150,36 @@ class UpdateChannelsComponent extends Component {
 		this.props.history.push(url);
 	}
 	//Opens ChannelInstanceListComponent at the given channel and instance
-	handleInstanceClick(instance_title) {
+	handleInstanceClick(instance_title, e) {
+		e.preventDefault();
 		var url = "/orgs/" + this.state.org_id + "/channels";
-		this.props.history.push({
-			pathname: url,
-			state: {channel_title: this.state.channel_title, instance_title: instance_title},
-		});
+
+		//If the current user is an admin or org owner
+		let role = org_member_details.get(this.state.username).role;
+		if (role === "ADMIN" || role === "ORG_OWNER") {
+			//Open the chat
+			this.props.history.push({
+				pathname: url,
+				state: {
+					channel_title: this.state.channel_title,
+					instance_title: instance_title,
+				},
+			});
+		} else {
+			//If the current user is in the channel
+			for (var i in this.state.members) {
+				if (this.state.members[i].username === this.state.username) {
+					//Open the chat
+					this.props.history.push({
+						pathname: url,
+						state: {
+							channel_title: this.state.channel_title,
+							instance_title: instance_title,
+						},
+					});
+				}
+			}
+		}
 	}
 
 	addUser = (user) => {
@@ -496,9 +520,10 @@ class UpdateChannelsComponent extends Component {
 											<ListGroup>
 												{this.state.channel.instances.map((instance) => (
 													<ListGroup.Item
-														onClick={() =>
+														onClick={(e) =>
 															this.handleInstanceClick(
-																instance.instance_title
+																instance.instance_title,
+																e
 															)
 														}
 														action>
