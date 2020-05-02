@@ -15,11 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-<<<<<<< HEAD
-//import org.springframework.mail.SimpleMailMessage;
-//import org.springframework.mail.javamail.JavaMailSender;
-=======
->>>>>>> adbc20a242c1e638b3a156721c8a35960f7379fb
 
 import com.l8z.GlobalVariable;
 import com.l8z.jparepository.PasswordRecoveryJpaRepository;
@@ -71,34 +66,16 @@ public class UserJpaResource {
 		return ResponseEntity.noContent().build();
 	}
 	
-<<<<<<< HEAD
-	/*@PostMapping("/user/password/reset")
-	public ResponseEntity<Void> resetPassword(
-			HttpServletRequest request, 
-			@RequestParam("email") String userEmail
-		) {
-	    User user = userService.findUserByEmail(userEmail);
-=======
 	@PostMapping("/user/password/reset")
 	public boolean resetPassword(@RequestParam("email") String email) {
 	    // Ensure the User Exists
 		User user = repo.findUserByEmail(email);
->>>>>>> adbc20a242c1e638b3a156721c8a35960f7379fb
 	    if (user == null) {
 	        System.out.println("System - Email Specified Is Not Associated to an Account!");
 	        return false;
 	    } else {
 	    // Create the Token for the User to Reset their Password
 	    String token = UUID.randomUUID().toString();
-<<<<<<< HEAD
-	    userService.createPasswordResetTokenForUser(user, token);
-	    mailSender.send(constructResetTokenEmail(getAppUrl(request), 
-	      request.getLocale(), token, user));
-	    return new GenericResponse(
-	      messages.getMessage("message.resetPasswordEmail", null, 
-	      request.getLocale()));
-	}*/
-=======
 	    // Save the Token to the Database
 	    prrepo.save(new PasswordResetToken(token, user.getUsername()));
 	    // Create the Simple Mail Message and Set the Email, Subject and Message
@@ -144,5 +121,4 @@ public class UserJpaResource {
     	}
     	return inviter_basic_users;
     }
->>>>>>> adbc20a242c1e638b3a156721c8a35960f7379fb
 }

@@ -432,16 +432,8 @@ class ChatComponent extends Component {
 		retDiv = messages.map((old_msg) => {
 			messageCounter++;
 			return (
-<<<<<<< HEAD
 				<MessageComponent key={messageCounter} senderUsername={old_msg.sender} sender={instance_member_details.get(old_msg.sender)} msg={old_msg}/>
-=======
-				<MessageComponent
-					key={messageCounter}
-					sender={instance_member_details.get(old_msg.sender)}
-					msg={old_msg}
-				/>
->>>>>>> adbc20a242c1e638b3a156721c8a35960f7379fb
-			);
+				);
 		});
 		return retDiv;
 	}

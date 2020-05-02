@@ -26,15 +26,10 @@ import AgendaComponent from '../Agenda/AgendaComponent.jsx'
 import ProfileComponent from '../Profile/ProfileComponent.jsx'
 import PasswordChangeComponent from "../PasswordChange/PasswordChangeComponent.jsx";
 import OrgWrapperComponent from '../Orgs/OrgWrapperComponent.jsx'
-
-<<<<<<< HEAD
 import ContactComponent from '../Contacts/ContactComponent.jsx'
-
-=======
-
-
 import InvitesComponent from '../Invites/InvitesComponent.jsx'
->>>>>>> adbc20a242c1e638b3a156721c8a35960f7379fb
+
+
 class BodyComponent extends Component {
     render() {
         return (
