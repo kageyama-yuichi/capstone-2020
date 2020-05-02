@@ -500,6 +500,25 @@ public class OrgsJpaResource {
 		return ResponseEntity.noContent().build();
 	}
 	
+	@GetMapping(value="/jpa/orgs/{username}/{org_id}/{channel_title}")
+	public Channels retrieve_channel(@PathVariable String username, @PathVariable String org_id, @PathVariable String channel_title){
+		
+		OrgsSQL sql = null;
+		Orgs temp_org = null;
+		Channels retChannel = null;
+
+		try {
+			sql = orgsjpa.getByOrgId(org_id); 
+			temp_org = json_mapper.readValue(sql.get_data(), Orgs.class);
+
+			retChannel = temp_org.retrieve_channel(channel_title);
+			
+		} catch (JsonProcessingException e) {
+			System.out.println("System - Error Updating Org");
+		}
+		return retChannel;
+	}
+	
 	@PostMapping(value="/jpa/orgs/{username}/{org_id}/{channel_title}")
 	public ResponseEntity<Void> update_channel(
 			@PathVariable String username,
@@ -655,6 +674,36 @@ public class OrgsJpaResource {
 		
 		return ResponseEntity.noContent().build();
 	}
+	
+	@GetMapping("/jpa/orgs/{username}/{org_id}/{old_channel_title}/{new_channel_title}")
+	public boolean validate_channel_title(@PathVariable String org_id, @PathVariable String old_channel_title, @PathVariable String new_channel_title) {
+		OrgsSQL sql = null;
+		Orgs temp_org = null;
+
+		boolean retVal = true;
+		try {
+			sql = orgsjpa.getByOrgId(org_id); 
+			temp_org = json_mapper.readValue(sql.get_data(), Orgs.class);
+			
+			List<Channels> channels = temp_org.get_channels();
+			
+			for(Channels channel: channels) {
+				if(channel.get_channel_title().equals(new_channel_title)) {
+					if(!channel.get_channel_title().equals(old_channel_title)) {
+						retVal = false;
+						break;
+					}
+				
+				}
+			}
+			
+		} catch (JsonProcessingException e) {
+			System.out.println("System - Error Updating Org");
+		}
+		
+		return retVal;
+	}
+	
 	///////////////////////////////////////////////////////////////////////////
 	///////////////// C H A N N E L   T O D O   R E L A T E D /////////////////
 	///////////////////////////////////////////////////////////////////////////

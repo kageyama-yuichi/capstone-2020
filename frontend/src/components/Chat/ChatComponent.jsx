@@ -124,7 +124,7 @@ class ChatComponent extends Component {
 			});
 			counter++;
 		}
-		
+
 		// Might need to Change this so that we can load e.g., 20 Messages per Request
 		stomp_client.unsubscribe("/group/history" + extension + "/" + this.state.username, {});
 		if (!this.state.joined) {
@@ -138,7 +138,7 @@ class ChatComponent extends Component {
 				joined: true,
 			});
 		}
-		console.log("got messages")
+		console.log("got messages");
 	};
 
 	// Handles Member Loading
@@ -391,7 +391,7 @@ class ChatComponent extends Component {
 					channel_title: this.props.channel_title,
 					instance_title: this.props.instance_title,
 					joined: false,
-					bottom: true
+					bottom: true,
 				},
 				this.my_connect()
 			);
@@ -463,60 +463,66 @@ class ChatComponent extends Component {
 
 		return (
 			<div className="chat-component">
-				<Container fluid style={{height: "100%"}} className="pr-0">
-					<Row className="title-header border-bottom">
-						<h1>{this.state.instance_title} - Chat Room</h1>
-					</Row>
-					<Row className="window-body">
-						<Col xs={10} className="h-100 inline-block">
-							<Container fluid style={{height: "90%"}}>
-								<Container
-									fluid
-									className="h-100"
-									id="scrollable-chat"
-									style={{overflowY: "scroll"}}>
-									{this.mapMessages()}
+				{this.state.instance_title ? (
+					<Container fluid style={{height: "100%"}} className="pr-0">
+						<h1 className="title-header border-bottom">
+							{this.state.instance_title} - Chat Room
+						</h1>
 
-									{/* <div className="message-date">
+						<div className="d-flex window-body w-100">
+							<Container className="ml-0 mr-0 pl-0 flex-fill pr-0">
+								<Container fluid className="pr-0" style={{height: "90%"}}>
+									<Container
+										fluid
+										className="h-100 w-100 pr-0"
+										id="scrollable-chat"
+										style={{overflowY: "auto"}}>
+										{this.mapMessages()}
+
+										{/* <div className="message-date">
 											July 3rd 2020 at 12:30am
 										</div> */}
+									</Container>
 								</Container>
+								<div className="d-flex flex-row justify-content-center">
+									<input
+										className="form-control rounded-left w-75"
+										type="msg"
+										id="msg"
+										style={{borderRadius: "0px"}}
+										placeholder="Enter Message"
+										onChange={this.handle_typing}
+										value={this.state.message}
+										onKeyPress={(event) => {
+											if (event.key === "Enter") {
+												this.handle_send_message();
+											}
+										}}
+									/>
+									<Button
+										type="button"
+										variant="secondary"
+										style={{borderRadius: "0px"}}
+										className="rounded-right"
+										onClick={this.handle_send_message}>
+										SEND
+									</Button>
+								</div>
 							</Container>
-							<div className="d-flex flex-row justify-content-center">
-								<input
-									className="form-control rounded-left w-75"
-									type="msg"
-									id="msg"
-									style={{borderRadius: "0px"}}
-									placeholder="Enter Message"
-									onChange={this.handle_typing}
-									value={this.state.message}
-									onKeyPress={(event) => {
-										if (event.key === "Enter") {
-											this.handle_send_message();
-										}
-									}}
-								/>
-								<Button
-									type="button"
-									variant="secondary"
-									style={{borderRadius: "0px"}}
-									className="rounded-right"
-									onClick={this.handle_send_message}>
-									SEND
-								</Button>
-							</div>
-						</Col>
-						<Col className="h-100">
-							<Container fluid className="pr-0 mr-0 h-100">
+							<Container
+								fluid
+								className="pl-0 pr-0 ml-0 mr-0 h-100 flex-fill"
+								style={{minWidth: "150px", maxWidth: "300px"}}>
 								<div className="user-container h-100">
 									<h1 className="user-title">Users</h1>
 									<div className="user-list">{this.mapUsers()}</div>
 								</div>
 							</Container>
-						</Col>
-					</Row>
-				</Container>
+						</div>
+					</Container>
+				) : (
+					<h1>A welcome page here would be pretty cool</h1>
+				)}
 			</div>
 		);
 	}

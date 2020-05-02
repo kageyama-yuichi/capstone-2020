@@ -9,11 +9,10 @@ class OrgWrapperComponent extends Component {
 		this.state = {
 			username: AuthenticationService.getLoggedInUserName(),
 			org_id: this.props.match.params.org_id,
-			channel_title: "",
-			instance_title: "",
+			channel_title: props.location.state ? props.location.state.channel_title : "",
+			instance_title: props.location.state ? props.location.state.instance_title : "",
 			instanceSelected: false
 		};
-
 		this.handleInstanceClick = this.handleInstanceClick.bind(this)
 	}
 
@@ -28,6 +27,7 @@ class OrgWrapperComponent extends Component {
 	}
 
 	render() {
+		console.log(this.state.channel_title, this.state.instance_title)
 		return (
 			<div className="app-window">
 				<div className="d-flex">

@@ -53,6 +53,9 @@ class OrgsResources {
 	retrieve_all_channel_titles(username, org_id) {
 		return axios.get(`${JPA_URL}/orgs/${username}/${org_id}/new`);
 	}
+	retrieve_channel(username, org_id, channel_title) {
+		return axios.get(`${JPA_URL}/orgs/${username}/${org_id}/${channel_title}`);
+	}
 	create_channel(username, org_id, channel) {
 		return axios.post(`${JPA_URL}/orgs/${username}/${org_id}/new`, channel);
 	}
@@ -61,7 +64,10 @@ class OrgsResources {
     }
 	delete_channel(username, org_id, channel_title) {
         return axios.delete(`${JPA_URL}/orgs/${username}/${org_id}/${channel_title}`);
-    }
+	}
+	validateChannelTitle(username, org_id, old_channel_title, new_channel_title) {
+		return axios.get(`${JPA_URL}/orgs/${username}/${org_id}/${old_channel_title}/${new_channel_title}`);
+	}
 	// Channel Todo Related
 	retrieve_org_todos(username, org_id, channel_title) {
 		return axios.get(`${JPA_URL}/orgs/todos/${username}/${org_id}/${channel_title}`);
