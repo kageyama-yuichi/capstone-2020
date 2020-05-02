@@ -8,9 +8,10 @@ class PasswordChangeComponent extends Component {
 		super(props);
 		this.state = {
 			username: AuthenticationService.getLoggedInUserName(),
-			oldPassword: PasswordChangeResources.receiveUserPassword(this.state.username),
+			oldPassword: "",
 			newPassword: "",
 			confirmPassword: "",
+			token: ""
 		};
 		this.handleCancel = this.handleCancel.bind(this);
 		this.handleUpdate = this.handleUpdate.bind(this);
@@ -21,14 +22,17 @@ class PasswordChangeComponent extends Component {
 	}
 	
 	handleUpdate(){
-		if(this.state.oldPassword === ""){
+		if(this.state.oldPassword === PasswordChangeResources.receiveUserPassword(this.state.username)){
 			if(this.state.newPassword === this.state.confirmPassword){
-				PasswordChangeResources.updateUserPassword(this.username, this.newPassword)
+				PasswordChangeResources.updateUserPassword(this.state.username, this.state.newPassword, this.state.token)
 			}
 			else{
+				console.log("New Password: " +this.state.newPassword);
+				console.log("Confirm Password: " + this.state.confirmPassword);
 				console.log("New password don't match");
 			}
 		} else{
+			console.log("Old Password: " + this.state.oldPassword);
 			console.log("Password Didn't match");
 		}
 	}

@@ -22,6 +22,7 @@ import com.l8z.GlobalVariable;
 import com.l8z.jparepository.PasswordRecoveryJpaRepository;
 import com.l8z.jparepository.PendingInvitesJpaRepository;
 import com.l8z.jparepository.UserJpaRepository;
+import com.l8z.jwt.JwtPasswordDecryption;
 import com.l8z.pending.PendingInvites;
 import com.l8z.user.BasicUser;
 import com.l8z.user.PasswordResetToken;
@@ -132,10 +133,10 @@ public class UserJpaResource {
 		
 		// if a Token was present, immediately update password
 		if(!token.equals("")) {
-			user.setPassword(bCryptEncoder.encode(password));
+			user.setPassword(bCryptEncoder.encode(JwtPasswordDecryption.decrypt(password,"L8Z")));
 			success = true;
 		} else {
-			// Tyler's Jank Shit
+			user.setPassword(bCryptEncoder.encode(JwtPasswordDecryption.decrypt(password,"L8Z")));
 			success = true;
 		}
 		

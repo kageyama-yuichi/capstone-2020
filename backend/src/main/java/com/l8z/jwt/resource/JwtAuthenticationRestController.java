@@ -92,9 +92,7 @@ public class JwtAuthenticationRestController {
 	private void authenticate(String username, String password) {
 		Objects.requireNonNull(username);
 		Objects.requireNonNull(password);
-		System.out.println("Before Decryption: " + password);
 		password = JwtPasswordDecryption.decrypt(password, "L8Z");
-		System.out.println("After Decryption: " + password);
 
 		try {
 			authMang.authenticate(new UsernamePasswordAuthenticationToken(username, password));
