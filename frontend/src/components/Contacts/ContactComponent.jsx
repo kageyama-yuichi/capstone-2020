@@ -1,18 +1,29 @@
 import React, {Component} from "react";
-import {Container} from "react-bootstrap";
+import {Container, ListGroup} from "react-bootstrap"; 
+import ContactsResource from "./ContactsResource.js"
+import AuthenticationService from "../Authentication/AuthenticationService.js"
 
 class ContactComponent extends Component {
 
     constructor(props) {
         super(props)
-        this.state = {
+        this.state = { 
+			username: AuthenticationService.getLoggedInUserName(),
             contactList: []
         }
     }
 
-    componentDidMount() {
-        //Getting contact list here 
-    }
+	refresh_contacts = () => {
+		// Retrieves the Contacts for the Organisation Channels
+		ContactsResource.getContactList(this.state.username).then((response) => {
+			this.setState({contactList: response.data});
+		});
+	}
+	
+	componentDidMount() {
+		this.refresh_contacts();
+	}
+  
 
     render() {
         console.log("rendering contacts")
@@ -20,8 +31,14 @@ class ContactComponent extends Component {
 			<div className="app-window">
 				<Container fluid className="h-100">
                     <h1>
-                        this is a header
-                    </h1>
+					Private
+                    </h1>  
+
+					<h3>Contact List</h3>
+
+					{this.state.contactList.length > 0 ? (<ListGroup>
+						{this.state.contactList.map(contact =>  (<ListGroup.Item key={contact} action>{contact}</ListGroup.Item>))}
+					</ListGroup>) : null}
 				</Container>
 			</div>
 		);
