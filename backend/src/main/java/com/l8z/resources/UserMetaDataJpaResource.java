@@ -303,7 +303,7 @@ public class UserMetaDataJpaResource {
 			// If its they haven't got any friends or joined any orgs, it will return null
 			if (sql != null) {
 				contact_list = json_mapper.readValue(sql.get_contact_list(),
-						json_mapper.getTypeFactory().constructCollectionType(List.class, Contact.class));
+						json_mapper.getTypeFactory().constructCollectionType(List.class, String.class));
 			}
 
 		} catch (JsonMappingException e) {
