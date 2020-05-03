@@ -96,7 +96,7 @@ class ChannelListComponent extends Component {
 	}
 
 	onClick(channel_title){
-		OrgsResources.addFavChannel(this.state.username, channel_title);
+		OrgsResources.addFavChannel(this.state.username, this.state.org_id, channel_title);
 	}
 
 	render() {

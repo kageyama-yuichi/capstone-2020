@@ -11,6 +11,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -172,10 +173,10 @@ public class UserMetaDataJpaResource {
 	}
 	
 	
-	public void favourite_channel_added(String username, String favchannel) {
+	public void favourite_channel_added(String username, String org_id, String favchannel) {
 		System.out.println("System - Saving Favourite Channel");
 		// Stores all the org_ids of the User
-		String org_ids = "[]";
+		List<String> org_ids =  new ArrayList<String>();
 		// Stores all the org_channels of the User
 		String org_channels = "[]";
 		// Stores the users contact_list
@@ -191,7 +192,8 @@ public class UserMetaDataJpaResource {
 			// If its they haven't got any friends or joined any orgs, it will return null
 			if (sql != null) {
 				// Convert to List of Strings Object
-				org_ids = sql.get_org_ids();
+				org_ids = json_mapper.readValue(sql.get_org_ids(),
+						json_mapper.getTypeFactory().constructCollectionType(List.class, String.class));
 				// Get the Current String
 				org_channels = sql.get_org_channels();
 				// Get the Current String
@@ -201,12 +203,19 @@ public class UserMetaDataJpaResource {
 						json_mapper.getTypeFactory().constructCollectionType(List.class, String.class));
 
 			}
-
-			// Add the new contact
-			fav_channel.add(new String(favchannel));
+			
+			if (fav_channel.contains(org_id + "." + favchannel)){
+				fav_channel.remove(org_id + "." + favchannel);
+			}
+			else {
+			// Add the new Fav_Channel
+			fav_channel.add(new String(org_id + "." + favchannel));
+			}
+		
+			
 
 			// Save it
-			repo.save(new UserMetaData(username, org_ids, org_channels, contact_list, json_mapper.writeValueAsString(fav_channel)));
+			repo.save(new UserMetaData(username, json_mapper.writeValueAsString(org_ids), org_channels, contact_list, json_mapper.writeValueAsString(fav_channel)));
 		} catch (JsonMappingException e) {
 			System.out.println("System - Error Updating Database");
 		} catch (JsonProcessingException e) {
@@ -214,21 +223,42 @@ public class UserMetaDataJpaResource {
 		}
 	}
 	
-	@PostMapping(value = "jpa/orgs/favchannels/{username}/{fav_channel}")
-	public ResponseEntity<Void> add_fav_channel(@PathVariable String username, @PathVariable String fav_channel) {
-		System.out.println("System - Creating Contact List");
+	@PostMapping(value = "jpa/orgs/favchannels/{username}/{org_id}/{fav_channel}")
+	public ResponseEntity<Void> add_fav_channel(@PathVariable String username, @PathVariable String org_id, @PathVariable String fav_channel) {
+		System.out.println("System - Creating Fav_Channel List");
 	
-		favourite_channel_added(username,fav_channel);
+		favourite_channel_added(username, org_id, fav_channel);
 
 		return ResponseEntity.noContent().build();
 	}
 	
-	@PostMapping(value = "jpa/orgs/channels/{username}/{channel}")
-	public ResponseEntity<Void> add_channel(@PathVariable String username, @PathVariable String org_channels) {
-		System.out.println("System - Creating Contact List");
+	@DeleteMapping(value = "jpa/orgs/favchannels/{username}/{fav_channel}")
+	public ResponseEntity<Void> delete_fav_channel(@PathVariable String favchannel) {
+		System.out.println("System - Retrieving Fav Channels List");
 	
-		favourite_channel_added(username,org_channels);
+		// Stores the users fav_channels
+		List<String> fav_channel = new ArrayList<String>();
+		// Used to Store Retrieved Data from Database
+		UserMetaData sql = null;
 
+		try {
+			// Get the Current Data from Database if it Exists
+			sql = repo.findByUsername(favchannel);
+			// If its they haven't got any friends or joined any orgs, it will return null
+			if (sql != null) {
+				fav_channel = json_mapper.readValue(sql.get_fav_channel(),
+						json_mapper.getTypeFactory().constructCollectionType(List.class, String.class));
+			}
+
+		} catch (JsonMappingException e) {
+			System.out.println("System - Error Updating Database");
+		} catch (JsonProcessingException e) {
+			System.out.println("System - Error Updating Database");
+		}
+		
+		repo.deleteById(favchannel);
+
+		
 		return ResponseEntity.noContent().build();
 	}
 	
