@@ -20,7 +20,7 @@ class OrgsWidgetComponent extends Component {
 		// Retrieves the Organisations of the User from the Server
 		OrgsResources.retrieve_orgs_sql(this.state.username).then((response) => {
 			// Maps the Response Data (Orgs.class) to JSObject
-			var data = JSON.parse(response.data[0]._data);
+			
 			var orgs = [];
 			var data;
 			var date;
