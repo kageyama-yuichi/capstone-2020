@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Container, ListGroup} from "react-bootstrap"; 
+import {Button, Container, ListGroup} from "react-bootstrap"; 
 import ContactsResource from "./ContactsResource.js"
 import AuthenticationService from "../Authentication/AuthenticationService.js"
 
@@ -23,6 +23,11 @@ class ContactComponent extends Component {
 	componentDidMount() {
 		this.refresh_contacts();
 	}
+
+	handle_getContactList = (contact) => {
+		var url = this.props.history.location.pathname + "/" + contact;
+		this.props.history.push(url);
+	};
   
 
     render() {
@@ -37,7 +42,7 @@ class ContactComponent extends Component {
 					<h3>Contact List</h3>
 
 					{this.state.contactList.length > 0 ? (<ListGroup>
-						{this.state.contactList.map(contact =>  (<ListGroup.Item key={contact} action>{contact}</ListGroup.Item>))}
+						{this.state.contactList.map(contact =>  (<ListGroup.Item key={contact} onClick={() => this.handle_getContactList(contact)}action>{contact}</ListGroup.Item>))}
 					</ListGroup>) : null}
 				</Container>
 			</div>
