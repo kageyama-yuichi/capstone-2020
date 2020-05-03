@@ -8,6 +8,8 @@ import {Container, Button} from "react-bootstrap";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
 import equal from "fast-deep-equal";
 
+//TODO: remove todos that have a date that is in the past.
+//		should probably do this in backend when getting the todos
 class TodoComponent extends Component {
 	constructor(props) {
 		super(props);
@@ -23,8 +25,8 @@ class TodoComponent extends Component {
 		this.handleDeleteClick = this.handleDeleteClick.bind(this);
 		this.handleEditClick = this.handleEditClick.bind(this);
 		this.handleCreateClick = this.handleCreateClick.bind(this);
-		this.handleCreateCallback = this.handleCreateCallback.bind(this)
-		this.handleUpdateCallback = this.handleUpdateCallback.bind(this)
+		this.handleCreateCallback = this.handleCreateCallback.bind(this);
+		this.handleUpdateCallback = this.handleUpdateCallback.bind(this);
 	}
 
 	toggleOverlay = () => {
@@ -101,7 +103,6 @@ class TodoComponent extends Component {
 	}
 
 	handleCreateCallback(todo) {
-		console.log(todo)
 		if (this.props.isTeamTodo) {
 			OrgResources.create_org_todo(
 				this.state.username,
@@ -139,6 +140,7 @@ class TodoComponent extends Component {
 					});
 				}
 				todos.sort((a, b) => new moment(a.date) - new moment(b.date));
+
 				this.setState({todos: todos});
 			});
 		} else {
@@ -154,6 +156,16 @@ class TodoComponent extends Component {
 					});
 				}
 				todos.sort((a, b) => new moment(a.date) - new moment(b.date));
+				//If component is a widget, remove all todos that aren't today
+				if (this.props.isWidget) {
+					for (var i in todos) {
+						if (moment().diff(todos[i].date, "days")) {
+							todos.splice(i);
+							break;
+						}
+					}
+				}
+
 				this.setState({todos: todos});
 			});
 		}
@@ -173,24 +185,26 @@ class TodoComponent extends Component {
 	}
 
 	render() {
-		console.log(this.state.todos)
 		return (
 			<div className="todo-component">
 				<Container fluid>
-					<div className="d-flex title-header border-bottom mb-3 w-100 justify-content-between">
-						<h1 style={{height: "fit-content"}}>Todo List</h1>
-
-						<Button
-							className="align-self-center"
-							variant="outline-primary"
-							onClick={this.handleCreateClick}>
-							New Todo
-						</Button>
+					<div className="d-flex border-bottom w-100 justify-content-between">
+						<h3>Todo List</h3>
+						{this.props.isWidget ? null : (
+							<Button
+								className="align-self-baseline"
+								variant="outline-primary"
+								onClick={this.handleCreateClick}>
+								New Todo
+							</Button>
+						)}
 					</div>
-
-					{/* <Col style={{height: "100%"}} style={{whiteSpace: "nowrap"}} className="justify-content-end"> */}
-
-					<div className="window-body todo-container">
+					<div
+						style={
+							this.props.isWidget
+								? {height: "calc(50vh - 92px)", overflowY: "auto"}
+								: {height: "calc(100vh - 92px)", overflowY: "auto"}
+						}>
 						<table cellSpacing="0" className="todo-table">
 							<tbody>
 								{this.state.todos.map((todo) => (
@@ -200,6 +214,7 @@ class TodoComponent extends Component {
 												className={
 													todo.status ? "done-button" : "doing-button"
 												}
+												style={{outline: "none"}}
 												onClick={() => this.handleDoneClick(todo.id)}>
 												{todo.status ? "Done" : "Doing"}
 											</button>
@@ -210,18 +225,21 @@ class TodoComponent extends Component {
 												? "Today"
 												: moment(todo.date).format("ll")}
 										</td>
-
-										<td className="update-col">
-											<button onClick={() => this.handleEditClick(todo)}>
-												<i className="fas fa-edit"></i>
-											</button>
-										</td>
-
-										<td className="delete-col">
-											<button onClick={() => this.handleDeleteClick(todo.id)}>
-												<i className="fas fa-minus-circle"></i>
-											</button>
-										</td>
+										{this.props.isWidget ? null : (
+											<td className="update-col">
+												<button onClick={() => this.handleEditClick(todo)}>
+													<i className="fas fa-edit"></i>
+												</button>
+											</td>
+										)}
+										{this.props.isWidget ? null : (
+											<td className="delete-col">
+												<button
+													onClick={() => this.handleDeleteClick(todo.id)}>
+													<i className="fas fa-minus-circle"></i>
+												</button>
+											</td>
+										)}
 									</tr>
 								))}
 							</tbody>
@@ -243,6 +261,7 @@ class TodoComponent extends Component {
 }
 TodoComponent.defaultProps = {
 	isTeamTodo: false,
+	isWidget: false,
 };
 
 export default TodoComponent;

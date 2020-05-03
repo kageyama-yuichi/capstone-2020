@@ -40,7 +40,6 @@ class OrgsComponent extends Component {
 	};
 
 	componentDidUpdate() {
-		console.log(this.state.orgs);
 	}
 
 	refresh_orgs = () => {
@@ -119,9 +118,9 @@ class OrgsComponent extends Component {
 							New org
 						</Button>
 					</div>
-					<CardDeck className="window-body" style={{height: "auto", overflowY: "scroll"}}>
+					<CardDeck className="window-body" style={{height: "auto", overflowY: "auto"}}>
 						{this.state.orgs.map((org) => (
-							<Card className="org-card" key={org.org_id}>
+							<Card className="org-card mb-1" key={org.org_id}>
 								<Link to={"orgs/" + org.org_id + "/channels"} className="cards-fix">
 									<Card.Img
 										variant="top"
