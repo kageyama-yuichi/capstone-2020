@@ -12,6 +12,7 @@ class ChannelListComponent extends Component {
 			org_id: props.orgId,
 			channels: [],
 			isExpanded: [],
+			channel_title: "",
 		};
 
 		this.handleAddInstanceClick = this.handleAddInstanceClick.bind(this);
@@ -94,6 +95,10 @@ class ChannelListComponent extends Component {
 		return false;
 	}
 
+	onClick(channel_title){
+		OrgsResources.addFavChannel(this.state.username, channel_title);
+	}
+
 	render() {
 		console.log(this.state.channels);
 		return (
@@ -136,7 +141,7 @@ class ChannelListComponent extends Component {
 											size="sm"
 											className="mt-auto mb-auto"
 											style={{height: "fit-content"}}>
-											<Button variant="light">
+											<Button onClick={() => this.onClick(ch.channel_title)} variant="light" >
 												<i className="text-warning fas fa-star"></i>
 											</Button>
 											<Button
