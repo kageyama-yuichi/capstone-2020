@@ -21,8 +21,33 @@ class PasswordChangeComponent extends Component {
 		this.props.history.goBack();
 	}
 	
+	handle_typing_oldPassword = (event) => {
+		this.setState({
+			oldPassword: event.target.value,
+		});
+	};
+	
+	handle_typing_newPassword = (event) => {
+		this.setState({
+			newPassword: event.target.value,
+		});
+	};
+	
+	handle_typing_confirmPassword = (event) => {
+		this.setState({
+			confirmPassword: event.target.value,
+		});
+	};
+	
+	handleChange(event) {
+		const {name: fieldName, value} = event.target;
+		this.setState({
+			[fieldName]: value,
+		});
+	}
+	
 	handleUpdate(){
-		if(this.state.oldPassword === PasswordChangeResources.receiveUserPassword(this.state.username)){
+		if(PasswordChangeResources.receiveUserPassword(this.state.username) === true){
 			if(this.state.newPassword === this.state.confirmPassword){
 				PasswordChangeResources.updateUserPassword(this.state.username, this.state.newPassword, this.state.token)
 			}
@@ -51,7 +76,9 @@ class PasswordChangeComponent extends Component {
 							<Form.Control 
 								placeholder="Current Password" required
 								className="oldPassword-input"
-								name="oldPassword" />
+								name="oldPassword" 
+								onChange={this.handleChange.bind(this)}
+								value={this.state.oldPassword}/>
 							<Form.Control.Feedback></Form.Control.Feedback>
 						</Form.Group>
 						<Form.Group>
@@ -59,7 +86,9 @@ class PasswordChangeComponent extends Component {
 							<Form.Control 
 								placeholder="New Password" required
 								className="newPassword-input"
-								name="newPassword" />
+								name="newPassword" 
+								onChange={this.handleChange.bind(this)}
+								value={this.state.newPassword}/>
 							<Form.Control.Feedback></Form.Control.Feedback>
 						</Form.Group>
 						<Form.Group>
@@ -67,7 +96,9 @@ class PasswordChangeComponent extends Component {
 							<Form.Control 
 								placeholder="Confirm New Password" required
 								className="confirmPassword-input"
-								name="confirmPassword" />
+								name="confirmPassword" 
+								onChange={this.handleChange.bind(this)}
+								value={this.state.confirmPassword}/>
 							<Form.Control.Feedback></Form.Control.Feedback>
 						</Form.Group>
 

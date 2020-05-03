@@ -50,8 +50,6 @@ public class JwtAuthenticationRestController {
 
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 		
-		System.out.println(authenticationRequest.getPassword());
-		
 		final UserDetails userDetails = jwtUserService.loadUserByUsername(authenticationRequest.getUsername());
 
 		final String token = jwtTokenUtil.generateToken(userDetails);
