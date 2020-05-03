@@ -404,9 +404,9 @@ class ChatComponent extends Component {
 		}
 	}
 
-	componentWillUnmount() {
-		window.location.reload(false);
-	}
+	// componentWillUnmount() {
+	// 	window.location.reload(false);
+	// }
 
 	componentDidMount() {
 		this.my_connect();
