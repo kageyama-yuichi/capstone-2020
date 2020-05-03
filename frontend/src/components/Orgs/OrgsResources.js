@@ -5,6 +5,9 @@ class OrgsResources {
     // Organisation Related
 	retrieve_orgs(username) {
 		return axios.get(`${JPA_URL}/orgs/${username}`);
+	}
+	retrieve_orgs_sql(username) {
+		return axios.get(`${JPA_URL}/orgs/${username}/sql`);
     }
 	retrieve_org(username, org_id) {
 		return axios.get(`${JPA_URL}/orgs/${username}/${org_id}`);

@@ -47,7 +47,8 @@ class AgendaComponent extends Component {
 	render() {
 		return (
 			<div className="app-window">
-				<Container fluid>
+				<h1 className="border-bottom title-header">Agenda</h1>
+				<Container fluid className="window-body">
 					{this.state.loadedTodos ? (
 						<Row>
 							<Col>

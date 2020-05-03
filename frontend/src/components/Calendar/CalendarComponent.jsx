@@ -63,7 +63,7 @@ class CalendarComponent extends Component {
 				<Calendar
 					selectable
 					localizer={localizer}
-					style={{height: "100vh"}}
+					className="window-body"
 					events={this.state.events}
 					defaultView="month"
 					defaultDate={new Date()}

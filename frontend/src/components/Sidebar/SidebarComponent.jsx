@@ -42,7 +42,7 @@ class SidebarComponent extends Component {
 								<span className="link-text">Orgs</span>
 							</Link>
 						</li>
-						<li className="sidebar-item">
+						<li className={(window.location.pathname === `/agenda` ? "current-window": "") + " sidebar-item"}>
 							<Link to="/agenda" className="sidebar-link nav-link unselectable">
 								<img src={AgendaIcon} className="unselectable" alt="AgendaIcon"></img>
 								<span className="link-text">Agenda</span>
