@@ -1,0 +1,14 @@
+.dashboard-component .container{
+    display:flex;
+    width: 95%;
+}
+
+.dashboard-component .container .left{
+   flex: 1;
+    
+}
+
+.dashboard-component .container .right{
+    flex: 1;
+     
+ }

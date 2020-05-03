@@ -12,20 +12,47 @@
     font-size: 16px;
 }
 
+.title-header{
+    margin-bottom: 0px;
+    height: 50px;
+}
+.window-body{
+    height: calc(100% - 50px);
+}
+
 /* To override user agent stylesheet */
 * {
     margin:0px;
-	height: inherit;
-    width: inherit;
+	/* height: inherit;
+    width: inherit; */
+}
+
+label{
+    height: auto;
+}
+
+.form-row{
+    height: auto;
 }
 
 /* Should probably think of a better way to globally style */
 .app-window{
     margin-left: 5rem;
+    width: calc(100% - 5rem);
 }
 
 a, button, input[type=button], input[type=submit]{
     cursor: pointer;
+}
+
+.unselectable {
+    
+    -moz-user-select: none; 
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    -webkit-user-drag: none; 
 }
 
 @font-face {

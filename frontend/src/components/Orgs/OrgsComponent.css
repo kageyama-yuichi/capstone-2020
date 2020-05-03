@@ -1,0 +1,20 @@
+.cards-fix {
+	padding: 0;
+	border: none;
+	white-space: normal;
+	flex: 1 1 auto;
+}
+
+.cards-fix:hover {
+	text-decoration: none;
+}
+
+.org-card {
+	width: 20rem !important;
+    flex: initial !important;
+    transition: 0.5s ease;
+}
+
+.org-card:hover{
+    border-color: #06233B;
+}

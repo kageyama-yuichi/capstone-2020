@@ -1,10 +1,14 @@
 package com.l8z.chat;
 //Sourced from: https://www.callicoder.com/spring-boot-websocket-chat-example/
 
-import java.time.LocalDateTime;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
+@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 // Message Payload that will be Sent to the Server
 public class ChatMessage {
 	// Members
@@ -12,7 +16,7 @@ public class ChatMessage {
 	@JsonProperty("content") private String content;
 	@JsonProperty("sender") private String sender;
 	@JsonProperty("receiver") private String receiver;
-	private LocalDateTime date_time=LocalDateTime.now(); 
+    @JsonProperty("date_time") private String date_time = (new SimpleDateFormat("h:mm a (dd/MM/yyyy)").format(new Date())).toUpperCase(); 
 
     // Enumeration Class to define Types
     public enum MessageType {
@@ -35,7 +39,7 @@ public class ChatMessage {
     public String get_receiver() {
         return receiver;
     }
-    public LocalDateTime get_date_time() {
+    public String get_date_time() {
 		return date_time;
 	}
     // Setters
@@ -50,9 +54,6 @@ public class ChatMessage {
     }
     public void set_receiver(String receiver) {
 		this.receiver = receiver;
-	}
-    public void set_date_time(LocalDateTime date_time) {
-		this.date_time = date_time;
 	}
     
     public void display_message() {

@@ -1,0 +1,13 @@
+.add-orgs-component{
+    display: flex;
+    flex-direction: column;
+}
+
+.add-orgs-form{
+    padding: 2rem;
+    margin: auto;
+}
+
+.add-orgs-container{
+    height: fit-content;
+}

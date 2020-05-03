@@ -1,57 +1,45 @@
-import React, { Component } from "react";
-import { Nav, NavItem, NavLink } from "reactstrap";
+import React, {Component} from "react";
 import "./LandingComponent.css";
 import FooterComponent from "../Footer/FooterComponent.jsx";
 import RegisterComponent from "../Register/RegisterComponent.jsx";
-import logoSVG from "../../assests/Logo_v4.svg";
+import PasswordRecoveryComponent from "../PasswordRecovery/PasswordRecoveryComponent.jsx";
+import logoSVG from "../../assests/Logo_v4.png";
+import {Container, Form, Button} from "react-bootstrap";
+import AuthenticationService from "../Authentication/AuthenticationService.js";
 
 class LandingComponent extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			username: "",
+			password: "",
 			showRegister: false,
-			windowSize: ""
+			showRecovery: false,
+			windowSize: "",
 		};
 		this.handleSubmit = this.handleSubmit.bind(this);
+		this.registerSubmitHandler = this.registerSubmitHandler.bind(this);
 		this.newUserOnClickHandler = this.newUserOnClickHandler.bind(this);
+		this.recoveryOnClickHandler = this.recoveryOnClickHandler.bind(this);
 	}
 
 	newUserOnClickHandler() {
-		this.setState({ showRegister: !this.state.showRegister });
+		this.setState({showRegister: !this.state.showRegister});
 	}
 
-	calcFormSize() {
-		let h =
-			document.getElementsByClassName("register-container")[0]
-				.offsetHeight +
-			document.getElementsByClassName("logo-container")[0].offsetHeight +
-			document.getElementsByClassName("login-form")[0].offsetHeight;
-
-		let cont = document.getElementsByClassName("cont")[0];
-		if (h <= this.getBodyHeight()) {
-			cont.style.height = "100%";
-		} else {
-			cont.style.height = "fit-content";
-		}
+	recoveryOnClickHandler() {
+		this.setState({showRecovery: !this.state.showRecovery});
 	}
 
-	handleResize = e => {
-		const windowSize = window.innerWidth;
+	registerSubmitHandler() {
+		this.props.history.push("/dashboard");
+	}
 
-		this.calcFormSize();
-
-		this.setState(prevState => {
-			return { windowSize };
+	handleChange(event) {
+		const {name: fieldName, value} = event.target;
+		this.setState({
+			[fieldName]: value,
 		});
-	};
-
-	componentDidMount() {
-		window.addEventListener("resize", this.handleResize);
-		this.calcFormSize();
-	}
-
-	componentWillUnmount() {
-		window.removeEventListener("resize", this.handleResize);
 	}
 
 	getBodyHeight() {
@@ -62,78 +50,123 @@ class LandingComponent extends Component {
 		return document.getElementsByTagName("body")[0].offsetWidth;
 	}
 
+	handle_typing_username = (event) => {
+		this.setState({
+			username: event.target.value,
+		});
+	};
+	handle_typing_password = (event) => {
+		this.setState({
+			password: event.target.value,
+		});
+	};
+
 	handleSubmit(e) {
 		e.preventDefault();
-		this.props.history.push("/dashboard");
+		AuthenticationService.executeJwtAuthenticationService(
+			this.state.username,
+			this.state.password
+		).then((response) => {
+			console.log("Inner Authetnication");
+			AuthenticationService.registerSuccessfulLoginForJwt(
+				this.state.username,
+				response.data.token
+			);
+			let url = "/dashboard";
+			this.props.history.push(url);
+		});
+	}
+
+	componentDidMount() {
+		localStorage.clear();
+		sessionStorage.clear();
 	}
 
 	render() {
 		return (
-			<div className="home-page">
-				<div>
+			<div>
+				<div className="home-page">
 					<div className="login-container">
-						<div className="cont">
+						<Container style={{height: "100vh"}}>
 							<div className="logo-container">
-								<img className="logo" src={logoSVG}></img>
+								<img className="logo" src={logoSVG} alt="Logo"></img>
 							</div>
-							<form className="login-form" onSubmit={this.handleSubmit}>
+							<Form className="login-form" onSubmit={this.handleSubmit}>
 								<h1 className="login-title">LOGIN</h1>
-								<div className="input-container">
+								<Form.Group className="input-container">
 									<p className="input-name">Username</p>
 									<input
 										type="text"
+										name="username"
 										className="input-field username-field"
 										placeholder="Enter your username"
-									></input>
-								</div>
-								<div className="input-container">
+										onChange={this.handleChange.bind(this)}
+										value={this.state.username}></input>
+								</Form.Group>
+								<Form.Group className="input-container">
 									<p className="input-name">Password</p>
 									<input
-										type="text"
+										type="password"
+										name="password"
 										className="input-field password-field"
 										placeholder="Enter your password"
-									></input>
-								</div>
+										onChange={this.handleChange.bind(this)}
+										value={this.state.password}></input>
+								</Form.Group>
 								<div className="password-reset">
-									<a className="login-link-text">Forgot password?</a>
+									<Button
+										variant="link"
+										onClick={this.recoveryOnClickHandler}
+										className="login-link-text">
+										Forgot password?
+									</Button>
 								</div>
 
-								<input
+								<Button
 									type="submit"
-									className="login-button submit-button"
-									value="SIGN IN"
-								></input>
-							</form>
+									variant="secondary"
+									size="lg"
+									className="submit-button button-lg">
+									SIGN IN
+								</Button>
+							</Form>
 							<div className="register-container">
-								<p className="or">or</p>
-								<hr></hr>
 								<div className="create-account-container">
 									<p>
 										New user?{" "}
-										<a className="login-link-text" onClick={this.newUserOnClickHandler}>
+										<Button
+											variant="link"
+											className="login-link-text"
+											onClick={this.newUserOnClickHandler}>
 											Create a new account
-										</a>
+										</Button>
 									</p>
 								</div>
 							</div>
-							{this.state.showRegister ? (
-								<RegisterComponent
-									handler={this.newUserOnClickHandler}
-								/>
-							) : null}
-						</div>
+						</Container>
 						<FooterComponent />
+
+						{window.innerHeight < window.innerWidth && this.getBodyWidth() > 1200 ? (
+							<div className="info-container">
+								<p className="motto">THIS MOTTO.</p>
+								<p className="more-motto">
+									Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin
+									quis ornare nulla. Pellentesque quis malesuada sem. Quisque
+									elementum purus at lorem rhoncus, eu dictum purus malesuada.
+								</p>
+							</div>
+						) : null}
 					</div>
-					{window.innerHeight < window.innerWidth &&
-					this.getBodyWidth() > 1200 ? (
-						<div className="info-container">
-							<p className="motto">THIS MOTTO.</p>
-							<p className="more-motto">
-									Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin quis ornare nulla. Pellentesque quis malesuada sem. Quisque elementum purus at lorem rhoncus, eu dictum purus malesuada.
-							</p>
-						</div>
-					) : null}
 				</div>
+				{this.state.showRegister ? (
+					<RegisterComponent
+						submitHandler={this.registerSubmitHandler}
+						handler={this.newUserOnClickHandler}
+					/>
+				) : null}
+				{this.state.showRecovery ? (
+					<PasswordRecoveryComponent handler={this.recoveryOnClickHandler} />
+				) : null}
 			</div>
 		);
 	}
