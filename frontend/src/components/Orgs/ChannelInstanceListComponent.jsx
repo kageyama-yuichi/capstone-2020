@@ -82,7 +82,7 @@ class ChannelListComponent extends Component {
 			pathname: url,
 			state: {
 				channel: ch,
-				org_id: this.state.org_id
+				org_id: this.state.org_id,
 			},
 		});
 	}
@@ -106,8 +106,6 @@ class ChannelListComponent extends Component {
 		return "TEAM_MEMBER";
 	}
 
-
-
 	renderButtons(ch) {
 		let role = this.getRole(ch.members);
 
@@ -129,8 +127,8 @@ class ChannelListComponent extends Component {
 				) : null}
 				{role !== "TEAM_MEMBER" ? (
 					<Button variant="dark" onClick={() => this.handleChannelSettingsClick(ch)}>
-					<i className="fas fa-cog"></i>
-				</Button>
+						<i className="fas fa-cog"></i>
+					</Button>
 				) : null}
 			</ButtonGroup>
 		);
@@ -143,7 +141,7 @@ class ChannelListComponent extends Component {
 				<Container fluid>
 					<div className="d-flex justify-content-between">
 						<h3>{this.state.org_id}</h3>
-						
+
 						<Button
 							size="sm"
 							className="align-self-center"
@@ -185,6 +183,16 @@ class ChannelListComponent extends Component {
 
 									<Accordion.Collapse eventKey={ch.channel_title}>
 										<ListGroup variant="flush">
+											<ListGroup.Item
+												className="pt-1 pb-1"
+												action
+												onClick={() =>
+													this.props.todoCallback(
+														ch.channel_title
+													)
+												}>
+												Todo List
+												</ListGroup.Item>
 											{ch.instances.map((instance) => (
 												<ListGroup.Item
 													className="pt-1 pb-1"
