@@ -1,12 +1,12 @@
 import React, {Component} from "react";
 import TodoResources from "./TodoResources.js";
+import OrgResources from "../Orgs/OrgsResources.js";
 import "./TodoComponent.css";
 import moment from "moment";
 import TodoEditComponent from "./TodoEditComponent.jsx";
 import {Container, Button} from "react-bootstrap";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
-import equal from 'fast-deep-equal'
-
+import equal from "fast-deep-equal";
 
 class TodoComponent extends Component {
 	constructor(props) {
@@ -14,6 +14,8 @@ class TodoComponent extends Component {
 		this.state = {
 			username: AuthenticationService.getLoggedInUserName(),
 			todos: props.todos ? props.todos : [],
+			orgId: props.isTeamTodo ? props.orgId : "",
+			channelTitle: props.isTeamTodo ? props.channelTitle : "",
 			showOverlay: false,
 			editTodo: "",
 		};
@@ -21,6 +23,8 @@ class TodoComponent extends Component {
 		this.handleDeleteClick = this.handleDeleteClick.bind(this);
 		this.handleEditClick = this.handleEditClick.bind(this);
 		this.handleCreateClick = this.handleCreateClick.bind(this);
+		this.handleCreateCallback = this.handleCreateCallback.bind(this)
+		this.handleUpdateCallback = this.handleUpdateCallback.bind(this)
 	}
 
 	toggleOverlay = () => {
@@ -35,16 +39,38 @@ class TodoComponent extends Component {
 	};
 
 	handleDoneClick(id) {
-		TodoResources.update_todo_status(this.state.username, id).then((response) => {
-			this.refresh_todos();
-		});
+		if (this.props.isTeamTodo) {
+			OrgResources.update_org_todo_status(
+				this.state.username,
+				this.state.org_id,
+				this.state.channel_title,
+				id
+			).then((response) => {
+				this.refresh_todos();
+			});
+		} else {
+			TodoResources.update_todo_status(this.state.username, id).then((response) => {
+				this.refresh_todos();
+			});
+		}
 	}
 
 	handleDeleteClick = (id) => {
-		TodoResources.delete_todo(this.state.username, id).then((response) => {
-			// Reset using this.refresh_todos in Callback to Force
-			this.refresh_todos();
-		});
+		if (this.props.isTeamTodo) {
+			OrgResources.delete_org_todo(
+				this.state.username,
+				this.state.org_id,
+				this.state.channel_title,
+				id
+			).then(() => {
+				this.refresh_todos();
+			});
+		} else {
+			TodoResources.delete_todo(this.state.username, id).then((response) => {
+				// Reset using this.refresh_todos in Callback to Force
+				this.refresh_todos();
+			});
+		}
 	};
 	handleEditClick = (todo) => {
 		this.setState({editTodo: todo});
@@ -58,23 +84,65 @@ class TodoComponent extends Component {
 		this.toggleOverlay();
 	}
 
-	componentDidUpdate(prevProps) {
-		if (!equal(this.props.todos, prevProps.todos)) {
-			// Check if it's a new user, you can also use some unique property, like the ID  (this.props.user.id !== prevProps.user.id)
-			this.setState({todos: this.props.todos})
+	handleUpdateCallback(id, todo) {
+		if (this.props.isTeamTodo) {
+			OrgResources.update_org_todo(
+				this.state.username,
+				this.state.orgId,
+				this.state.channelTitle,
+				id,
+				todo
+			).then(() => this.saveCallback());
+		} else {
+			TodoResources.update_todo(this.state.username, this.state.id, todo).then(() =>
+				this.saveCallback()
+			);
 		}
 	}
 
-	refresh_todos = () => {
-		if (this.props.callback) { 
-			this.props.callback()
-		}else{
-			this.setState({
-				todos: [],
+	handleCreateCallback(todo) {
+		console.log(todo)
+		if (this.props.isTeamTodo) {
+			OrgResources.create_org_todo(
+				this.state.username,
+				this.state.orgId,
+				this.state.channelTitle,
+				todo
+			).then(() => this.saveCallback());
+		} else {
+			TodoResources.create_todo(this.state.username, todo).then(() => this.saveCallback());
+		}
+	}
+
+	componentDidUpdate(prevProps) {
+		if (!equal(this.props.todos, prevProps.todos)) {
+			// Check if it's a new user, you can also use some unique property, like the ID  (this.props.user.id !== prevProps.user.id)
+			this.setState({todos: this.props.todos});
+		}
+	}
+
+	getTodos() {
+		let todos = [];
+		if (this.props.isTeamTodo) {
+			OrgResources.retrieve_org_todos(
+				this.state.username,
+				this.state.orgId,
+				this.state.channelTitle
+			).then((response) => {
+				for (let i = 0; i < response.data.length; i++) {
+					todos.push({
+						id: response.data[i].id,
+						username: response.data[i].username,
+						desc: response.data[i].desc,
+						date: response.data[i].date,
+						status: response.data[i].status,
+					});
+				}
+				todos.sort((a, b) => new moment(a.date) - new moment(b.date));
+				this.setState({todos: todos});
 			});
-			// Retrieves the Todos for the User from the Server
+		} else {
 			TodoResources.retrieve_todos(this.state.username).then((response) => {
-				let todos = [];
 				// Maps the Response Data (Todo.class) to JSObject
 				for (let i = 0; i < response.data.length; i++) {
 					todos.push({
@@ -86,8 +154,16 @@ class TodoComponent extends Component {
 					});
 				}
 				todos.sort((a, b) => new moment(a.date) - new moment(b.date));
-				this.setState({ todos: todos });
+				this.setState({todos: todos});
 			});
+		}
+	}
+
+	refresh_todos = () => {
+		if (this.props.callback) {
+			this.props.callback();
+		} else {
+			this.getTodos();
 			this.forceUpdate();
 		}
 	};
@@ -97,13 +173,17 @@ class TodoComponent extends Component {
 	}
 
 	render() {
+		console.log(this.state.todos)
 		return (
 			<div className="todo-component">
 				<Container fluid>
 					<div className="d-flex title-header border-bottom mb-3 w-100 justify-content-between">
 						<h1 style={{height: "fit-content"}}>Todo List</h1>
 
-						<Button className="align-self-center" variant="outline-primary" onClick={this.handleCreateClick}>
+						<Button
+							className="align-self-center"
+							variant="outline-primary"
+							onClick={this.handleCreateClick}>
 							New Todo
 						</Button>
 					</div>
@@ -149,6 +229,8 @@ class TodoComponent extends Component {
 						{this.state.showOverlay ? (
 							<TodoEditComponent
 								closeHandler={this.toggleOverlay}
+								updateCallback={this.handleUpdateCallback}
+								createCallback={this.handleCreateCallback}
 								saveCallback={this.saveCallback}
 								editTodo={this.state.editTodo}
 							/>
@@ -158,7 +240,9 @@ class TodoComponent extends Component {
 			</div>
 		);
 	}
-	
 }
+TodoComponent.defaultProps = {
+	isTeamTodo: false,
+};
 
 export default TodoComponent;
