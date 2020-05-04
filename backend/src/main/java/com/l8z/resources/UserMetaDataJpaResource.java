@@ -301,6 +301,7 @@ public class UserMetaDataJpaResource {
 		String fav_channel = "[]";
 		// Used to Store Retrieved Data from Database
 		UserMetaData sql = null;
+		boolean isAlreadyContact = false;
 
 		try {
 			// Get the Current Data from Database if it Exists
@@ -318,12 +319,22 @@ public class UserMetaDataJpaResource {
 				fav_channel = sql.get_fav_channel();
 
 			}
-
-			// Add the new contact
-			contact_list.add(username2);
-
-			// Save it
-			repo.save(new UserMetaData(username1, org_ids, org_channels, json_mapper.writeValueAsString(contact_list), fav_channel));
+			
+			// Check if the User is Already a Contact
+			for(int i=0; i<contact_list.size(); i++) {
+				if(contact_list.get(i).equals(username2)) {
+					isAlreadyContact = true;
+					break; // Speeding up Process
+				}
+			}
+			// Confirm the User is Not A Contact and Not Yourself
+			if(!isAlreadyContact && !username1.equals(username2)) {
+				// Add the new contact
+				contact_list.add(username2);
+				// Save it
+				repo.save(new UserMetaData(username1, org_ids, org_channels, json_mapper.writeValueAsString(contact_list), fav_channel));
+			}
+			
 		} catch (JsonMappingException e) {
 			System.out.println("System - Error Updating Database");
 		} catch (JsonProcessingException e) {
