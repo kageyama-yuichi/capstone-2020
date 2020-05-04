@@ -23,13 +23,11 @@ class MessageComponent extends Component {
 	}
 
 	handleClick(e) {
-		console.log(e.target);
 		target = e.target;
 		this.setState({show: !this.state.show});
 	}
 
 	render() {
-		console.log(this.state.ref);
 		return (
 			<Container fluid className="pt-2 pb-2 d-flex">
 				<div ref="target">
