@@ -12,6 +12,7 @@ class ChannelListComponent extends Component {
 			org_id: props.orgId,
 			channels: [],
 			isExpanded: [],
+			channel_title: "",
 		};
 
 		this.handleAddInstanceClick = this.handleAddInstanceClick.bind(this);
@@ -97,6 +98,10 @@ class ChannelListComponent extends Component {
 		return false;
 	}
 
+	onClick(channel_title){
+		OrgsResources.addFavChannel(this.state.username, this.state.org_id, channel_title);
+  }
+        
 	getRole(members) {
 		for (var i in members) {
 			if (members[i].username === this.state.username) {
@@ -178,7 +183,30 @@ class ChannelListComponent extends Component {
 												{ch.channel_title}
 											</div>
 										</Accordion.Toggle>
+
+										<ButtonGroup
+											size="sm"
+											className="mt-auto mb-auto"
+											style={{height: "fit-content"}}>
+											<Button onClick={() => this.onClick(ch.channel_title)} variant="light" >
+												<i className="text-warning fas fa-star"></i>
+											</Button>
+											<Button
+												variant="light"
+												onClick={() =>
+													this.handleAddInstanceClick(ch.channel_title)
+												}>
+												<i className="text-success fas fa-plus"></i>
+											</Button>
+											<Button
+												variant="light"
+												onClick={() => this.handleChannelSettingsClick(ch)}>
+												<i className="fas fa-cog"></i>
+											</Button>
+										</ButtonGroup>
+
 										{this.renderButtons(ch)}
+
 									</div>
 
 									<Accordion.Collapse eventKey={ch.channel_title}>
