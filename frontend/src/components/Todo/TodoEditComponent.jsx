@@ -83,13 +83,10 @@ class TodoEditComponent extends Component {
 
 		if (this.validateForm(e)) {
 			if (this.state.id) {
-				TodoResources.update_todo(this.state.username, this.state.id, todo).then(() =>
-					this.props.saveCallback()
-				);
+				console.log("todoedit",todo)
+				this.props.updateCallback(this.state.id, todo);
 			} else {
-				TodoResources.create_todo(this.state.username, todo).then(() =>
-					this.props.saveCallback()
-				);
+				this.props.createCallback(todo);
 			}
 		}
 		this.setState({validated: true});

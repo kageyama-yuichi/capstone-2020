@@ -90,6 +90,7 @@ class ChannelListComponent extends Component {
 							}}>
 							<MemberListComponent
 								show_buttons={false}
+								remove_member={this.props.remove_member}
 								username={this.state.username}
 								members={ch.members}
 								org_member_details={org_member_details}
