@@ -177,6 +177,9 @@ class UpdateOrgsComponent extends Component {
 						this.forceUpdate();
 					}
 				);
+				this.setState((prevState) => ({
+					alerts: [...prevState.alerts, `Channel ${channel_title} successfully deleted`],
+				}));
 			}
 		);
 	};
@@ -219,6 +222,7 @@ class UpdateOrgsComponent extends Component {
 		if (!valid) {
 			deleteOrgInput.setCustomValidity("invalid");
 		}
+		
 		this.setState({deleteOrgInputError: error, orgIdValidated: true});
 	}
 
