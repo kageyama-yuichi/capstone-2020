@@ -588,7 +588,7 @@ class UpdateOrgsComponent extends Component {
 	};
 
 	// Promoting and Demoting Members
-	manage_member = (username, new_role) => {
+	manage_member = (username, type) => {
 		let auth = {
 			username: this.state.username,
 			role: org_member_details.get(this.state.username).role,
@@ -597,9 +597,26 @@ class UpdateOrgsComponent extends Component {
 			username: username,
 			role: org_member_details.get(username).role,
 		};
+
+		let newRole = "";
+		//Error checking in MemberListComponent
+		if (type === "promote") {
+			if (member.role === "TEAM_LEADER") {
+				newRole = "ADMIN"
+			} else if (member.role === "TEAM_MEMBER") {
+				newRole = "TEAM_LEADER"
+			}
+		} else if (type === "demote") {
+			if (member.role === "ADMIN") {
+				newRole = "TEAM_LEADER"
+			} else if (member.role === "TEAM_LEADER") {
+				newRole = "TEAM_MEMBER"
+			}
+		}
+
 		let new_managed = {
 			username: username,
-			role: new_role,
+			role: newRole,
 		};
 		let body = [];
 		body.push(auth);

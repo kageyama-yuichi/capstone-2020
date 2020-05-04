@@ -55,7 +55,7 @@ class MemberListComponent extends Component {
 			<Button
 				key={username + "demote"}
 				variant="warning"
-				onClick={() => this.manage_member(username, "TEAM_LEADER")}>
+				onClick={() => this.manage_member(username, "demote")}>
 				<i className="fas fa-chevron-down"></i>
 			</Button>
 		) : null;
@@ -63,7 +63,7 @@ class MemberListComponent extends Component {
 			<Button
 				key={username + "promote"}
 				variant="success"
-				onClick={() => this.manage_member(username, "ADMIN")}>
+				onClick={() => this.manage_member(username, "promote")}>
 				<i className="fas fa-chevron-up"></i>
 			</Button>
 		) : null;
