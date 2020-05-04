@@ -1,22 +1,22 @@
-import React, { Component } from "react";
+import React, {Component} from "react";
 import "./TodoEditComponent.css";
 import moment from "moment";
 import TodoResources from './TodoResources.js'
-
+import {Form, Button} from "react-bootstrap";
+import AuthenticationService from '../Authentication/AuthenticationService.js'
 
 class TodoEditComponent extends Component {
-
-    constructor(props) {
-        super(props);
+	constructor(props) {
+		super(props);
 
         let todo = this.props.editTodo;
-        if (todo.length == 0) {
+        if (todo.length === 0) {
             
             this.state = {
                 id: "",
-                username: localStorage.getItem("username"),
+                username: AuthenticationService.getLoggedInUserName(),
                 desc: "",
-                date: "",
+                date: moment().format("YYYY-MM-DD"),
                 descError: "",
                 dateError: "",
                 status: false
@@ -24,7 +24,7 @@ class TodoEditComponent extends Component {
         } else {
             this.state = {
                 id: todo.id,
-                username: localStorage.getItem("username"),
+                username: AuthenticationService.getLoggedInUserName(),
                 desc: todo.desc,
                 date: todo.date,
                 descError: "",
@@ -32,106 +32,124 @@ class TodoEditComponent extends Component {
                 status: todo.status
             }
         }
-        
-    }
+	}
 
-    validateForm() {
+	validateForm(e) {
+		const fields = this.state;
 
-        const fields = this.state;
+		let formIsValid = true;
+		this.setState({dateError: "", descError: ""});
 
-        let formIsValid = true;
-        this.setState({ dateError: "", descError: "" });
+		let errors = {};
 
-        if (!fields.desc) {
-            formIsValid = false;
-            this.setState({descError: "Description cannot be empty"})
-        }
+		if (!fields.desc) {
+			errors.desc = "Description cannot be empty";
+		}
 
-        if (!fields.date) {
-            formIsValid = false;
-            this.setState({dateError: "Date cannot be empty"})
-        } else if (moment().isAfter(this.state.date,'date')) {
-            formIsValid = false;
-            this.setState({dateError: "Date cannot be in the past"})            
-        }
+		if (!fields.date) {
+			errors.date = "Date cannot be empty";
+		} else if (moment().isAfter(this.state.date, "date")) {
+			errors.date = "Date cannot be in the past";
+		}
 
-        return formIsValid;
-        
-    }
+		let form = e.currentTarget;
 
-    //TEMP: Submit currently closes overlay
-    handleSubmit(e) {
-        e.preventDefault();
+		var formControl = Array.prototype.slice.call(form.querySelectorAll(".form-control"));
 
-        let todo = {
-            username: this.state.username,
-            desc: this.state.desc,
-            date: this.state.date,
-            status: this.state.status
-        }
-
-        if (this.validateForm()) {
-
-            if (this.state.id) {
-                TodoResources.update_todo(this.state.username, this.state.id, todo).then(() => this.props.saveCallback());
-            } else {
-                TodoResources.create_todo(this.state.username, todo).then(() => this.props.saveCallback());
-            }
-        } 
-    }
-
-    handleChange(event) {
-		const { name: fieldName, value } = event.target;
-		this.setState({
-			[fieldName]: value
+		//Iterate over input fields and get corresponding error
+		//Flag form as invalid if there is an error
+		formControl.forEach((ele) => {
+			if (errors[ele.name]) {
+				formIsValid = false;
+				ele.setCustomValidity("invalid");
+			} else {
+				ele.setCustomValidity("");
+			}
 		});
+
+		this.setState({errors: errors});
+
+		return formIsValid;
+	}
+	//TEMP: Submit currently closes overlay
+	handleSubmit(e) {
+		e.preventDefault();
+		let todo = {
+			username: this.state.username,
+			desc: this.state.desc,
+			date: this.state.date,
+			status: this.state.status,
+		};
+
+		if (this.validateForm(e)) {
+			if (this.state.id) {
+				console.log("todoedit",todo)
+				this.props.updateCallback(this.state.id, todo);
+			} else {
+				this.props.createCallback(todo);
+			}
+		}
+		this.setState({validated: true});
+	}
+
+	handleChange(event) {
+		const { name: fieldName, value } = event.target;
+		console.log(value, this.state.date)
+		this.setState({
+			[fieldName]: value,
+		});
+		
 	}
 
 	render() {
 		return (
 			<div className="wrapper">
-				<div className="bg" onClick={this.props.closeHandler}></div>
+				<div className="bg bg-full" onClick={this.props.closeHandler}></div>
 
 				<div className="overlay todo-overlay">
-					<button
-						className="exit-button"
-						onClick={this.props.closeHandler}
-					>
+					<button className="exit-button" onClick={this.props.closeHandler}>
 						X
 					</button>
 
-                    <form className="todo-form" onSubmit={this.handleSubmit.bind(this)}>    
-                        <h2>Create a new todo</h2>
-                        <div className="group">
-                            
-							<label>Description</label>
-							<input
+					<Form
+						noValidate
+						validated={this.state.validated}
+						className="todo-form"
+						onSubmit={this.handleSubmit.bind(this)}>
+						<h2>Create a new todo</h2>
+						<Form.Group className="group">
+							<Form.Label>Description</Form.Label>
+							<Form.Control
 								className="desc-input"
 								type="text"
 								name="desc"
-                                placeholder="Enter a description"
-                                onChange={this.handleChange.bind(this)}
-                                value={this.state.desc}
-                            />
-                            <label className="error-label">{this.state.descError}</label> 
-                        </div>
-                        
-						<div className="group">
-							<label>Date</label>
-							<input
+								placeholder="Enter a description"
+								onChange={this.handleChange.bind(this)}
+								value={this.state.desc}
+							/>
+							<Form.Control.Feedback type="invalid">
+								{this.state.descError}
+							</Form.Control.Feedback>
+						</Form.Group>
+
+						<Form.Group className="group">
+							<Form.Label>Date</Form.Label>
+							<Form.Control
 								className="date-input"
 								type="date"
-                                name="date"
-                                onChange={this.handleChange.bind(this)}
-                                value={this.state.date}
-                            />
-                            <label className="error-label">{this.state.dateError}</label>
-						</div>
+								name="date"
+								onChange={this.handleChange.bind(this)}
+								value={this.state.date}
+							/>
+							<Form.Control.Feedback type="invalid">
+								{this.state.dateError}
+							</Form.Control.Feedback>
+						</Form.Group>
 
-						<button className="save-button" type="submit">
+						<Button variant="secondary" className="save-button" type="submit">
 							Save
-						</button>
-					</form>
+						</Button>
+					</Form>
 				</div>
 			</div>
 		);

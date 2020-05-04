@@ -1,5 +1,6 @@
 .todo-component {
 	width: 100%;
+	height: fit-content;
 }
 
 .todo-container {
@@ -36,6 +37,7 @@
 .done-button {
 	background-color: rgb(28, 196, 28);
 	border: 1px solid darkgray;
+	margin: 7px 0px;
 	color: white;
 }
 
