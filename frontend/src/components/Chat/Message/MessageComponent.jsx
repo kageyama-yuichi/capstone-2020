@@ -42,7 +42,7 @@ class MessageComponent extends Component {
 					placement="right"
 					trigger="click"
 					rootClose="true"
-					overlay={<UserProfileOverlayComponent sender={this.props.sender} />}>
+					overlay={<UserProfileOverlayComponent senderUsername={this.props.senderUsername} sender={this.props.sender} />}>
 					<a
 						className="unselectable"
 						style={{userSelect: "none", userDrag: "none"}}
