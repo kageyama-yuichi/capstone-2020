@@ -232,40 +232,62 @@ public class UserMetaDataJpaResource {
 		return ResponseEntity.noContent().build();
 	}
 	
-	@DeleteMapping(value = "jpa/orgs/favchannels/{username}/{fav_channel}")
-	public ResponseEntity<Void> delete_fav_channel(@PathVariable String favchannel) {
-		System.out.println("System - Retrieving Fav Channels List");
 	
-		// Stores the users fav_channels
-		List<String> fav_channel = new ArrayList<String>();
+/////////////////////
+// Contact Related //
+/////////////////////	
+	
+	public void contact_deleted(String username_1, String username_2) {
+		System.out.println("System - Removing Contact");
+		// Stores all the org_ids of the User
+		String org_ids = "[]";
+		// Stores all the org_channels of the User
+		String org_channels = "[]";
+		// Stores the users contact_list
+		List<String> contact_list = new ArrayList<String>();
+		// Stores the favourite channel of the User
+		String fav_channel = "[]";
 		// Used to Store Retrieved Data from Database
 		UserMetaData sql = null;
 
 		try {
 			// Get the Current Data from Database if it Exists
-			sql = repo.findByUsername(favchannel);
+			sql = repo.findByUsername(username_1);
 			// If its they haven't got any friends or joined any orgs, it will return null
 			if (sql != null) {
-				fav_channel = json_mapper.readValue(sql.get_fav_channel(),
+				// Convert to List of Strings Object
+				org_ids = sql.get_org_ids();
+				// Get the Current String
+				org_channels = sql.get_org_channels();
+				// Get the Current String
+				contact_list = json_mapper.readValue(sql.get_contact_list(),
 						json_mapper.getTypeFactory().constructCollectionType(List.class, String.class));
+				// Get Favourite Channel
+				fav_channel = sql.get_fav_channel();
+
 			}
 
+			// Add the new contact
+			if (contact_list.contains(username_2)) {
+				contact_list.remove(username_2);
+			}
+			// Save it
+			repo.save(new UserMetaData(username_1, org_ids, org_channels, json_mapper.writeValueAsString(contact_list), fav_channel));
 		} catch (JsonMappingException e) {
 			System.out.println("System - Error Updating Database");
 		} catch (JsonProcessingException e) {
 			System.out.println("System - Error Updating Database");
 		}
-		
-		repo.deleteById(favchannel);
-
-		
-		return ResponseEntity.noContent().build();
 	}
 	
+	@DeleteMapping(value = "jpa/private/contacts/{username_1}/{username_2}")
+	public ResponseEntity<Void> remove_contact(@PathVariable String username_1, @PathVariable String username_2) {
+		System.out.println("System - Removing Contact");
 	
-/////////////////////
-// Contact Related //
-/////////////////////	
+		contact_deleted(username_1, username_2);
+
+		return ResponseEntity.noContent().build();
+	}
 	
 	public void contact_added(String username1, String username2) {
 		System.out.println("System - Saving Contact");

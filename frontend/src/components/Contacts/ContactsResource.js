@@ -11,8 +11,8 @@ class ContactsResource {
         return axios.get(`${JPA_URL}/private/contacts/${username}/new`);
     }
 
-    removeContact(username, target) {
-        return axios.delete(`${JPA_URL}/private/contacts/${username}/${target}`);
+    remove_contact(username_1, username_2) {
+        return axios.delete(`${JPA_URL}/private/contacts/${username_1}/${username_2}`);
     }
 
     changeContactStatus(username, target) {
