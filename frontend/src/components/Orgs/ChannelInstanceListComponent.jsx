@@ -183,28 +183,6 @@ class ChannelListComponent extends Component {
 												{ch.channel_title}
 											</div>
 										</Accordion.Toggle>
-
-										<ButtonGroup
-											size="sm"
-											className="mt-auto mb-auto"
-											style={{height: "fit-content"}}>
-											<Button onClick={() => this.onClick(ch.channel_title)} variant="light" >
-												<i className="text-warning fas fa-star"></i>
-											</Button>
-											<Button
-												variant="light"
-												onClick={() =>
-													this.handleAddInstanceClick(ch.channel_title)
-												}>
-												<i className="text-success fas fa-plus"></i>
-											</Button>
-											<Button
-												variant="light"
-												onClick={() => this.handleChannelSettingsClick(ch)}>
-												<i className="fas fa-cog"></i>
-											</Button>
-										</ButtonGroup>
-
 										{this.renderButtons(ch)}
 
 									</div>
