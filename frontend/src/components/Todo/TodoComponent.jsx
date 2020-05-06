@@ -248,17 +248,19 @@ class TodoComponent extends Component {
 									))}
 								</tbody>
 							</table>
-							{this.state.showOverlay ? (
-								<TodoEditComponent
-									closeHandler={this.toggleOverlay}
-									updateCallback={this.handleUpdateCallback}
-									createCallback={this.handleCreateCallback}
-									saveCallback={this.saveCallback}
-									editTodo={this.state.editTodo}
-								/>
-							) : null}
 						</div>
-					) : <p>You have nothing todo.</p>}
+					) : (
+						null
+					)}
+					{this.state.showOverlay ? (
+						<TodoEditComponent
+							closeHandler={this.toggleOverlay}
+							updateCallback={this.handleUpdateCallback}
+							createCallback={this.handleCreateCallback}
+							saveCallback={this.saveCallback}
+							editTodo={this.state.editTodo}
+						/>
+					) : null}
 				</Container>
 			</div>
 		);
