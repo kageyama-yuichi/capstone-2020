@@ -120,7 +120,7 @@ class ChannelListComponent extends Component {
 				size="sm"
 				className="mt-auto mb-auto"
 				style={{height: "fit-content"}}>
-				<Button variant="dark">
+				<Button onClick={() => this.onClick(ch.channel_title)} variant="dark">
 					<i className="text-warning fas fa-star"></i>
 				</Button>
 				{role !== "TEAM_MEMBER" ? (
