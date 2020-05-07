@@ -25,7 +25,6 @@ class ChannelListComponent extends Component {
 
 	refresh_channels = () => {
 		// Retrieves All Channels from the Org Data
-		console.log(this.state.org_id);
 		OrgsResources.retrieve_org(this.state.username, this.state.org_id).then((response) => {
 			let isExpanded = [];
 			response.data.channels.map((ch) => {
@@ -40,13 +39,11 @@ class ChannelListComponent extends Component {
 	refresh_instances = () => {
 		// Retrieves All Instances from the Org Data
 		OrgsResources.retrieve_org(this.state.username, this.state.org_id).then((response) => {
-			// console.log(response.data.channels);
 			// Maps the Response Data (Channels.class) to JSONbject
 			for (let i = 0; i < response.data.channels.length; i++) {
 				if (response.data.channels[i].channel_title === this.state.channel_title) {
 					// Map the Response Data (Instances.class) to JSONObject
 					for (let j = 0; j < response.data.channels[i].instances.length; j++) {
-						// console.log(response.data.channels[i]);
 						this.state.instances.push({
 							instance_title: response.data.channels[i].instances[j].instance_title,
 							type: response.data.channels[i].instances[j].type,
@@ -140,7 +137,6 @@ class ChannelListComponent extends Component {
 	}
 
 	render() {
-		console.log(this.state.channels);
 		return (
 			<div className="side-channel-list border-right border-primary">
 				<Container fluid>

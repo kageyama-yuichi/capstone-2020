@@ -39,7 +39,6 @@ class CalendarComponent extends Component {
 	}
 
 	onSelectEvent(event) {
-		console.log(event);
 		this.handleDoneClick(event.id);
 	}
 

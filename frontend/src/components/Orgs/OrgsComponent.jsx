@@ -90,7 +90,6 @@ class OrgsComponent extends Component {
 
 	renderButtons(org) {
 		if (org.user_role === "ORG_OWNER" || org.user_role === "ADMIN") {
-			console.log("calling render for org owner");
 			return (
 				<Card.Footer>
 					<Button onClick={() => this.handle_update_org(org.org_id)} variant="info">
