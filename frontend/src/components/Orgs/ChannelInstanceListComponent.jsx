@@ -20,7 +20,6 @@ class ChannelListComponent extends Component {
 
 	componentDidMount() {
 		this.refresh_channels();
-		this.refresh_instances();
 	}
 
 	refresh_channels = () => {
@@ -34,26 +33,6 @@ class ChannelListComponent extends Component {
 				channels: response.data.channels,
 				isExpanded: isExpanded,
 			});
-		});
-	};
-	refresh_instances = () => {
-		// Retrieves All Instances from the Org Data
-		OrgsResources.retrieve_org(this.state.username, this.state.org_id).then((response) => {
-			// Maps the Response Data (Channels.class) to JSONbject
-			for (let i = 0; i < response.data.channels.length; i++) {
-				if (response.data.channels[i].channel_title === this.state.channel_title) {
-					// Map the Response Data (Instances.class) to JSONObject
-					for (let j = 0; j < response.data.channels[i].instances.length; j++) {
-						this.state.instances.push({
-							instance_title: response.data.channels[i].instances[j].instance_title,
-							type: response.data.channels[i].instances[j].type,
-						});
-						this.setState({
-							instances: this.state.instances,
-						});
-					}
-				}
-			}
 		});
 	};
 
@@ -95,10 +74,10 @@ class ChannelListComponent extends Component {
 		return false;
 	}
 
-	onClick(channel_title){
+	onClick(channel_title) {
 		OrgsResources.addFavChannel(this.state.username, this.state.org_id, channel_title);
-  }
-        
+	}
+
 	getRole(members) {
 		for (var i in members) {
 			if (members[i].username === this.state.username) {
@@ -180,7 +159,6 @@ class ChannelListComponent extends Component {
 											</div>
 										</Accordion.Toggle>
 										{this.renderButtons(ch)}
-
 									</div>
 
 									<Accordion.Collapse eventKey={ch.channel_title}>
@@ -190,11 +168,12 @@ class ChannelListComponent extends Component {
 												action
 												onClick={() =>
 													this.props.todoCallback(
-														ch.channel_title
+														ch.channel_title,
+														this.getRole(ch.members)
 													)
 												}>
 												Todo List
-												</ListGroup.Item>
+											</ListGroup.Item>
 											{ch.instances.map((instance) => (
 												<ListGroup.Item
 													className="pt-1 pb-1"

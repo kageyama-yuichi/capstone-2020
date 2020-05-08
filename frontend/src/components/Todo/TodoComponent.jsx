@@ -185,12 +185,16 @@ class TodoComponent extends Component {
 	}
 
 	render() {
+		console.log(this.state.todos)
 		return (
 			<div className="todo-component">
 				<Container fluid>
 					<div className="d-flex border-bottom w-100 justify-content-between">
 						<h3>Todo List</h3>
-						{this.props.isWidget ? null : (
+
+						{this.props.isWidget || this.props.role === "TEAM_MEMBER" ? null : (
+							//Team members cannot add todos
+
 							<Button
 								className="align-self-baseline"
 								variant="outline-primary"
@@ -215,8 +219,10 @@ class TodoComponent extends Component {
 													className={
 														todo.status ? "done-button" : "doing-button"
 													}
-													style={{outline: "none"}}
-													onClick={() => this.handleDoneClick(todo.id)}>
+													style={{ outline: "none" }}
+													onClick={() => this.handleDoneClick(todo.id)}
+													disabled={this.props.role === "TEAM_MEMBER"}
+												>
 													{todo.status ? "Done" : "Doing"}
 												</button>
 											</td>
@@ -226,7 +232,7 @@ class TodoComponent extends Component {
 													? "Today"
 													: moment(todo.date).format("ll")}
 											</td>
-											{this.props.isWidget ? null : (
+											{this.props.isWidget || this.props.role === "TEAM_MEMBER" ? null : (
 												<td className="update-col">
 													<button
 														onClick={() => this.handleEditClick(todo)}>
@@ -234,7 +240,7 @@ class TodoComponent extends Component {
 													</button>
 												</td>
 											)}
-											{this.props.isWidget ? null : (
+											{this.props.isWidget || this.props.role === "TEAM_MEMBER" ? null : (
 												<td className="delete-col">
 													<button
 														onClick={() =>
@@ -249,9 +255,7 @@ class TodoComponent extends Component {
 								</tbody>
 							</table>
 						</div>
-					) : (
-						null
-					)}
+					) : null}
 					{this.state.showOverlay ? (
 						<TodoEditComponent
 							closeHandler={this.toggleOverlay}

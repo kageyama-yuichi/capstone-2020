@@ -41,7 +41,7 @@ class MessageComponent extends Component {
 					className="unselectable"
 					placement="right"
 					trigger="click"
-					rootClose="true"
+					rootClose={true}
 					overlay={<UserProfileOverlayComponent senderUsername={this.props.senderUsername} sender={this.props.sender} />}>
 					<a
 						className="unselectable"
@@ -73,7 +73,7 @@ class MessageComponent extends Component {
 						</h6>
 					</Container>
 					<Container fluid className="message-body">
-						<h6 className="text-wrap text-muted">{this.state.message}</h6>
+						<h6 className="text-wrap text-muted pr-5 mr-5">{this.state.message}</h6>
 					</Container>
 				</Container>
 			</Container>

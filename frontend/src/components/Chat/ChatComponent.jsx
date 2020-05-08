@@ -5,6 +5,7 @@ import "./ChatComponent.css";
 import Encryption from "./Encryption.js";
 import {Container, Row, Col, Button} from "react-bootstrap";
 import MessageComponent from "./Message/MessageComponent.jsx";
+import OrgResources from "../Orgs/OrgsResources.js";
 
 var stomp_client = null;
 var orgs_id = null;
@@ -14,7 +15,11 @@ var extension = null;
 var counter = 0;
 var messageCounter = 0;
 var messages = [];
+var visible = 0;
+var oldMessageLength = 0;
+
 const instance_member_details = new Map();
+
 // Sender in All Instances are the Usernames of the User
 
 /* Things Left to Do:
@@ -30,7 +35,7 @@ class ChatComponent extends Component {
 			message: "",
 			error: "",
 			member_list: [],
-
+			readLast: "",
 			joined: false,
 			current_time: "",
 			open_members: false,
@@ -134,6 +139,7 @@ class ChatComponent extends Component {
 				joined: true,
 			});
 		}
+		oldMessageLength = messages.length - 1;
 	};
 
 	// Handles Member Loading
@@ -173,6 +179,7 @@ class ChatComponent extends Component {
 
 	// Handles Server Responses Accordingly
 	on_message_received = (payload) => {
+		
 		var message_text = JSON.parse(payload.body);
 		var does_require_sorting = false;
 		// This gets the Original Contents in the Map
@@ -209,7 +216,6 @@ class ChatComponent extends Component {
 				sender: message_text.sender,
 				date_time: message_text.date_time,
 			});
-			this.forceUpdate();
 			if (message_text.sender === this.state.username) {
 				this.scroll_to_bottom();
 			}
@@ -383,7 +389,10 @@ class ChatComponent extends Component {
 					joined: false,
 					bottom: true,
 				},
-				this.my_connect()
+				() => {
+					this.getReadLast();
+					this.my_connect();
+				}
 			);
 		} else {
 			if (counter === messageCounter && messageCounter > 0 && this.state.bottom) {
@@ -392,12 +401,73 @@ class ChatComponent extends Component {
 		}
 	}
 
-	// componentWillUnmount() {
-	// 	window.location.reload(false);
-	// }
+	componentWillUnmount() {
+		if (messages.length > 0) {
+			console.log(this.state.org_id);
+			
+			OrgResources.setChannelInstanceChatTime(
+				this.state.username,
+				this.state.org_id,
+				this.state.channel_title,
+				this.state.instance_title,
+				new String(messages[visible].date_time)
+			);
+		}
+
+		this.resetLocalVariables();
+	}
+
+	handleScroll(event) {
+		var messageContainerHeight = 863;
+		var chatDiv = document.getElementById("scrollable-chat");
+		if (chatDiv) {
+			messageContainerHeight = chatDiv.getBoundingClientRect().height;
+		}
+
+		if (chatDiv) {
+			//console.log("Chat div ", chatDiv);
+
+			let displayedMessages = document.getElementsByClassName("displayed-message");
+			if (displayedMessages) {
+				for (var i = 0; i < displayedMessages.length; i++) {
+					if (i > visible) {
+						if (
+							Math.round(
+								messageContainerHeight +
+									chatDiv.scrollTop -
+									displayedMessages[i].offsetTop
+							) < 0
+						) {
+							break;
+						} else {
+							visible = i;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	getReadLast() {
+		if (this.state.channel_title && this.state.instance_title) {
+			OrgResources.getChannelInstanceChatTime(
+				this.state.username,
+				this.state.org_id,
+				this.state.channel_title,
+				this.state.instance_title
+			).then((response) => {
+				this.setState({readLast: response.data});
+			});
+		}
+
+		
+	}
 
 	componentDidMount() {
 		this.my_connect();
+
+		this.getReadLast();
+
 		this.setState({
 			current_time: new Date().toLocaleString(),
 		});
@@ -413,17 +483,31 @@ class ChatComponent extends Component {
 	}
 
 	mapMessages() {
+		
 		let retDiv;
 		messageCounter = 0;
-
-		retDiv = messages.map((old_msg) => {
+		retDiv = messages.map((old_msg, index) => {
 			messageCounter++;
 			return (
-				<MessageComponent key={messageCounter} senderUsername={old_msg.sender} sender={instance_member_details.get(old_msg.sender)} msg={old_msg}/>
-				);
+				<div className="displayed-message" key={messageCounter}>
+					<MessageComponent
+						senderUsername={old_msg.sender}
+						sender={instance_member_details.get(old_msg.sender)}
+						msg={old_msg}
+					/>
+					
+					{(this.state.readLast === old_msg.date_time)  && index < oldMessageLength ? (
+						<div className="d-flex justify-content-center border-bottom border-top border-danger pd-5 md-5">
+							New
+						</div>
+					) : null}
+				</div>
+			);
 		});
+		
 		return retDiv;
 	}
+
 
 	mapUsers() {
 		let retDiv;
@@ -453,9 +537,14 @@ class ChatComponent extends Component {
 								<Container fluid className="pr-0" style={{height: "90%"}}>
 									<Container
 										fluid
+										onScroll={this.handleScroll}
 										className="h-100 w-100 pr-0"
 										id="scrollable-chat"
-										style={{overflowY: "auto"}}>
+										style={{
+											overflowY: "auto",
+											overflowX: "hidden",
+											wordWrap: "break-word",
+										}}>
 										{this.mapMessages()}
 
 										{/* <div className="message-date">
@@ -504,6 +593,7 @@ class ChatComponent extends Component {
 				)}
 			</div>
 		);
+		
 	}
 }
 
