@@ -16,7 +16,7 @@ public class ChatMessage {
 	@JsonProperty("content") private String content;
 	@JsonProperty("sender") private String sender;
 	@JsonProperty("receiver") private String receiver;
-    @JsonProperty("date_time") private String date_time = (new SimpleDateFormat("h:mm a (dd/MM/yyyy)").format(new Date())).toUpperCase(); 
+    @JsonProperty("date_time") private String date_time = (new SimpleDateFormat("h:mm:ss:SS a (dd/MM/yyyy)").format(new Date())).toUpperCase(); 
 
     // Enumeration Class to define Types
     public enum MessageType {

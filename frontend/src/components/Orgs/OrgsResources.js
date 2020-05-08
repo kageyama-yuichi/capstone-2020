@@ -111,7 +111,14 @@ class OrgsResources {
     }
 	delete_instance(username, org_id, channel_title, instance_title) {
         return axios.delete(`${JPA_URL}/orgs/${username}/${org_id}/${channel_title}/${instance_title}`);
-    }
+	}
+	//User meta data jpa resource
+	getChannelInstanceChatTime(username, org_id, channel_title, instance_title) {
+		return axios.get(`${JPA_URL}/time/orgs/${username}/${org_id}/${channel_title}/${instance_title}`);
+	}
+	setChannelInstanceChatTime(username, org_id, channel_title, instance_title,time) {
+		return axios.post(`${JPA_URL}/time/orgs/${username}/${org_id}/${channel_title}/${instance_title}`, time);
+	}
 }
 
 export default new OrgsResources()
