@@ -159,7 +159,6 @@ class ContactComponent extends Component {
 	}
 
     render() {
-        console.log("rendering contacts")
 		
 		return (
 			<div className="app-window">

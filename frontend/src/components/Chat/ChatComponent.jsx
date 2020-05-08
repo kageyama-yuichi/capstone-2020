@@ -49,20 +49,17 @@ class ChatComponent extends Component {
 	}
 	// Function to Connect the User to the Server
 	my_connect = () => {
-		console.log("myconnect called");
 		orgs_id = "/" + this.props.org_id;
 		channel_title = "/" + this.props.channel_title;
 		instance_title = "/" + this.props.instance_title;
 		extension = orgs_id + channel_title + instance_title;
 
-		console.log("System - Trying to Connect...");
 
 		// Create the Socket
 		const Stomp = require("stompjs");
 		var SockJS = require("sockjs-client");
 		var socket = new SockJS(API_URL + "/chat");
 		stomp_client = Stomp.over(socket);
-		//console.log(stomp_client);
 		// Disables Console Messages
 		stomp_client.debug = null;
 		// Connect the User
@@ -71,7 +68,6 @@ class ChatComponent extends Component {
 
 	// Subscribe the User to the Groups and Send the Server member of User
 	on_connected = () => {
-		console.log("System - Session is Connected.");
 		this.setState({
 			channel_connected: true,
 		});
@@ -144,7 +140,6 @@ class ChatComponent extends Component {
 			});
 		}
 		oldMessageLength = messages.length - 1;
-		console.log("got messages");
 	};
 
 	// Handles Member Loading
@@ -213,7 +208,6 @@ class ChatComponent extends Component {
 			if (message_text.content) temp.status = "typing...";
 			if (message_text.content === "Stopped Typing") temp.status = "online";
 		} else if (message_text.type === "CHAT") {
-			console.log("System - Chat Message Received");
 			temp.status = "online";
 			// Decrypt
 			messages.push({
@@ -283,19 +277,16 @@ class ChatComponent extends Component {
 	};
 
 	fetch_history = () => {
-		console.log("System - Retrieving Old Messages");
 		stomp_client.send("/app/fetch_history" + extension + "/" + this.state.username);
 	};
 
 	fetch_members = () => {
-		console.log("System - Retrieving Members");
 		stomp_client.send("/app/fetch_members" + extension + "/" + this.state.username);
 	};
 
 	scroll_to_bottom = () => {
 		let chatDiv = document.getElementById("scrollable-chat");
 		if (chatDiv) {
-			//console.log("Chat div ", chatDiv);
 			chatDiv.scrollTop = chatDiv.scrollHeight;
 			this.setState({bottom: false});
 		}
@@ -386,10 +377,6 @@ class ChatComponent extends Component {
 
 	componentDidUpdate(prevProps) {
 		//let renderedMessages = document.getElementsByClassName("message").length;
-
-		// var cont = document.getElementById("scrollable-chat");
-		// messageContainerHeight = cont.getBoundingClientRect();
-		// console.log(messageContainerHeight);
 		if (
 			prevProps.channel_title !== this.props.channel_title ||
 			prevProps.instance_title !== this.props.instance_title

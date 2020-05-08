@@ -74,7 +74,6 @@ class TodoEditComponent extends Component {
 
 		if (this.validateForm(e)) {
 			if (this.state.id) {
-				console.log("todoedit", todo);
 				this.props.updateCallback(this.state.id, todo);
 			} else {
 				this.props.createCallback(todo);
@@ -85,7 +84,6 @@ class TodoEditComponent extends Component {
 
 	handleChange(event) {
 		const {name: fieldName, value} = event.target;
-		console.log(value, this.state.date);
 		this.setState({
 			[fieldName]: value,
 		});

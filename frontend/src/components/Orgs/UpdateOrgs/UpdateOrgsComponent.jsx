@@ -103,7 +103,6 @@ class UpdateOrgsComponent extends Component {
 
 		// 	if (!formIsValid) {
 		// 		errors.id = "Org ID already used";
-		// 		console.log("System - ID Already Used");
 		// 	}
 		// }
 
@@ -112,7 +111,6 @@ class UpdateOrgsComponent extends Component {
 
 		//Iterate over input fields and get corresponding error
 		//Flag form as invalid if there is an error
-		console.log(form);
 		formControl.forEach((ele) => {
 			if (errors[ele.name]) {
 				ele.setCustomValidity("invalid");
@@ -122,7 +120,6 @@ class UpdateOrgsComponent extends Component {
 		});
 
 		this.setState({errors: errors});
-		console.log(errors);
 		return formIsValid;
 	}
 
@@ -130,14 +127,12 @@ class UpdateOrgsComponent extends Component {
 		e.preventDefault();
 
 		if (this.handleValidation(e)) {
-			console.log("System - Creating New Organisation");
 			let org_push = {
 				org_id: this.state.org_id,
 				org_title: this.state.org_title,
 				channels: channels,
 				members: this.state.members,
 			};
-			console.log(org_push);
 			OrgsResources.update_org(
 				this.state.username,
 				this.state.old_org_id,
@@ -164,10 +159,8 @@ class UpdateOrgsComponent extends Component {
 		this.props.history.push(url);
 	};
 	handle_delete_channel = (channel_title) => {
-		console.log("Deleteing");
 		OrgsResources.delete_channel(this.state.username, this.state.org_id, channel_title).then(
 			(response) => {
-				console.log("Deleted");
 				// Reset the Channels Variable
 				channels = [];
 				// Retrieves All Channels from the Org Data
@@ -201,7 +194,6 @@ class UpdateOrgsComponent extends Component {
 
 	handleDeleteOrg(e) {
 		e.preventDefault();
-		console.log("called");
 		let valid = true;
 		let error = "";
 		const deleteOrgInput = document.getElementById("deleteOrgInput");
@@ -241,10 +233,7 @@ class UpdateOrgsComponent extends Component {
 				});
 			});
 		}
-		// console.log(this.state.org_id);
-		// console.log(this.state.org_title);
-		// console.log(this.state.channels);
-		// console.log(this.state.members);
+
 	}
 
 	componentDidMount() {
@@ -492,7 +481,7 @@ class UpdateOrgsComponent extends Component {
 		OrgsResources.retrieve_basic_users_in_orgs(this.state.members).then((response) => {
 			// Go through the Response Data which is the Basic User and Strip Data
 			for (let i = 0; i < response.data.length; i++) {
-				//console.log(response.data[i]);
+
 				let user_details = {
 					fname: response.data[i].fname,
 					lname: response.data[i].lname,
@@ -716,7 +705,6 @@ class UpdateOrgsComponent extends Component {
 	}
 
 	mapToastAlerts() {
-		console.log(this.state.alerts);
 		let toasts = this.state.alerts.map((alert, index) => {
 			return (
 				<Toast key={index} onClose={() => this.handleToastAlertClose(index)}>
@@ -732,7 +720,6 @@ class UpdateOrgsComponent extends Component {
 	}
 
 	render() {
-		console.log("System - Rendering Page...");
 
 		return !this.state.is_verifed ? null : (
 			<div className="app-window update-org-component">

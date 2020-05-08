@@ -77,7 +77,6 @@ class PlacesAutocomplete extends React.Component {
 					this.callBack(res.data.predictions, res.data.status);
 				}
             ).catch((err) => {
-                console.log(err, "Remember to add API_KEY to backend")
                 this.setState({ loading: false });
             });
 		}
@@ -107,12 +106,12 @@ class PlacesAutocomplete extends React.Component {
 		this.handleSelect(suggestion.description);
 	}
 
-	handleBlur(dropdown) {
-		dropdown.style.display = "none";
+	handleBlur() {
+		document.getElementById("autocomplete-dropdown-container").style.display = "none";
 	}
 
-	handleFocus(dropdown) {
-		dropdown.style.display = "block";
+	handleFocus() {
+		document.getElementById("autocomplete-dropdown-container").style.display = "block";
 	}
 
 	getSuggestionItemProps = (suggestion, options = {}) => {
@@ -126,9 +125,9 @@ class PlacesAutocomplete extends React.Component {
 	};
 
 	getInputProps = (options = {}) => {
-		var dropdown = document.getElementById("autocomplete-dropdown-container");
-		const handleBlur = this.handleBlur.bind(this, dropdown);
-		const handleFocus = this.handleFocus.bind(this, dropdown);
+		
+		const handleBlur = this.handleBlur.bind(this);
+		const handleFocus = this.handleFocus.bind(this);
 
 		const defaultInputProps = {
 			type: "text",
@@ -148,9 +147,6 @@ class PlacesAutocomplete extends React.Component {
 
 
     render() {
-        
-        console.log(this.state.sessionToken)
-
 		return (
 			<div>
 				<input

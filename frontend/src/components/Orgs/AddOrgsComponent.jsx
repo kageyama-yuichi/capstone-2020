@@ -45,7 +45,6 @@ class AddOrgsComponent extends Component {
 
 			if (!formIsValid) {
 				errors.id = "Org ID already used";
-				console.log("System - ID Already Used");
 			}
 		}
 
@@ -71,14 +70,12 @@ class AddOrgsComponent extends Component {
 		e.preventDefault();
 
 		if (this.handleValidation(e)) {
-			console.log("System - Creating New Organisation");
 			let org = {
 				org_id: this.state.org_id,
 				org_title: this.state.org_title,
 				channels: [],
 				members: [],
 			};
-			console.log(org);
 			OrgsResources.create_org(this.state.username, org).then(() =>
 				this.props.history.goBack()
 			);
@@ -119,7 +116,6 @@ class AddOrgsComponent extends Component {
 	}
 
 	render() {
-		console.log("System - Rendering Page...");
 		return (
 			<div className="add-orgs-component app-window">
 				<Container className="add-orgs-container">

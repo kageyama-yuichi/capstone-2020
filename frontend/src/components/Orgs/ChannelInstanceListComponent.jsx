@@ -24,7 +24,6 @@ class ChannelListComponent extends Component {
 
 	refresh_channels = () => {
 		// Retrieves All Channels from the Org Data
-		console.log(this.state.org_id);
 		OrgsResources.retrieve_org(this.state.username, this.state.org_id).then((response) => {
 			let isExpanded = [];
 			response.data.channels.map((ch) => {
@@ -117,7 +116,6 @@ class ChannelListComponent extends Component {
 	}
 
 	render() {
-		console.log(this.state.channels);
 		return (
 			<div className="side-channel-list border-right border-primary">
 				<Container fluid>

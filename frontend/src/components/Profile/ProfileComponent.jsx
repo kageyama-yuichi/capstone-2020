@@ -40,7 +40,6 @@ class ProfileComponent extends Component {
 
 	handleImageChange = (e) => {
 		const imageFile = e.target.files[0];
-		console.log(imageFile);
 		let imageValid = true;
 
 		if (!imageFile) {
@@ -101,7 +100,6 @@ class ProfileComponent extends Component {
 			formIsValid = false;
 			this.setState({addressError: "Address Cannot be empty"});
 		}
-		console.log(formIsValid);
 		return formIsValid;
 	}
 
@@ -120,7 +118,6 @@ class ProfileComponent extends Component {
 			};
 			// Retrieve the User's Profile Information from the Server
 			ProfileResources.updateUserProfile(this.state.username, prof);
-			console.log("success");
 			this.props.history.push(`/dashboard`);
 		}
 
@@ -130,7 +127,6 @@ class ProfileComponent extends Component {
 	refreshUserProfile = () => {
 		// Retrieve the User's Profile Information from the Server
 		ProfileResources.receiveUserProfile(this.state.username).then((response) => {
-			console.log(response.data);
 			this.setState({
 				id: response.data.id,
 				firstname: response.data.fname,
