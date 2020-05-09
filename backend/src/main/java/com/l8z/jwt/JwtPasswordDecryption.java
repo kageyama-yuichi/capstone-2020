@@ -105,7 +105,6 @@ public class JwtPasswordDecryption {
 		}
 		String decryptedText = new String(decryptedData, StandardCharsets.UTF_8);
 
-		System.out.println(decryptedText);
 		return decryptedText;
 	}
 }
