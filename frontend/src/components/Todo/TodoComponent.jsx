@@ -124,25 +124,13 @@ class TodoComponent extends Component {
 
 	getTodos() {
 		let todos = [];
-		if (this.props.isTeamTodo) {
-			OrgResources.retrieve_org_todos(
-				this.state.username,
-				this.state.orgId,
-				this.state.channelTitle
-			).then((response) => {
-				todos = response.data;
-				todos.sort((a, b) => new moment(a.date) - new moment(b.date));
 
-				this.setState({todos: todos});
-			});
-		} else {
-			TodoResources.retrieve_todos(this.state.username).then((response) => {
-				todos = response.data;
-				todos.sort((a, b) => new moment(a.date) - new moment(b.date));
+		TodoResources.retrieve_todos(this.state.username).then((response) => {
+			todos = response.data;
+			todos.sort((a, b) => new moment(a.date) - new moment(b.date));
 
-				this.setState({todos: todos});
-			});
-		}
+			this.setState({todos: todos});
+		});
 	}
 
 	refresh_todos = () => {
@@ -164,7 +152,6 @@ class TodoComponent extends Component {
 				<Container fluid>
 					<div className="d-flex border-bottom w-100 justify-content-between">
 						<h3>{this.props.title}</h3>
-						
 
 						{this.props.role === "TEAM_MEMBER" || !this.props.showNewButton ? null : (
 							//Team members cannot add todos
@@ -188,14 +175,17 @@ class TodoComponent extends Component {
 								<tbody>
 									{this.state.todos.map((todo) => (
 										<tr key={todo.id}>
-											<td style={{width: "50px"}}className="done-col">
+											<td style={{width: "50px"}} className="done-col">
 												<button
 													className={
 														todo.status ? "done-button" : "doing-button"
 													}
 													style={{outline: "none", whiteSpace: "nowrap"}}
 													onClick={() => this.handleDoneClick(todo.id)}
-													disabled={this.props.role === "TEAM_MEMBER" || this.props.disableDoneButton}>
+													disabled={
+														this.props.role === "TEAM_MEMBER" ||
+														this.props.disableDoneButton
+													}>
 													{todo.status ? "Done" : "Doing"}
 												</button>
 											</td>
