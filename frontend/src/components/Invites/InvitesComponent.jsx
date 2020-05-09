@@ -120,9 +120,6 @@ class InvitesComponent extends Component {
 		return (
 			<div className="invites-component">
 				<Container fluid style={{overflowY: "auto"}}>
-					<div className="border-bottom">
-						<h3>Pending Invites</h3>
-					</div>
 					{invites.length > 0 ? (
 						<ListGroup className="overflow-auto">{this.mapInvites()}</ListGroup>
 					) : (
