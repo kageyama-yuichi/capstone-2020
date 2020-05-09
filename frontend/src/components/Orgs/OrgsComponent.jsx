@@ -90,7 +90,6 @@ class OrgsComponent extends Component {
 
 	renderButtons(org) {
 		if (org.user_role === "ORG_OWNER" || org.user_role === "ADMIN") {
-			console.log("calling render for org owner");
 			return (
 				<Card.Footer>
 					<Button onClick={() => this.handle_update_org(org.org_id)} variant="info">
@@ -121,8 +120,9 @@ class OrgsComponent extends Component {
 					<CardDeck className="window-body" style={{height: "auto", overflowY: "auto"}}>
 						{this.state.orgs.map((org) => (
 							<Card className="org-card mb-1" key={org.org_id}>
-								<Link to={"orgs/" + org.org_id + "/channels"} className="cards-fix">
-									<Card.Img
+								<Link to={"orgs/" + org.org_id + "/channels"} className="unselectable cards-fix">
+									<Card.Img 
+										className="unselectable"
 										variant="top"
 										width="20rem"
 										height="140px"

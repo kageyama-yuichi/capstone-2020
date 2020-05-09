@@ -503,6 +503,9 @@ public class OrgsJpaResource {
 		}
 		// Save the Org
 		orgsjpa.save(sql);
+		
+		// Add the Channel Title to the User's Name
+		user_meta_data_jpa_resouce.channel_added(username, org_id, channel.get_channel_title());
 
 		return ResponseEntity.noContent().build();
 	}

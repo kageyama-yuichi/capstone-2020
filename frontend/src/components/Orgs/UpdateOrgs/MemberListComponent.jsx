@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {ListGroup, Button, ButtonGroup} from "react-bootstrap";
+import {ListGroup, Button, ButtonGroup, OverlayTrigger, Tooltip} from "react-bootstrap";
 import {getRoleIconClassName} from "../OrgHelpers.js";
 
 var org_member_details = new Map();
@@ -14,6 +14,20 @@ class MemberListComponent extends Component {
 		org_member_details = new Map(props.org_member_details);
 	}
 
+	roleToString(role) {
+		let ret = ""
+
+		if (role === "ORG_OWNER") {
+			ret = "Org Owner"
+		} else if (role === "ADMIN") {
+			ret = "Admin"
+		} else if (role === "TEAM_LEADER") {
+			ret = "Team Leader"
+		} 
+
+		return ret;
+	}
+
 	mapOrgUsers(mapper, show_buttons) {
 		let retDiv;
 		// Ensure the Map Has Data
@@ -25,7 +39,16 @@ class MemberListComponent extends Component {
 							<p>
 								{org_member_details.get(member.username).name}{" "}
 								{member.role === "TEAM_MEMBER" ? null : (
-									<i className={getRoleIconClassName(member.role)}> </i>
+									<OverlayTrigger
+										
+										placement="right"
+										overlay={
+											<Tooltip id={`tooltip-top`}>
+												{this.roleToString(member.role)}
+											</Tooltip>
+										}>
+										<i className={getRoleIconClassName(member.role)}> </i>
+									</OverlayTrigger>
 								)}
 							</p>
 							{show_buttons
@@ -55,7 +78,7 @@ class MemberListComponent extends Component {
 			<Button
 				key={username + "demote"}
 				variant="warning"
-				onClick={() => this.manage_member(username, "TEAM_LEADER")}>
+				onClick={() => this.manage_member(username, "demote")}>
 				<i className="fas fa-chevron-down"></i>
 			</Button>
 		) : null;
@@ -63,7 +86,7 @@ class MemberListComponent extends Component {
 			<Button
 				key={username + "promote"}
 				variant="success"
-				onClick={() => this.manage_member(username, "ADMIN")}>
+				onClick={() => this.manage_member(username, "promote")}>
 				<i className="fas fa-chevron-up"></i>
 			</Button>
 		) : null;
@@ -112,7 +135,6 @@ class MemberListComponent extends Component {
 	}
 
 	render() {
-		console.log(this.state.members);
 		return (
 			<ListGroup className="overflow-auto">
 				{this.mapOrgUsers(this.state.members, this.props.show_buttons)}
@@ -123,6 +145,6 @@ class MemberListComponent extends Component {
 
 MemberListComponent.defaultProps = {
 	show_buttons: false,
-	show_manage_buttons: true
+	show_manage_buttons: true,
 };
 export default MemberListComponent;

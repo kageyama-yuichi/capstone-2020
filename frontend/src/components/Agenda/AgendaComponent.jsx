@@ -41,7 +41,6 @@ class AgendaComponent extends Component {
 			todos.sort((a, b) => new moment(a.date) - new moment(b.date));
 			this.setState({todos: todos, loadedTodos: true});
 		});
-		this.forceUpdate();
 	};
 
 	render() {

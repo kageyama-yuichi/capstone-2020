@@ -39,14 +39,16 @@ class CalendarComponent extends Component {
 	}
 
 	onSelectEvent(event) {
-		console.log(event);
 		this.handleDoneClick(event.id);
 	}
 
-	handleDoneClick(id) {
-		TodoResources.update_todo_status(this.state.username, id).then((response) => {
-			this.props.callback();
-		});
+	handleDoneClick(event) {
+		if (event.username !== undefined) {
+			TodoResources.update_todo_status(this.state.username, event.id).then((response) => {
+				this.props.callback();
+			});
+		}
+		
 	}
 
 	//Checks if prop changed
@@ -68,7 +70,7 @@ class CalendarComponent extends Component {
 					defaultView="month"
 					defaultDate={new Date()}
 					views={{month: true}}
-					onSelectEvent={(event) => this.handleDoneClick(event.id)}
+					onSelectEvent={(event) => this.handleDoneClick(event)}
                     eventPropGetter={(event) => {
                         const backgroundColor = event.status ? "rgb(28, 196, 28)" : "rgb(255, 162, 162)"
                         return {style: {backgroundColor}}

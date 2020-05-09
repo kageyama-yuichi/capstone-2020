@@ -15,6 +15,7 @@
     "react": "^16.10.1",
     "react-big-calendar": "^0.24.5",
     "react-bootstrap": "^1.0.0",
+    "react-color": "^2.18.1",
     "react-dom": "^16.10.1",
     "react-router-dom": "^4.3.1",
     "react-scripts": "^3.1.1",

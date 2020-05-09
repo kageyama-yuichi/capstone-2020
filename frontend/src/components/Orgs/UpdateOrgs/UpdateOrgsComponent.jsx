@@ -14,7 +14,7 @@ import {
 	Row,
 	Col,
 	ListGroup,
-	InputGroup,
+	Toast,
 	FormControl,
 	Tabs,
 	Tab,
@@ -55,6 +55,7 @@ class UpdateOrgsComponent extends Component {
 			deleteOrgInputError: "",
 			deleteOrgButtonDisabled: true,
 			orgIdValidated: false,
+			alerts: [],
 		};
 		this.on_submit = this.on_submit.bind(this);
 		this.handleCancel = this.handleCancel.bind(this);
@@ -102,7 +103,6 @@ class UpdateOrgsComponent extends Component {
 
 		// 	if (!formIsValid) {
 		// 		errors.id = "Org ID already used";
-		// 		console.log("System - ID Already Used");
 		// 	}
 		// }
 
@@ -111,7 +111,6 @@ class UpdateOrgsComponent extends Component {
 
 		//Iterate over input fields and get corresponding error
 		//Flag form as invalid if there is an error
-		console.log(form);
 		formControl.forEach((ele) => {
 			if (errors[ele.name]) {
 				ele.setCustomValidity("invalid");
@@ -121,7 +120,6 @@ class UpdateOrgsComponent extends Component {
 		});
 
 		this.setState({errors: errors});
-		console.log(errors);
 		return formIsValid;
 	}
 
@@ -129,14 +127,12 @@ class UpdateOrgsComponent extends Component {
 		e.preventDefault();
 
 		if (this.handleValidation(e)) {
-			console.log("System - Creating New Organisation");
 			let org_push = {
 				org_id: this.state.org_id,
 				org_title: this.state.org_title,
 				channels: channels,
 				members: this.state.members,
 			};
-			console.log(org_push);
 			OrgsResources.update_org(
 				this.state.username,
 				this.state.old_org_id,
@@ -163,10 +159,8 @@ class UpdateOrgsComponent extends Component {
 		this.props.history.push(url);
 	};
 	handle_delete_channel = (channel_title) => {
-		console.log("Deleteing");
 		OrgsResources.delete_channel(this.state.username, this.state.org_id, channel_title).then(
 			(response) => {
-				console.log("Deleted");
 				// Reset the Channels Variable
 				channels = [];
 				// Retrieves All Channels from the Org Data
@@ -176,6 +170,9 @@ class UpdateOrgsComponent extends Component {
 						this.forceUpdate();
 					}
 				);
+				this.setState((prevState) => ({
+					alerts: [...prevState.alerts, `Channel ${channel_title} successfully deleted`],
+				}));
 			}
 		);
 	};
@@ -197,7 +194,6 @@ class UpdateOrgsComponent extends Component {
 
 	handleDeleteOrg(e) {
 		e.preventDefault();
-		console.log("called");
 		let valid = true;
 		let error = "";
 		const deleteOrgInput = document.getElementById("deleteOrgInput");
@@ -218,6 +214,7 @@ class UpdateOrgsComponent extends Component {
 		if (!valid) {
 			deleteOrgInput.setCustomValidity("invalid");
 		}
+		
 		this.setState({deleteOrgInputError: error, orgIdValidated: true});
 	}
 
@@ -236,10 +233,7 @@ class UpdateOrgsComponent extends Component {
 				});
 			});
 		}
-		// console.log(this.state.org_id);
-		// console.log(this.state.org_title);
-		// console.log(this.state.channels);
-		// console.log(this.state.members);
+
 	}
 
 	componentDidMount() {
@@ -487,7 +481,7 @@ class UpdateOrgsComponent extends Component {
 		OrgsResources.retrieve_basic_users_in_orgs(this.state.members).then((response) => {
 			// Go through the Response Data which is the Basic User and Strip Data
 			for (let i = 0; i < response.data.length; i++) {
-				//console.log(response.data[i]);
+
 				let user_details = {
 					fname: response.data[i].fname,
 					lname: response.data[i].lname,
@@ -528,7 +522,10 @@ class UpdateOrgsComponent extends Component {
 	invite_user = (invitee) => {
 		OrgsResources.invite_to_org(this.state.username, invitee, this.state.org_id).then(
 			(response) => {
-				alert("User Successfully Emailed");
+				this.setState((prevState) => ({
+					alerts: [...prevState.alerts, "User Successfully Emailed"],
+				}));
+
 				searched_users = [];
 				// Resetting Fields
 				this.setState({
@@ -588,7 +585,7 @@ class UpdateOrgsComponent extends Component {
 	};
 
 	// Promoting and Demoting Members
-	manage_member = (username, new_role) => {
+	manage_member = (username, type) => {
 		let auth = {
 			username: this.state.username,
 			role: org_member_details.get(this.state.username).role,
@@ -597,9 +594,26 @@ class UpdateOrgsComponent extends Component {
 			username: username,
 			role: org_member_details.get(username).role,
 		};
+
+		let newRole = "";
+		//Error checking in MemberListComponent
+		if (type === "promote") {
+			if (member.role === "TEAM_LEADER") {
+				newRole = "ADMIN";
+			} else if (member.role === "TEAM_MEMBER") {
+				newRole = "TEAM_LEADER";
+			}
+		} else if (type === "demote") {
+			if (member.role === "ADMIN") {
+				newRole = "TEAM_LEADER";
+			} else if (member.role === "TEAM_LEADER") {
+				newRole = "TEAM_MEMBER";
+			}
+		}
+
 		let new_managed = {
 			username: username,
-			role: new_role,
+			role: newRole,
 		};
 		let body = [];
 		body.push(auth);
@@ -607,7 +621,10 @@ class UpdateOrgsComponent extends Component {
 		body.push(new_managed);
 		// Push Request to Server
 		OrgsResources.manage_users_in_org(this.state.org_id, body).then((response) => {
-			alert("The User has been Modified");
+			this.setState((prevState) => ({
+				alerts: [...prevState.alerts, "User has been Modified"],
+			}));
+
 			// Reload the Page as Alot of Modifications can Occur
 			this.loadOrg();
 		});
@@ -621,7 +638,10 @@ class UpdateOrgsComponent extends Component {
 		};
 		// Push Request to Server
 		OrgsResources.remove_user_from_org(this.state.org_id, old_member).then((response) => {
-			alert("The User has been Removed");
+			this.setState((prevState) => ({
+				alerts: [...prevState.alerts, "User has been Removed"],
+			}));
+
 			// Reload the Page as Alot of Modifications can Occur
 			this.loadOrg();
 		});
@@ -634,7 +654,7 @@ class UpdateOrgsComponent extends Component {
 		if (mapper.length > 0) {
 			retDiv = mapper.map((usr) => {
 				return (
-					<ListGroup.Item key={usr.username} className="bg-light text-dark">
+					<ListGroup.Item key={`pending-${usr.username}`} className="bg-light text-dark">
 						<div className="d-flex justify-content-between">
 							<p>
 								{usr.fname} {usr.lname}
@@ -678,8 +698,28 @@ class UpdateOrgsComponent extends Component {
 		return retDiv;
 	}
 
+	handleToastAlertClose(index) {
+		let newArr = this.state.alerts;
+		newArr.splice(index, 1);
+		this.setState({alerts: newArr});
+	}
+
+	mapToastAlerts() {
+		let toasts = this.state.alerts.map((alert, index) => {
+			return (
+				<Toast key={index} onClose={() => this.handleToastAlertClose(index)}>
+					<Toast.Header>
+						<strong className="mr-auto">Update Orgs</strong>
+					</Toast.Header>
+					<Toast.Body>{alert}</Toast.Body>
+				</Toast>
+			);
+		});
+
+		return <div style={{position: "absolute", top: 0, right: 0}}>{toasts}</div>;
+	}
+
 	render() {
-		console.log("System - Rendering Page...");
 
 		return !this.state.is_verifed ? null : (
 			<div className="app-window update-org-component">
@@ -914,6 +954,7 @@ class UpdateOrgsComponent extends Component {
 						current_members_in_channel={current_members_in_channel}
 					/>
 				) : null}
+				{this.mapToastAlerts()}
 			</div>
 		);
 	}
