@@ -14,7 +14,7 @@ class PlacesAutocomplete extends React.Component {
 			suggestions: [],
 			value: props.value,
 			//Default location set to Melbourne
-			location: "37.8136,144.9631",
+			location: "-37.8136,144.9631",
 			sessionToken: props.sessionToken,
 			isExpanded: false,
 			activeSuggestionId: null,
