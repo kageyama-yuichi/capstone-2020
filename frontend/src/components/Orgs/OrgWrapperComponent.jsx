@@ -2,8 +2,7 @@ import React, {Component} from "react";
 import ChannelListComponent from "./ChannelInstanceListComponent";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
 import ChatComponent from "../Chat/ChatComponent";
-import TodoComponent from "../Todo/TodoComponent";
-
+import ChannelAgendaComponent from "./ChannelAgendaComponent.jsx";
 class OrgWrapperComponent extends Component {
 	constructor(props) {
 		super(props);
@@ -57,12 +56,13 @@ class OrgWrapperComponent extends Component {
 							instance_title={this.state.instance_title}
 						/>
 					) : (
-						<TodoComponent
-							isTeamTodo={true}
-							role={this.state.role}
-							orgId={this.state.org_id}
-							channelTitle={this.state.channel_title}
-						/>
+						<div className="w-100">
+							<ChannelAgendaComponent
+								orgId={this.state.org_id}
+								channelTitle={this.state.channel_title}
+								role={this.state.role}
+							/>
+						</div>
 					)}
 				</div>
 			</div>

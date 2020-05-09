@@ -22,22 +22,10 @@ class AgendaComponent extends Component {
 	}
 
 	refresh_todos = () => {
-		this.setState({
-			todos: [],
-		});
 		// Retrieves the Todos for the User from the Server
 		TodoResources.retrieve_todos(this.state.username).then((response) => {
-			let todos = [];
-			// Maps the Response Data (Todo.class) to JSObject
-			for (let i = 0; i < response.data.length; i++) {
-				todos.push({
-					id: response.data[i].id,
-					username: response.data[i].username,
-					desc: response.data[i].desc,
-					date: response.data[i].date,
-					status: response.data[i].status,
-				});
-			}
+			let todos = response.data;
+			
 			todos.sort((a, b) => new moment(a.date) - new moment(b.date));
 			this.setState({todos: todos, loadedTodos: true});
 		});
