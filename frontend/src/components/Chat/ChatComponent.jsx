@@ -3,7 +3,7 @@ import {API_URL} from "../../Constants";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
 import "./ChatComponent.css";
 import Encryption from "./Encryption.js";
-import {Container, Row, Col, Button} from "react-bootstrap";
+import {Container, Tabs, Tab, Button} from "react-bootstrap";
 import MessageComponent from "./Message/MessageComponent.jsx";
 import OrgResources from "../Orgs/OrgsResources.js";
 
@@ -53,7 +53,6 @@ class ChatComponent extends Component {
 		channel_title = "/" + this.props.channel_title;
 		instance_title = "/" + this.props.instance_title;
 		extension = orgs_id + channel_title + instance_title;
-
 
 		// Create the Socket
 		const Stomp = require("stompjs");
@@ -112,7 +111,6 @@ class ChatComponent extends Component {
 
 	// Handles Chat History
 	on_history_received = (payload) => {
-		
 		var obj = JSON.parse(payload.body);
 		// Iterate over
 		for (let i = obj.length - 1; i >= 0; i--) {
@@ -179,7 +177,6 @@ class ChatComponent extends Component {
 
 	// Handles Server Responses Accordingly
 	on_message_received = (payload) => {
-		
 		var message_text = JSON.parse(payload.body);
 		var does_require_sorting = false;
 		// This gets the Original Contents in the Map
@@ -404,7 +401,7 @@ class ChatComponent extends Component {
 	componentWillUnmount() {
 		if (messages.length > 0) {
 			console.log(this.state.org_id);
-			
+
 			OrgResources.setChannelInstanceChatTime(
 				this.state.username,
 				this.state.org_id,
@@ -459,8 +456,6 @@ class ChatComponent extends Component {
 				this.setState({readLast: response.data});
 			});
 		}
-
-		
 	}
 
 	componentDidMount() {
@@ -483,7 +478,6 @@ class ChatComponent extends Component {
 	}
 
 	mapMessages() {
-		
 		let retDiv;
 		messageCounter = 0;
 		retDiv = messages.map((old_msg, index) => {
@@ -495,8 +489,8 @@ class ChatComponent extends Component {
 						sender={instance_member_details.get(old_msg.sender)}
 						msg={old_msg}
 					/>
-					
-					{(this.state.readLast === old_msg.date_time)  && index < oldMessageLength ? (
+
+					{this.state.readLast === old_msg.date_time && index < oldMessageLength ? (
 						<div className="d-flex justify-content-center border-bottom border-top border-danger pd-5 md-5">
 							New
 						</div>
@@ -504,10 +498,9 @@ class ChatComponent extends Component {
 				</div>
 			);
 		});
-		
+
 		return retDiv;
 	}
-
 
 	mapUsers() {
 		let retDiv;
@@ -523,7 +516,6 @@ class ChatComponent extends Component {
 	}
 
 	render() {
-		
 		return (
 			<div className="chat-component">
 				{this.state.instance_title ? (
@@ -581,9 +573,13 @@ class ChatComponent extends Component {
 								fluid
 								className="pl-0 pr-0 ml-0 mr-0 h-100 flex-fill"
 								style={{minWidth: "150px", maxWidth: "300px"}}>
-								<div className="user-container h-100">
-									<h1 className="user-title">Users</h1>
-									<div className="user-list">{this.mapUsers()}</div>
+								<div className="h-100 bg-light"> 
+									<Tabs className="text-light" defaultActiveKey="users">
+										<Tab eventKey="users" title="Users">
+											<div className="user-list">{this.mapUsers()}</div>
+										</Tab>
+										<Tab eventKey="pinned" title="Pinned"></Tab>
+									</Tabs>
 								</div>
 							</Container>
 						</div>
@@ -593,7 +589,6 @@ class ChatComponent extends Component {
 				)}
 			</div>
 		);
-		
 	}
 }
 

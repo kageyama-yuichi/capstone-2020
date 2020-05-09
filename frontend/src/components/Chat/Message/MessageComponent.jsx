@@ -42,7 +42,12 @@ class MessageComponent extends Component {
 					placement="right"
 					trigger="click"
 					rootClose={true}
-					overlay={<UserProfileOverlayComponent senderUsername={this.props.senderUsername} sender={this.props.sender} />}>
+					overlay={
+						<UserProfileOverlayComponent
+							senderUsername={this.props.senderUsername}
+							sender={this.props.sender}
+						/>
+					}>
 					<a
 						className="unselectable"
 						style={{userSelect: "none", userDrag: "none"}}
@@ -59,18 +64,23 @@ class MessageComponent extends Component {
 					</a>
 				</OverlayTrigger>
 				<Container fluid className="pl-0">
-					<Container fluid className="message-header d-flex align-items-end">
-						<h5>{this.state.name}</h5>
-						<h6>
-							<small className="pl-1 text-muted">
-								@{this.state.sender}{" "}
-								{this.state.dateTime.format(
-									this.state.dateTime.isSame(moment(), "d")
-										? "[Today] [at] LT"
-										: "ll [at] LT"
-								)}
-							</small>
-						</h6>
+					<Container fluid className="message-header d-flex justify-content-between">
+						<div className="d-flex align-items-end">
+							<h5>{this.state.name}</h5>
+							<h6>
+								<small className="pl-1 text-muted">
+									@{this.state.sender}{" "}
+									{this.state.dateTime.format(
+										this.state.dateTime.isSame(moment(), "d")
+											? "[Today] [at] LT"
+											: "ll [at] LT"
+									)}
+								</small>
+							</h6>
+						</div>
+						<i
+							style={{transform: "rotate(45deg)"}}
+							className="pl-2 align-self-center fas fa-thumbtack text-secondary"></i>
 					</Container>
 					<Container fluid className="message-body">
 						<h6 className="text-wrap text-muted pr-5 mr-5">{this.state.message}</h6>

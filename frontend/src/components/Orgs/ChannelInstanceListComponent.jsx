@@ -117,7 +117,7 @@ class ChannelListComponent extends Component {
 
 	render() {
 		return (
-			<div className="side-channel-list border-right border-primary">
+			<div className="side-channel-list border-right bg-light">
 				<Container fluid>
 					<div className="d-flex justify-content-between">
 						<h3>{this.state.org_id}</h3>
