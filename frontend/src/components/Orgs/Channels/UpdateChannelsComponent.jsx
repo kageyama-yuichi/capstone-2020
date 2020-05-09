@@ -425,7 +425,7 @@ class UpdateChannelsComponent extends Component {
 							</Col>
 						</Row>
 
-						<Tabs defaultActiveKey="members" id="uncontrolled-tab-example">
+						<Tabs defaultActiveKey="members">
 							<Tab eventKey="members" style={{height: "1rem"}} title="Member List">
 								<Container fluid>
 									<Row>

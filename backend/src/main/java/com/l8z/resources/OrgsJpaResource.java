@@ -758,6 +758,17 @@ public class OrgsJpaResource {
 		orgstodojpa.deleteById(id);
 		return ResponseEntity.noContent().build();
 	}
+	
+	@GetMapping("/jpa/orgs/todos/{username}")
+	public List<List<OrgTodo>> retrieveAllOrgTodos(@PathVariable String username){
+		
+		List<String> orgChannels = user_meta_data_jpa_resouce.getUserChannels(username);
+		List<List<OrgTodo>> orgTodos = new ArrayList<List<OrgTodo>>();
+		
+		orgChannels.forEach((n) -> orgTodos.add(orgstodojpa.getByOrgChannel(n)));
+		
+		return orgTodos;
+	}
 
 	///////////////////////////////////////////////////////////////////////////
 	///////////////////// I N S T A N C E R E L A T E D /////////////////////
