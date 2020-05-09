@@ -146,24 +146,29 @@ class TodoComponent extends Component {
 		} else {
 			TodoResources.retrieve_todos(this.state.username).then((response) => {
 				// Maps the Response Data (Todo.class) to JSObject
-				for (let i = 0; i < response.data.length; i++) {
-					todos.push({
-						id: response.data[i].id,
-						username: response.data[i].username,
-						desc: response.data[i].desc,
-						date: response.data[i].date,
-						status: response.data[i].status,
-					});
-				}
+				// for (let i = 0; i < response.data.length; i++) {
+				// 	todos.push({
+				// 		id: response.data[i].id,
+				// 		username: response.data[i].username,
+				// 		desc: response.data[i].desc,
+				// 		date: response.data[i].date,
+				// 		status: response.data[i].status,
+				// 	});
+				// }
+				todos = response.data;
+
 				todos.sort((a, b) => new moment(a.date) - new moment(b.date));
 				//If component is a widget, remove all todos that aren't today
+
 				if (this.props.isWidget) {
 					for (var i in todos) {
-						if (moment().diff(todos[i].date, "days")) {
+						console.log(moment().isSame(todos[i].date, "day"))
+						if (!moment().isSame(todos[i].date, "day")) {
 							todos.splice(i);
 							break;
 						}
 					}
+					console.log(todos)
 				}
 
 				this.setState({todos: todos});
@@ -185,14 +190,13 @@ class TodoComponent extends Component {
 	}
 
 	render() {
-		console.log(this.state.todos)
 		return (
 			<div className="todo-component">
 				<Container fluid>
 					<div className="d-flex border-bottom w-100 justify-content-between">
 						<h3>Todo List</h3>
 
-						{this.props.isWidget || this.props.role === "TEAM_MEMBER" ? null : (
+						{ this.props.role === "TEAM_MEMBER" ? null : (
 							//Team members cannot add todos
 
 							<Button
