@@ -47,8 +47,8 @@ class PasswordChangeComponent extends Component {
 	}
 	
 	handleUpdate(){
-		if(PasswordChangeResources.receiveUserPassword(this.state.username) === true){
 			if(this.state.newPassword === this.state.confirmPassword){
+				console.log(this.state.username + " " + this.state.newPassword + " " + this.state.token);
 				PasswordChangeResources.updateUserPassword(this.state.username, this.state.newPassword, this.state.token)
 			}
 			else{
@@ -56,10 +56,6 @@ class PasswordChangeComponent extends Component {
 				console.log("Confirm Password: " + this.state.confirmPassword);
 				console.log("New password don't match");
 			}
-		} else{
-			console.log("Old Password: " + this.state.oldPassword);
-			console.log("Password Didn't match");
-		}
 	}
 
 	render() {
@@ -71,16 +67,6 @@ class PasswordChangeComponent extends Component {
 					</div>
 
 					<Form className="d-flex w-50 ml-auto mr-auto flex-column flex-fill ">
-						<Form.Group>
-							<Form.Label>Current Password</Form.Label>
-							<Form.Control 
-								placeholder="Current Password" required
-								className="oldPassword-input"
-								name="oldPassword" 
-								onChange={this.handleChange.bind(this)}
-								value={this.state.oldPassword}/>
-							<Form.Control.Feedback></Form.Control.Feedback>
-						</Form.Group>
 						<Form.Group>
 							<Form.Label>New Password</Form.Label>
 							<Form.Control 

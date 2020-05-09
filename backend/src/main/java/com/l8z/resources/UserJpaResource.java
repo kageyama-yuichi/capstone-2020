@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -116,16 +117,6 @@ public class UserJpaResource {
 		String tTD = check.getExpiryDate();
 
 		return check;
-	}
-
-	@PostMapping("/jpa/profile/{username}/{password}")
-	public boolean receiveUserPassword(@PathVariable String username, @PathVariable String password) {
-		User user = repo.findByUsername(username);
-		String oldPassword = user.getPassword();
-		password = bCryptEncoder.encode(password);
-		System.out.println("This is the new password " + password);
-		System.out.println("This is the old password: " + oldPassword);
-		return true;
 	}
 
 	@PostMapping("/jpa/profile/{username}/{password}/{token}")
