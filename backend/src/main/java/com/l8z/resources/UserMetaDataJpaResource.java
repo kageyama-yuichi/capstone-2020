@@ -150,6 +150,31 @@ public class UserMetaDataJpaResource {
 		}
 	}
 
+	public List<String> getUserChannels(String username){
+	
+		// Stores all the org_channels of the User
+		List<String> org_channels = new ArrayList<String>();
+	
+		UserMetaData sql = null;
+		
+		try {
+			// Get the Current Data from Database if it Exists
+			sql = repo.findByUsername(username);
+			if (sql != null) {				
+				// Convert to List of Strings Object
+				org_channels = json_mapper.readValue(sql.get_org_channels(),
+						json_mapper.getTypeFactory().constructCollectionType(List.class, String.class));
+			}
+
+		} catch (JsonMappingException e) {
+			System.out.println("System - Error Updating Database");
+		} catch (JsonProcessingException e) {
+			System.out.println("System - Error Updating Database");
+		}
+		
+		return org_channels;
+	}
+	
 /////////////////////
 //Channel Related //
 /////////////////////		

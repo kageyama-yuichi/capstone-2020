@@ -99,6 +99,10 @@ class OrgsResources {
 	remove_users_from_channel(username, org_id, channel_title, removed_members) {
 		return axios.post(`${JPA_URL}/members/${username}/orgs/${org_id}/${channel_title}/remove`, removed_members)
 	}
+	retrieveAllOrgTodos(username) {
+		return axios.get(`${JPA_URL}/orgs/todos/${username}`)
+	}
+
 	// Instance Related
 	retrieve_all_instance_titles(username, org_id, channel_title) {
 	return axios.get(`${JPA_URL}/orgs/${username}/${org_id}/${channel_title}/new`);
