@@ -147,6 +147,7 @@ class TodoComponent extends Component {
 	}
 
 	render() {
+		console.log(this.state.todos);
 		return (
 			<div className="todo-component">
 				<Container fluid>

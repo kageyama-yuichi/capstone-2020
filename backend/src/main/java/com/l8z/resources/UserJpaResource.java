@@ -22,6 +22,7 @@ import com.l8z.GlobalVariable;
 import com.l8z.jparepository.PasswordRecoveryJpaRepository;
 import com.l8z.jparepository.PendingInvitesJpaRepository;
 import com.l8z.jparepository.UserJpaRepository;
+import com.l8z.jwt.JwtInMemoryUserDetailsService;
 import com.l8z.jwt.JwtPasswordDecryption;
 import com.l8z.pending.PendingInvites;
 import com.l8z.user.BasicUser;
@@ -45,6 +46,8 @@ public class UserJpaResource {
 	private PasswordEncoder bCryptEncoder;
 	@Autowired
 	private JavaMailSender mail;
+	@Autowired
+	JwtInMemoryUserDetailsService service;
 
 	@GetMapping("/jpa/profile/{username}")
 	public User receiveUserProfile(@PathVariable String username) {
@@ -144,12 +147,12 @@ public class UserJpaResource {
 				// Remove the Token from the Database
 				prrepo.deleteById(id);
 			}
-
-			// Overwrite the Current Password in the System
-			user.setPassword(bCryptEncoder.encode(JwtPasswordDecryption.decrypt(password, "L8Z")));
-
-			// Save User
-			repo.save(user);
+			
+			// Set the Encrypted Password to Give to Service
+			user.setPassword(password);
+			// Gives it to a Service to Encrypt it for Us
+			service.save(user);
+			
 			return true;
 		} else {
 			return false;

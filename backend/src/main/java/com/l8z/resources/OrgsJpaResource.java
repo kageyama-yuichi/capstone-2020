@@ -434,7 +434,9 @@ public class OrgsJpaResource {
 
 			// Manage the Member
 			temp_org.remove_member(old_member);
-
+			// Removes the Org from their MetaData
+			user_meta_data_jpa_resouce.user_leaves_org(old_member.get_username(), org_id);
+			
 			// Save the Organisation
 			orgsjpa.save(new OrgsSQL(org_id, json_mapper.writeValueAsString(temp_org), recent_date_time));
 		} catch (JsonMappingException e) {

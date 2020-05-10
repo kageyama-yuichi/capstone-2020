@@ -1,22 +1,18 @@
 //Import key variable wherever stored
 const CryptoJS = require("crypto-js");
 
+var encrypt_key = process.env.REACT_APP_SECRET_KEY;
+
 class Encryption {
     //Encrypt Messages
 	encrpyt_message = (value) => {
-		return CryptoJS.AES.encrypt(value, "L8Z").toString();
+		return CryptoJS.AES.encrypt(value, encrypt_key).toString();
 	}
 	
 	//Decrypt Message
 	decrypt_message = (value) => {
-		return CryptoJS.AES.decrypt(value, "L8Z").toString(CryptoJS.enc.Utf8);
+		return CryptoJS.AES.decrypt(value, encrypt_key).toString(CryptoJS.enc.Utf8);
 	}
-
-	/* //Test Encrypt
-	test_encrypt = (value) => {
-		var cipher = crypto.createCipheriv('AES-128-CBC', "L8Z", '0102030405060708');
-		return cipher.update(value, 'utf-8', 'base64') + cipher.final('base64');
-	} */
 }
 
 export default new Encryption()
