@@ -3,6 +3,7 @@ import OrgsResources from "../OrgsResources.js";
 import AuthenticationService from "../../Authentication/AuthenticationService.js";
 import "../OrgsComponent.css";
 import {Container, Button, ButtonGroup, Row, Col, ListGroup} from "react-bootstrap";
+import {getRoleIconClassName} from "../OrgHelpers.js";
 
 /*
 	Left to do:
@@ -18,7 +19,6 @@ class ChannelsComponent extends Component {
 			org_id: this.props.match.params.org_id,
 			channels: [],
 			memberListOpen: [],
-
 		};
 		this.handle_open_channel = this.handle_open_channel.bind(this);
 	}
@@ -37,13 +37,8 @@ class ChannelsComponent extends Component {
 		this.props.history.push(url);
 	};
 
-	componentDidUpdate() {
-		console.log(this.state.orgs);
-	}
-
 	refresh_channels = () => {
 		// Retrieves All Channels from the Org Data
-		console.log(this.state.org_id);
 		OrgsResources.retrieve_org(this.state.username, this.state.org_id).then((response) => {
 			this.setState({
 				channels: response.data.channels,
@@ -69,17 +64,13 @@ class ChannelsComponent extends Component {
 		return ret;
 	};
 
-	
 	toggleMemberListDisplay(channel_title) {
 		this.state.memberListOpen[channel_title] = !this.state.memberListOpen[channel_title];
 		this.forceUpdate();
 	}
 
 	render() {
-		console.log("System - Rendering Page...");
-		console.log(this.props.history.location);
-		
-
+	
 		return (
 			<Container>
 				<Row>
@@ -102,22 +93,24 @@ class ChannelsComponent extends Component {
 									key={ch.channel_title}
 									className="channels"
 									variant="dark">
+									
 									<div className="d-flex justify-content-between">
-										{ch.channel_title}
-										<ButtonGroup className="align-self-end">
-											<Button
-												variant="secondary"
-												className="btn-sm"
-												onClick={() =>
-													this.toggleMemberListDisplay(ch.channel_title)
-												}>
-												{this.state.memberListOpen[ch.channel_title] ? (
-													<i class="fas fa-angle-up"></i>
-												) : (
-														<i className="fas fa-caret-down"></i>
-													)}
-											</Button>
-										</ButtonGroup>
+									<div className="h-100 w-75">{ch.channel_title}</div>
+										
+
+										<Button
+											variant="secondary"
+											className="btn-sm align-self-end"
+											onClick={(e) => {
+												e.stopPropagation();
+												this.toggleMemberListDisplay(ch.channel_title);
+											}}>
+											{this.state.memberListOpen[ch.channel_title] ? (
+												<i className="fas fa-angle-up"></i>
+											) : (
+												<i className="fas fa-caret-down"></i>
+											)}
+										</Button>
 									</div>
 
 									<ListGroup
@@ -130,8 +123,18 @@ class ChannelsComponent extends Component {
 											return (
 												<ListGroup.Item
 													key={member.username}
-													variant={this.setRoleStyling(member.role)}>
-													{member.username}
+													className="bg-light text-dark"
+													// variant={this.setRoleStyling(member.role)}
+												>
+													{member.username}{" "}
+													{member.role === "TEAM_MEMBER" ? null : (
+														<i
+															className={getRoleIconClassName(
+																member.role
+															)}>
+															{" "}
+														</i>
+													)}
 												</ListGroup.Item>
 											);
 										})}
@@ -143,8 +146,6 @@ class ChannelsComponent extends Component {
 				</Row>
 			</Container>
 		);
-		
-	
 	}
 }
 

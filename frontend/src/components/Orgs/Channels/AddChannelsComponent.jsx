@@ -13,21 +13,19 @@ class AddChannelsComponent extends Component {
 			channel_title: "",
 			channel_title_error: "",
 			owned_ids: [],
-			validated: false
+			validated: false,
 		};
 		this.on_submit = this.on_submit.bind(this);
 	}
 
 	on_submit = (e) => {
 		e.preventDefault();
-		console.log(this.state.channel_title);
 		var internal_error = false;
 		var error = "";
 		var str2 = this.state.channel_title;
 
 		// Ensure Length is 3 or Greater
 		if (this.state.channel_title.length < 3 || this.state.channel_title === "new") {
-			
 			error = "Channel title too short";
 			internal_error = true;
 		}
@@ -43,17 +41,14 @@ class AddChannelsComponent extends Component {
 			}
 
 			if (internal_error) {
-				console.log("System - ID Already Used");
-				
+
 				error = "Channel title already in use";
 			} else {
-				console.log("System - Creating New Channel");
 				let channel = {
 					channel_title: this.state.channel_title,
 					members: [],
 					instances: [],
 				};
-				console.log(channel);
 				OrgsResources.create_channel(
 					this.state.username,
 					this.state.org_id,
@@ -65,8 +60,8 @@ class AddChannelsComponent extends Component {
 		if (error.length > 0) {
 			e.currentTarget.querySelector(".form-control").setCustomValidity("invalid");
 		}
-		
-		this.setState({ channel_title_error: error, validated: true });
+
+		this.setState({channel_title_error: error, validated: true});
 	};
 
 	handle_typing_channel_title = (event) => {
@@ -96,7 +91,6 @@ class AddChannelsComponent extends Component {
 	}
 
 	render() {
-		console.log("System - Rendering Page...");
 		return (
 			<div className="app-window FormChannelComponent">
 				<Container>
@@ -120,8 +114,13 @@ class AddChannelsComponent extends Component {
 								{this.state.channel_title_error}
 							</Form.Control.Feedback>
 						</Form.Group>
-						<Button id="channel_create" type="submit">
+						<Button id="channel_create" variant="secondary" type="submit">
 							Create Channel
+						</Button>
+						<Button
+							onClick={() => this.props.history.goBack()}
+							variant="outline-primary">
+							Cancel
 						</Button>
 					</Form>
 				</Container>
