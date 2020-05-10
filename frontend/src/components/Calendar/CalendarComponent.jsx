@@ -23,12 +23,14 @@ class CalendarComponent extends Component {
 		var events = [];
 		this.props.todos.map((todo) => {
 			events.push({
+				username: todo.username,
 				id: todo.id,
 				title: todo.desc,
 				allDay: true,
 				start: todo.date,
 				end: todo.date,
 				status: todo.status,
+				color: todo.color
 			});
 		});
 		this.setState({events: events});
@@ -71,9 +73,16 @@ class CalendarComponent extends Component {
 					defaultDate={new Date()}
 					views={{month: true}}
 					onSelectEvent={(event) => this.handleDoneClick(event)}
-                    eventPropGetter={(event) => {
-                        const backgroundColor = event.status ? "rgb(28, 196, 28)" : "rgb(255, 162, 162)"
-                        return {style: {backgroundColor}}
+					eventPropGetter={(event) => {
+						console.log(event)
+						const style = {
+							backgroundColor: event.status ? event.color : "white",
+							color: event.status ? "white" : "darkgray",
+							border: "3px solid black",
+							borderColor: event.status ? "darkgray" : event.color,
+						}
+
+                        return {style: style}
                     }}
 				/>
 			</Container>
