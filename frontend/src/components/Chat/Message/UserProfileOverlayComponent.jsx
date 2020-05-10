@@ -14,18 +14,12 @@ class UserProfileOverlayComponent extends Component {
 			username: props.senderUsername
 		};
 		this.addContact = this.addContact.bind(this)
-		this.privateChat = this.privateChat.bind(this)
 	}
 
 	addContact() {
 		let username = sessionStorage.getItem("authenticatedUser");
 		console.log(username); console.log(this.state.username);
 	    ContactsResource.addContact(username, this.state.username)
-	}
-
-	privateChat() {
-		var url = "/private/" + this.state.username;
-		this.props.history.push(url);
 	}
 
 	render() {
