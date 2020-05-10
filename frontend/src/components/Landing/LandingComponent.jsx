@@ -67,7 +67,6 @@ class LandingComponent extends Component {
 			this.state.username,
 			this.state.password
 		).then((response) => {
-			console.log("Inner Authetnication");
 			AuthenticationService.registerSuccessfulLoginForJwt(
 				this.state.username,
 				response.data.token

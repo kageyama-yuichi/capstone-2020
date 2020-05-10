@@ -20,7 +20,6 @@ class AddChannelsComponent extends Component {
 
 	on_submit = (e) => {
 		e.preventDefault();
-		console.log(this.state.channel_title);
 		var internal_error = false;
 		var error = "";
 		var str2 = this.state.channel_title;
@@ -42,17 +41,14 @@ class AddChannelsComponent extends Component {
 			}
 
 			if (internal_error) {
-				console.log("System - ID Already Used");
 
 				error = "Channel title already in use";
 			} else {
-				console.log("System - Creating New Channel");
 				let channel = {
 					channel_title: this.state.channel_title,
 					members: [],
 					instances: [],
 				};
-				console.log(channel);
 				OrgsResources.create_channel(
 					this.state.username,
 					this.state.org_id,
@@ -95,7 +91,6 @@ class AddChannelsComponent extends Component {
 	}
 
 	render() {
-		console.log("System - Rendering Page...");
 		return (
 			<div className="app-window FormChannelComponent">
 				<Container>

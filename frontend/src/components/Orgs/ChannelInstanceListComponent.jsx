@@ -20,12 +20,10 @@ class ChannelListComponent extends Component {
 
 	componentDidMount() {
 		this.refresh_channels();
-		this.refresh_instances();
 	}
 
 	refresh_channels = () => {
 		// Retrieves All Channels from the Org Data
-		console.log(this.state.org_id);
 		OrgsResources.retrieve_org(this.state.username, this.state.org_id).then((response) => {
 			let isExpanded = [];
 			response.data.channels.map((ch) => {
@@ -35,28 +33,6 @@ class ChannelListComponent extends Component {
 				channels: response.data.channels,
 				isExpanded: isExpanded,
 			});
-		});
-	};
-	refresh_instances = () => {
-		// Retrieves All Instances from the Org Data
-		OrgsResources.retrieve_org(this.state.username, this.state.org_id).then((response) => {
-			// console.log(response.data.channels);
-			// Maps the Response Data (Channels.class) to JSONbject
-			for (let i = 0; i < response.data.channels.length; i++) {
-				if (response.data.channels[i].channel_title === this.state.channel_title) {
-					// Map the Response Data (Instances.class) to JSONObject
-					for (let j = 0; j < response.data.channels[i].instances.length; j++) {
-						// console.log(response.data.channels[i]);
-						this.state.instances.push({
-							instance_title: response.data.channels[i].instances[j].instance_title,
-							type: response.data.channels[i].instances[j].type,
-						});
-						this.setState({
-							instances: this.state.instances,
-						});
-					}
-				}
-			}
 		});
 	};
 
@@ -98,10 +74,10 @@ class ChannelListComponent extends Component {
 		return false;
 	}
 
-	onClick(channel_title){
+	onClick(channel_title) {
 		OrgsResources.addFavChannel(this.state.username, this.state.org_id, channel_title);
-  }
-        
+	}
+
 	getRole(members) {
 		for (var i in members) {
 			if (members[i].username === this.state.username) {
@@ -120,7 +96,7 @@ class ChannelListComponent extends Component {
 				size="sm"
 				className="mt-auto mb-auto"
 				style={{height: "fit-content"}}>
-				<Button variant="dark">
+				<Button onClick={() => this.onClick(ch.channel_title)} variant="dark">
 					<i className="text-warning fas fa-star"></i>
 				</Button>
 				{role !== "TEAM_MEMBER" ? (
@@ -140,9 +116,8 @@ class ChannelListComponent extends Component {
 	}
 
 	render() {
-		console.log(this.state.channels);
 		return (
-			<div className="side-channel-list border-right border-primary">
+			<div className="side-channel-list border-right bg-light">
 				<Container fluid>
 					<div className="d-flex justify-content-between">
 						<h3>{this.state.org_id}</h3>
@@ -184,7 +159,6 @@ class ChannelListComponent extends Component {
 											</div>
 										</Accordion.Toggle>
 										{this.renderButtons(ch)}
-
 									</div>
 
 									<Accordion.Collapse eventKey={ch.channel_title}>
@@ -194,11 +168,12 @@ class ChannelListComponent extends Component {
 												action
 												onClick={() =>
 													this.props.todoCallback(
-														ch.channel_title
+														ch.channel_title,
+														this.getRole(ch.members)
 													)
 												}>
 												Todo List
-												</ListGroup.Item>
+											</ListGroup.Item>
 											{ch.instances.map((instance) => (
 												<ListGroup.Item
 													className="pt-1 pb-1"

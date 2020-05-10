@@ -21,7 +21,6 @@ class SidebarComponent extends Component {
 
 	constructor(props) {
 		super(props);
-		console.log(window.location.pathname.match(orgsRegex))
 	}	
 
 	onClick() {
@@ -30,7 +29,6 @@ class SidebarComponent extends Component {
 	}
 
 	render() {
-		
 		//Do not load sidebar on landing page
 		if (window.location.pathname === '/' || window.location.pathname.indexOf('/recover/password/') != -1) {
 			return null;

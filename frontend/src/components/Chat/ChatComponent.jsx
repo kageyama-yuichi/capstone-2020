@@ -3,8 +3,9 @@ import {API_URL} from "../../Constants";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
 import "./ChatComponent.css";
 import Encryption from "./Encryption.js";
-import {Container, Row, Col, Button} from "react-bootstrap";
+import {Container, Tabs, Tab, Button} from "react-bootstrap";
 import MessageComponent from "./Message/MessageComponent.jsx";
+import OrgResources from "../Orgs/OrgsResources.js";
 
 var stomp_client = null;
 var orgs_id = null;
@@ -14,7 +15,11 @@ var extension = null;
 var counter = 0;
 var messageCounter = 0;
 var messages = [];
+var visible = 0;
+var oldMessageLength = 0;
+
 const instance_member_details = new Map();
+
 // Sender in All Instances are the Usernames of the User
 
 /* Things Left to Do:
@@ -30,7 +35,7 @@ class ChatComponent extends Component {
 			message: "",
 			error: "",
 			member_list: [],
-
+			readLast: "",
 			joined: false,
 			current_time: "",
 			open_members: false,
@@ -44,20 +49,16 @@ class ChatComponent extends Component {
 	}
 	// Function to Connect the User to the Server
 	my_connect = () => {
-		console.log("myconnect called");
 		orgs_id = "/" + this.props.org_id;
 		channel_title = "/" + this.props.channel_title;
 		instance_title = "/" + this.props.instance_title;
 		extension = orgs_id + channel_title + instance_title;
-
-		console.log("System - Trying to Connect...");
 
 		// Create the Socket
 		const Stomp = require("stompjs");
 		var SockJS = require("sockjs-client");
 		var socket = new SockJS(API_URL + "/chat");
 		stomp_client = Stomp.over(socket);
-		//console.log(stomp_client);
 		// Disables Console Messages
 		stomp_client.debug = null;
 		// Connect the User
@@ -66,7 +67,6 @@ class ChatComponent extends Component {
 
 	// Subscribe the User to the Groups and Send the Server member of User
 	on_connected = () => {
-		console.log("System - Session is Connected.");
 		this.setState({
 			channel_connected: true,
 		});
@@ -111,7 +111,6 @@ class ChatComponent extends Component {
 
 	// Handles Chat History
 	on_history_received = (payload) => {
-		
 		var obj = JSON.parse(payload.body);
 		// Iterate over
 		for (let i = obj.length - 1; i >= 0; i--) {
@@ -138,7 +137,7 @@ class ChatComponent extends Component {
 				joined: true,
 			});
 		}
-		console.log("got messages");
+		oldMessageLength = messages.length - 1;
 	};
 
 	// Handles Member Loading
@@ -206,7 +205,6 @@ class ChatComponent extends Component {
 			if (message_text.content) temp.status = "typing...";
 			if (message_text.content === "Stopped Typing") temp.status = "online";
 		} else if (message_text.type === "CHAT") {
-			console.log("System - Chat Message Received");
 			temp.status = "online";
 			// Decrypt
 			messages.push({
@@ -215,7 +213,6 @@ class ChatComponent extends Component {
 				sender: message_text.sender,
 				date_time: message_text.date_time,
 			});
-			this.forceUpdate();
 			if (message_text.sender === this.state.username) {
 				this.scroll_to_bottom();
 			}
@@ -277,19 +274,16 @@ class ChatComponent extends Component {
 	};
 
 	fetch_history = () => {
-		console.log("System - Retrieving Old Messages");
 		stomp_client.send("/app/fetch_history" + extension + "/" + this.state.username);
 	};
 
 	fetch_members = () => {
-		console.log("System - Retrieving Members");
 		stomp_client.send("/app/fetch_members" + extension + "/" + this.state.username);
 	};
 
 	scroll_to_bottom = () => {
 		let chatDiv = document.getElementById("scrollable-chat");
 		if (chatDiv) {
-			//console.log("Chat div ", chatDiv);
 			chatDiv.scrollTop = chatDiv.scrollHeight;
 			this.setState({bottom: false});
 		}
@@ -380,7 +374,6 @@ class ChatComponent extends Component {
 
 	componentDidUpdate(prevProps) {
 		//let renderedMessages = document.getElementsByClassName("message").length;
-		console.log("Counter", counter, "Message Counter", messageCounter);
 		if (
 			prevProps.channel_title !== this.props.channel_title ||
 			prevProps.instance_title !== this.props.instance_title
@@ -393,23 +386,83 @@ class ChatComponent extends Component {
 					joined: false,
 					bottom: true,
 				},
-				this.my_connect()
+				() => {
+					this.getReadLast();
+					this.my_connect();
+				}
 			);
 		} else {
 			if (counter === messageCounter && messageCounter > 0 && this.state.bottom) {
-				console.log("How many rendered", messageCounter, messages.length);
 				this.scroll_to_bottom();
-				console.log("Called scroll");
 			}
 		}
 	}
 
-	// componentWillUnmount() {
-	// 	window.location.reload(false);
-	// }
+	componentWillUnmount() {
+		if (messages.length > 0) {
+			console.log(this.state.org_id);
+
+			OrgResources.setChannelInstanceChatTime(
+				this.state.username,
+				this.state.org_id,
+				this.state.channel_title,
+				this.state.instance_title,
+				new String(messages[visible].date_time)
+			);
+		}
+
+		this.resetLocalVariables();
+	}
+
+	handleScroll(event) {
+		var messageContainerHeight = 863;
+		var chatDiv = document.getElementById("scrollable-chat");
+		if (chatDiv) {
+			messageContainerHeight = chatDiv.getBoundingClientRect().height;
+		}
+
+		if (chatDiv) {
+			//console.log("Chat div ", chatDiv);
+
+			let displayedMessages = document.getElementsByClassName("displayed-message");
+			if (displayedMessages) {
+				for (var i = 0; i < displayedMessages.length; i++) {
+					if (i > visible) {
+						if (
+							Math.round(
+								messageContainerHeight +
+									chatDiv.scrollTop -
+									displayedMessages[i].offsetTop
+							) < 0
+						) {
+							break;
+						} else {
+							visible = i;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	getReadLast() {
+		if (this.state.channel_title && this.state.instance_title) {
+			OrgResources.getChannelInstanceChatTime(
+				this.state.username,
+				this.state.org_id,
+				this.state.channel_title,
+				this.state.instance_title
+			).then((response) => {
+				this.setState({readLast: response.data});
+			});
+		}
+	}
 
 	componentDidMount() {
 		this.my_connect();
+
+		this.getReadLast();
+
 		this.setState({
 			current_time: new Date().toLocaleString(),
 		});
@@ -427,14 +480,25 @@ class ChatComponent extends Component {
 	mapMessages() {
 		let retDiv;
 		messageCounter = 0;
-		console.log("messages", messages);
-
-		retDiv = messages.map((old_msg) => {
+		retDiv = messages.map((old_msg, index) => {
 			messageCounter++;
 			return (
-				<MessageComponent key={messageCounter} senderUsername={old_msg.sender} sender={instance_member_details.get(old_msg.sender)} msg={old_msg}/>
-				);
+				<div className="displayed-message" key={messageCounter}>
+					<MessageComponent
+						senderUsername={old_msg.sender}
+						sender={instance_member_details.get(old_msg.sender)}
+						msg={old_msg}
+					/>
+
+					{this.state.readLast === old_msg.date_time && index < oldMessageLength ? (
+						<div className="d-flex justify-content-center border-bottom border-top border-danger pd-5 md-5">
+							New
+						</div>
+					) : null}
+				</div>
+			);
 		});
+
 		return retDiv;
 	}
 
@@ -452,11 +516,6 @@ class ChatComponent extends Component {
 	}
 
 	render() {
-		console.log(
-			"System - Rendering Page... Connection Status to Server: " +
-				this.state.channel_connected
-		);
-
 		return (
 			<div className="chat-component">
 				{this.state.instance_title ? (
@@ -470,9 +529,14 @@ class ChatComponent extends Component {
 								<Container fluid className="pr-0" style={{height: "90%"}}>
 									<Container
 										fluid
+										onScroll={this.handleScroll}
 										className="h-100 w-100 pr-0"
 										id="scrollable-chat"
-										style={{overflowY: "auto"}}>
+										style={{
+											overflowY: "auto",
+											overflowX: "hidden",
+											wordWrap: "break-word",
+										}}>
 										{this.mapMessages()}
 
 										{/* <div className="message-date">
@@ -509,9 +573,13 @@ class ChatComponent extends Component {
 								fluid
 								className="pl-0 pr-0 ml-0 mr-0 h-100 flex-fill"
 								style={{minWidth: "150px", maxWidth: "300px"}}>
-								<div className="user-container h-100">
-									<h1 className="user-title">Users</h1>
-									<div className="user-list">{this.mapUsers()}</div>
+								<div className="h-100 bg-light"> 
+									<Tabs className="text-light" defaultActiveKey="users">
+										<Tab eventKey="users" title="Users">
+											<div className="user-list">{this.mapUsers()}</div>
+										</Tab>
+										<Tab eventKey="pinned" title="Pinned"></Tab>
+									</Tabs>
 								</div>
 							</Container>
 						</div>

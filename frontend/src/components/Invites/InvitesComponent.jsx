@@ -23,7 +23,6 @@ class InvitesComponent extends Component {
 
 	// Function to Update the Organisation that the User clicked
 	handle_accept_invite = (unique_id) => {
-		console.log("Accept");
 		InvitesResources.user_decision_on_invite(unique_id, accepted).then((response) => {
 			// Redirect the User to the Orgs Tap
 			this.props.history.push("/orgs");
@@ -31,7 +30,6 @@ class InvitesComponent extends Component {
 	};
 	// Function to Allow the User to Reject an Organisational Invite
 	handle_reject_invite = (unique_id) => {
-		console.log("Reject");
 		InvitesResources.user_decision_on_invite(unique_id, rejected).then((response) => {
 			this.refresh_invites();
 		});
@@ -122,9 +120,6 @@ class InvitesComponent extends Component {
 		return (
 			<div className="invites-component">
 				<Container fluid style={{overflowY: "auto"}}>
-					<div className="border-bottom">
-						<h3>Pending Invites</h3>
-					</div>
 					{invites.length > 0 ? (
 						<ListGroup className="overflow-auto">{this.mapInvites()}</ListGroup>
 					) : (

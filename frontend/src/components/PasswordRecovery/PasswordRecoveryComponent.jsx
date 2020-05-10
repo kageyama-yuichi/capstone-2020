@@ -40,7 +40,6 @@ class PasswordRecoveryComponent extends Component {
 			emailControl.setCustomValidity("invalid");
 			valid = false;
 			this.setState({emailError: error});
-			console.log(error);
 		} else {
 			emailControl.setCustomValidity("");
 			this.setState({emailError: ""});
@@ -52,7 +51,6 @@ class PasswordRecoveryComponent extends Component {
 		e.preventDefault();
 		this.setState({loading: true});
 		if (this.handleValidation()) {
-			console.log(this.state.email);
 			PasswordRecoveryResources.sendTokenForResetPassword(this.state.email).then((response) => {
 				if(response.data) {
 					this.setState({

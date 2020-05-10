@@ -24,7 +24,6 @@ const org_member_details = new Map();
 class UpdateChannelsComponent extends Component {
 	constructor(props) {
 		super(props);
-		console.log(props.location.state.channel);
 		this.state = {
 			username: AuthenticationService.getLoggedInUserName(),
 			channel: props.location.state.channel,
@@ -47,7 +46,6 @@ class UpdateChannelsComponent extends Component {
 
 	on_submit = (e) => {
 		e.preventDefault();
-		console.log(this.state.channel_title);
 		var internal_error = false;
 		var error = "";
 		var str2 = this.state.channel_title;
@@ -78,7 +76,6 @@ class UpdateChannelsComponent extends Component {
 				} else {
 					let channel = this.state.channel;
 					channel.channel_title = this.state.channel_title;
-					console.log(channel);
 					OrgsResources.update_channel(
 						this.state.username,
 						this.state.org_id,
@@ -112,7 +109,6 @@ class UpdateChannelsComponent extends Component {
 
 	//Searches for members that are not in the channel but in the org
 	handle_search_new_users = () => {
-		console.log(org_member_details);
 		if (this.state.search_key != "") {
 			// Search for the Users Specified and Update Area
 
@@ -133,13 +129,11 @@ class UpdateChannelsComponent extends Component {
 					searched_users.push({username: key, value: value});
 				}
 			});
-			console.log(searched_users);
 
 			this.setState({searched_users: searched_users});
 		} else {
 			// Do Nothing
 		}
-		console.log(org_member_details);
 	};
 
 	handleCancel() {
@@ -352,7 +346,6 @@ class UpdateChannelsComponent extends Component {
 		OrgsResources.retrieve_basic_users_in_orgs(this.state.org.members).then((response) => {
 			// Go through the Response Data which is the Basic User and Strip Data
 			for (let i = 0; i < response.data.length; i++) {
-				//console.log(response.data[i]);
 				let user_details = {
 					fname: response.data[i].fname,
 					lname: response.data[i].lname,
@@ -391,7 +384,6 @@ class UpdateChannelsComponent extends Component {
 	}
 
 	render() {
-		console.log("System - Rendering Page...");
 		return (
 			<div className="app-window update-org-component">
 				<Container fluid>
@@ -433,7 +425,7 @@ class UpdateChannelsComponent extends Component {
 							</Col>
 						</Row>
 
-						<Tabs defaultActiveKey="members" id="uncontrolled-tab-example">
+						<Tabs defaultActiveKey="members">
 							<Tab eventKey="members" style={{height: "1rem"}} title="Member List">
 								<Container fluid>
 									<Row>

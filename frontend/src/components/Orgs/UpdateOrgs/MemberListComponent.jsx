@@ -135,7 +135,6 @@ class MemberListComponent extends Component {
 	}
 
 	render() {
-		console.log(this.state.members);
 		return (
 			<ListGroup className="overflow-auto">
 				{this.mapOrgUsers(this.state.members, this.props.show_buttons)}

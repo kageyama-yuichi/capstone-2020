@@ -124,51 +124,13 @@ class TodoComponent extends Component {
 
 	getTodos() {
 		let todos = [];
-		if (this.props.isTeamTodo) {
-			OrgResources.retrieve_org_todos(
-				this.state.username,
-				this.state.orgId,
-				this.state.channelTitle
-			).then((response) => {
-				for (let i = 0; i < response.data.length; i++) {
-					todos.push({
-						id: response.data[i].id,
-						username: response.data[i].username,
-						desc: response.data[i].desc,
-						date: response.data[i].date,
-						status: response.data[i].status,
-					});
-				}
-				todos.sort((a, b) => new moment(a.date) - new moment(b.date));
 
-				this.setState({todos: todos});
-			});
-		} else {
-			TodoResources.retrieve_todos(this.state.username).then((response) => {
-				// Maps the Response Data (Todo.class) to JSObject
-				for (let i = 0; i < response.data.length; i++) {
-					todos.push({
-						id: response.data[i].id,
-						username: response.data[i].username,
-						desc: response.data[i].desc,
-						date: response.data[i].date,
-						status: response.data[i].status,
-					});
-				}
-				todos.sort((a, b) => new moment(a.date) - new moment(b.date));
-				//If component is a widget, remove all todos that aren't today
-				if (this.props.isWidget) {
-					for (var i in todos) {
-						if (moment().diff(todos[i].date, "days")) {
-							todos.splice(i);
-							break;
-						}
-					}
-				}
+		TodoResources.retrieve_todos(this.state.username).then((response) => {
+			todos = response.data;
+			todos.sort((a, b) => new moment(a.date) - new moment(b.date));
 
-				this.setState({todos: todos});
-			});
-		}
+			this.setState({todos: todos});
+		});
 	}
 
 	refresh_todos = () => {
@@ -189,8 +151,11 @@ class TodoComponent extends Component {
 			<div className="todo-component">
 				<Container fluid>
 					<div className="d-flex border-bottom w-100 justify-content-between">
-						<h3>Todo List</h3>
-						{this.props.isWidget ? null : (
+						<h3>{this.props.title}</h3>
+
+						{this.props.role === "TEAM_MEMBER" || !this.props.showNewButton ? null : (
+							//Team members cannot add todos
+
 							<Button
 								className="align-self-baseline"
 								variant="outline-primary"
@@ -203,20 +168,24 @@ class TodoComponent extends Component {
 						<div
 							style={
 								this.props.isWidget
-									? {height: "calc(50vh - 92px)", overflowY: "auto"}
+									? {}
 									: {height: "calc(100vh - 92px)", overflowY: "auto"}
 							}>
 							<table cellSpacing="0" className="todo-table">
 								<tbody>
 									{this.state.todos.map((todo) => (
 										<tr key={todo.id}>
-											<td className="done-col">
+											<td style={{width: "50px"}} className="done-col">
 												<button
 													className={
 														todo.status ? "done-button" : "doing-button"
 													}
-													style={{outline: "none"}}
-													onClick={() => this.handleDoneClick(todo.id)}>
+													style={{outline: "none", whiteSpace: "nowrap"}}
+													onClick={() => this.handleDoneClick(todo.id)}
+													disabled={
+														this.props.role === "TEAM_MEMBER" ||
+														this.props.disableDoneButton
+													}>
 													{todo.status ? "Done" : "Doing"}
 												</button>
 											</td>
@@ -226,7 +195,8 @@ class TodoComponent extends Component {
 													? "Today"
 													: moment(todo.date).format("ll")}
 											</td>
-											{this.props.isWidget ? null : (
+											{this.props.isWidget ||
+											this.props.role === "TEAM_MEMBER" ? null : (
 												<td className="update-col">
 													<button
 														onClick={() => this.handleEditClick(todo)}>
@@ -234,7 +204,8 @@ class TodoComponent extends Component {
 													</button>
 												</td>
 											)}
-											{this.props.isWidget ? null : (
+											{this.props.isWidget ||
+											this.props.role === "TEAM_MEMBER" ? null : (
 												<td className="delete-col">
 													<button
 														onClick={() =>
@@ -249,9 +220,7 @@ class TodoComponent extends Component {
 								</tbody>
 							</table>
 						</div>
-					) : (
-						null
-					)}
+					) : null}
 					{this.state.showOverlay ? (
 						<TodoEditComponent
 							closeHandler={this.toggleOverlay}
@@ -269,6 +238,9 @@ class TodoComponent extends Component {
 TodoComponent.defaultProps = {
 	isTeamTodo: false,
 	isWidget: false,
+	title: "Todo List",
+	showNewButton: true,
+	disableDoneButton: false,
 };
 
 export default TodoComponent;

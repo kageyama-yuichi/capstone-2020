@@ -85,7 +85,6 @@ class RemoveUserFromChannelComponent extends Component {
 	}
 	
 	render() {
-		console.log("System - Rendering Page...");
 		return (
 			<div className="wrapper">
 				<div className="bg" onClick={this.props.handler}></div>

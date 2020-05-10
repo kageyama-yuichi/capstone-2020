@@ -42,7 +42,6 @@ class OrgsWidgetComponent extends Component {
 	}
 
 	render() {
-		console.log(this.state.orgs);
 		return (
 			<Container fluid className="pl-1 mt-1">
 				<Tabs defaultActiveKey="recent">
