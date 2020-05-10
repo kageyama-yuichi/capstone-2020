@@ -3,9 +3,12 @@ import {API_URL} from "../../Constants";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
 import "./ChatComponent.css";
 import Encryption from "./Encryption.js";
-import {Container, Tabs, Tab, Button} from "react-bootstrap";
+import {Container} from "react-bootstrap";
 import MessageComponent from "./Message/MessageComponent.jsx";
 import OrgResources from "../Orgs/OrgsResources.js";
+import MessageInputComponent from "./MessageInputComponent.jsx";
+import ChatTabbedSidebarComponent from "./ChatTabbedSidebarComponent.jsx";
+import MessagesListComponent from "./MessagesListComponent";
 
 var stomp_client = null;
 var orgs_id = null;
@@ -17,7 +20,7 @@ var messageCounter = 0;
 var messages = [];
 var visible = 0;
 var oldMessageLength = 0;
-
+var shouldScrollToBottom = true;
 const instance_member_details = new Map();
 
 // Sender in All Instances are the Usernames of the User
@@ -31,21 +34,15 @@ class ChatComponent extends Component {
 		super(props);
 		this.state = {
 			username: AuthenticationService.getLoggedInUserName(),
-			channel_connected: false,
-			message: "",
-			error: "",
 			member_list: [],
 			readLast: "",
 			joined: false,
-			current_time: "",
-			open_members: false,
 			bell_ring: false,
-			is_typing: false,
-			bottom: true,
 			org_id: props.org_id,
 			channel_title: props.channel_title,
 			instance_title: props.instance_title,
 		};
+		this.handleScrollToBottom = this.handleScrollToBottom.bind(this);
 	}
 	// Function to Connect the User to the Server
 	my_connect = () => {
@@ -214,7 +211,7 @@ class ChatComponent extends Component {
 				date_time: message_text.date_time,
 			});
 			if (message_text.sender === this.state.username) {
-				this.scroll_to_bottom();
+				shouldScrollToBottom = true;
 			}
 		} else {
 			// do nothing...
@@ -285,41 +282,16 @@ class ChatComponent extends Component {
 		let chatDiv = document.getElementById("scrollable-chat");
 		if (chatDiv) {
 			chatDiv.scrollTop = chatDiv.scrollHeight;
-			this.setState({bottom: false});
-		}
-	};
-
-	handle_send_message = () => {
-		this.send_message("CHAT", this.state.message);
-		this.setState({
-			message: "",
-		});
-	};
-
-	// This method handels all the "TYPING" actions
-	handle_typing = (event) => {
-		this.setState({
-			message: event.target.value,
-		});
-
-		// Check if the Value was Empty
-		if (event.target.value === "") {
-			// Set the is_typing boolean to false
-			this.setState({
-				is_typing: false,
-			});
-			// Send a Message to the Server that User Stopped
-			this.send_message("TYPING", "Stopped Typing");
-		} else {
-			// If the User was Not Typing, Set it to They Are
-			if (this.state.is_typing === false) {
-				this.setState({
-					is_typing: true,
-				});
-				// Send the Message off and Save if not "Started Typing"
-				this.send_message("TYPING", "Started Typing");
+			//Set the visible to last message
+			if (messages.length > 0) {
+				visible = messages.length - 1;
 			}
+			
 		}
+	};
+
+	handle_send_message = (message) => {
+		this.send_message("CHAT", message);
 	};
 
 	// This function is a complementary function to .sort() where it
@@ -360,7 +332,9 @@ class ChatComponent extends Component {
 	};
 
 	resetLocalVariables() {
-		stomp_client.disconnect();
+		if (stomp_client) {
+			stomp_client.disconnect();
+		}
 		stomp_client = null;
 		orgs_id = null;
 		channel_title = null;
@@ -369,6 +343,9 @@ class ChatComponent extends Component {
 		counter = 0;
 		messageCounter = 0;
 		messages = [];
+		visible = 0;
+		oldMessageLength = 0;
+		shouldScrollToBottom = true;
 		instance_member_details.clear();
 	}
 
@@ -392,16 +369,19 @@ class ChatComponent extends Component {
 				}
 			);
 		} else {
-			if (counter === messageCounter && messageCounter > 0 && this.state.bottom) {
-				this.scroll_to_bottom();
+			if (counter === messageCounter && messageCounter > 0) {
+				shouldScrollToBottom = true;
 			}
 		}
 	}
 
+	setMessageCounter(counter) {
+		messageCounter = counter;
+	}
+
 	componentWillUnmount() {
 		if (messages.length > 0) {
-			console.log(this.state.org_id);
-
+			console.log(visible, messages)
 			OrgResources.setChannelInstanceChatTime(
 				this.state.username,
 				this.state.org_id,
@@ -445,6 +425,11 @@ class ChatComponent extends Component {
 		}
 	}
 
+	handleScrollToBottom() {
+		shouldScrollToBottom = false;
+		this.scroll_to_bottom();
+	}
+
 	getReadLast() {
 		if (this.state.channel_title && this.state.instance_title) {
 			OrgResources.getChannelInstanceChatTime(
@@ -476,111 +461,40 @@ class ChatComponent extends Component {
 			10000
 		);
 	}
-
-	mapMessages() {
-		let retDiv;
-		messageCounter = 0;
-		retDiv = messages.map((old_msg, index) => {
-			messageCounter++;
-			return (
-				<div className="displayed-message" key={messageCounter}>
-					<MessageComponent
-						senderUsername={old_msg.sender}
-						sender={instance_member_details.get(old_msg.sender)}
-						msg={old_msg}
-					/>
-
-					{this.state.readLast === old_msg.date_time && index < oldMessageLength ? (
-						<div className="d-flex justify-content-center border-bottom border-top border-danger pd-5 md-5">
-							New
-						</div>
-					) : null}
-				</div>
-			);
-		});
-
-		return retDiv;
-	}
-
-	mapUsers() {
-		let retDiv;
-		retDiv = [...instance_member_details.keys()].map((key) => {
-			return (
-				<p key={key}>
-					{instance_member_details.get(key).name} (
-					{instance_member_details.get(key).status}) @{key}
-				</p>
-			);
-		});
-		return retDiv;
-	}
-
 	render() {
 		return (
 			<div className="chat-component">
 				{this.state.instance_title ? (
 					<Container fluid style={{height: "100%"}} className="pr-0">
-						<h1 className="title-header border-bottom">
-							{this.state.instance_title} - Chat Room
-						</h1>
+						<h2 className="title-header border-bottom">
+							{this.state.instance_title}
+						</h2>
 
 						<div className="d-flex window-body w-100">
 							<Container className="ml-0 mr-0 pl-0 flex-fill pr-0">
 								<Container fluid className="pr-0" style={{height: "90%"}}>
-									<Container
-										fluid
-										onScroll={this.handleScroll}
-										className="h-100 w-100 pr-0"
-										id="scrollable-chat"
-										style={{
-											overflowY: "auto",
-											overflowX: "hidden",
-											wordWrap: "break-word",
-										}}>
-										{this.mapMessages()}
-
-										{/* <div className="message-date">
-											July 3rd 2020 at 12:30am
-										</div> */}
-									</Container>
-								</Container>
-								<div className="d-flex flex-row justify-content-center">
-									<input
-										className="form-control rounded-left w-75"
-										type="msg"
-										id="msg"
-										style={{borderRadius: "0px"}}
-										placeholder="Enter Message"
-										onChange={this.handle_typing}
-										value={this.state.message}
-										onKeyPress={(event) => {
-											if (event.key === "Enter") {
-												this.handle_send_message();
-											}
-										}}
+									<MessagesListComponent
+										instance_member_details={instance_member_details}
+										messages={messages}
+										handleScroll={this.handleScroll}
+										setMessageCounter={this.setMessageCounter}
+										oldMessageLength={oldMessageLength}
+										shouldScrollToBottom={shouldScrollToBottom}
+										scrollToBottom={this.handleScrollToBottom}
 									/>
-									<Button
-										type="button"
-										variant="secondary"
-										style={{borderRadius: "0px"}}
-										className="rounded-right"
-										onClick={this.handle_send_message}>
-										SEND
-									</Button>
-								</div>
+								</Container>
+								<MessageInputComponent
+									handleSendMessage={this.handle_send_message}
+									send_message={this.send_message}
+								/>
 							</Container>
 							<Container
 								fluid
 								className="pl-0 pr-0 ml-0 mr-0 h-100 flex-fill"
 								style={{minWidth: "150px", maxWidth: "300px"}}>
-								<div className="h-100 bg-light"> 
-									<Tabs className="text-light" defaultActiveKey="users">
-										<Tab eventKey="users" title="Users">
-											<div className="user-list">{this.mapUsers()}</div>
-										</Tab>
-										<Tab eventKey="pinned" title="Pinned"></Tab>
-									</Tabs>
-								</div>
+								<ChatTabbedSidebarComponent
+									instance_member_details={instance_member_details}
+								/>
 							</Container>
 						</div>
 					</Container>
