@@ -65,7 +65,8 @@ public class TodoJpaResource {
 		){
 		Todo todoToUpdate = todojpa.getOne(id);
 		todoToUpdate.set_date(todo.get_date());
-		todoToUpdate.set_desc(todo.get_desc());
+		todoToUpdate.set_desc(todo.get_desc()); 
+		todoToUpdate.set_color(todo.get_color());
 
 		todojpa.save(todoToUpdate);
 		return ResponseEntity.noContent().build();
