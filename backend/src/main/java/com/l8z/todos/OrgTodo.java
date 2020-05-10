@@ -22,6 +22,9 @@ public class OrgTodo {
 	@JsonProperty("org_channel") private String orgChannel;
 	@JsonProperty("desc") private String desc;
 	@JsonProperty("date") private String date;
+	@JsonProperty("color") private String color;
+	
+
 	@JsonProperty("status") private boolean status = false;
 	
 	// Default Constructor
@@ -30,11 +33,12 @@ public class OrgTodo {
 	}
 
 	// Constructor
-	public OrgTodo (String orgId, String orgChannel, String desc, String date, boolean status) {
+	public OrgTodo (String orgId, String orgChannel, String desc, String date, String color, boolean status) {
 		this.orgId = orgId;
 		this.orgChannel = orgChannel;
 		this.desc = desc;
 		this.date = date;
+		this.color = color; 
 		this.status = status;
 	}
 
@@ -53,6 +57,9 @@ public class OrgTodo {
 	}
 	public String get_date() {
 		return date;
+	}
+	public String getColor() {
+		return color;
 	}
 	public boolean get_status() {
 		return status;
@@ -73,6 +80,9 @@ public class OrgTodo {
 	}
 	public void set_date(String date) {
 		this.date = date;
+	}
+	public void setColor(String color) {
+		this.color = color;
 	}
 	public void set_status(boolean status) {
 		this.status = status;

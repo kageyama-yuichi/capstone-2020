@@ -738,6 +738,7 @@ public class OrgsJpaResource {
 		OrgTodo todoToUpdate = orgstodojpa.getOne(id);
 		todoToUpdate.set_date(todo.get_date());
 		todoToUpdate.set_desc(todo.get_desc());
+		todoToUpdate.setColor(todo.getColor());
 
 		orgstodojpa.save(todoToUpdate);
 		return ResponseEntity.noContent().build();

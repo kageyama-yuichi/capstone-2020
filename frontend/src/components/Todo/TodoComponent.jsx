@@ -75,8 +75,8 @@ class TodoComponent extends Component {
 		}
 	};
 	handleEditClick = (todo) => {
-		this.setState({editTodo: todo});
-		this.toggleOverlay();
+		this.setState({editTodo: todo}, this.toggleOverlay());
+		
 		// var url = this.state.username + "/" + id;
 		// this.props.history.push(url);
 	};
@@ -96,7 +96,7 @@ class TodoComponent extends Component {
 				todo
 			).then(() => this.saveCallback());
 		} else {
-			TodoResources.update_todo(this.state.username, this.state.id, todo).then(() =>
+			TodoResources.update_todo(this.state.username, id, todo).then(() =>
 				this.saveCallback()
 			);
 		}
@@ -180,7 +180,7 @@ class TodoComponent extends Component {
 													className={
 														todo.status ? "done-button" : "doing-button"
 													}
-													style={{outline: "none", whiteSpace: "nowrap"}}
+													style={todo.status ? {backgroundColor: todo.color} : {borderColor: todo.color}}
 													onClick={() => this.handleDoneClick(todo.id)}
 													disabled={
 														this.props.role === "TEAM_MEMBER" ||
