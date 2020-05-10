@@ -70,7 +70,7 @@ class TodoEditComponent extends Component {
 			username: this.state.username,
 			desc: this.state.desc,
 			date: this.state.date, 
-			color: this.todo.color,
+			color: this.state.color,
 			status: this.state.status,
 		};
 
