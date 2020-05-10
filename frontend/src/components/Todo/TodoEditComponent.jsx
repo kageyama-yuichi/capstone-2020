@@ -68,7 +68,8 @@ class TodoEditComponent extends Component {
 		let todo = {
 			username: this.state.username,
 			desc: this.state.desc,
-			date: this.state.date,
+			date: this.state.date, 
+			color: this.state.color,
 			status: this.state.status,
 		};
 
