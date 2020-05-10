@@ -27,10 +27,10 @@ import AgendaComponent from '../Agenda/AgendaComponent.jsx'
 import ProfileComponent from '../Profile/ProfileComponent.jsx'
 import PasswordChangeComponent from "../PasswordChange/PasswordChangeComponent.jsx";
 import OrgWrapperComponent from '../Orgs/OrgWrapperComponent.jsx'
-
-
-
+import ContactComponent from '../Contacts/ContactComponent.jsx'
 import InvitesComponent from '../Invites/InvitesComponent.jsx'
+
+
 class BodyComponent extends Component {
     render() {
         return (
@@ -54,7 +54,8 @@ class BodyComponent extends Component {
                             <AuthenticatedRoute path="/chat/:orgs_id/:channel_title/:instance_title" exact component={ChatComponent} />
                             <AuthenticatedRoute path="/orgs/:org_id/:channel_title/:instance_title" exact component={UpdateInstancesComponent} />
 
-							<AuthenticatedRoute path="/private/:receiver" exact component={PrivateChatComponent} />
+                            <AuthenticatedRoute path="/private" exact component={ContactComponent}/>
+							<AuthenticatedRoute path="/private/:receiver" component={PrivateChatComponent} />
 
 							<AuthenticatedRoute path="/dashboard" exact component={DashboardComponent} />
 							<AuthenticatedRoute path="/dashboard2" exact component={InvitesComponent} />

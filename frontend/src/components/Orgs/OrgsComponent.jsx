@@ -2,8 +2,8 @@ import React, {Component} from "react";
 import OrgsResources from "./OrgsResources.js";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
 import "./OrgsComponent.css";
-import { Link } from "react-router-dom";
-import tempImg from "../../assests/tempImg.svg";
+import {Link} from "react-router-dom";
+import tempImg from "../../assests/orgImg.svg";
 
 import {Button, ButtonGroup, Container, Row, Col, Card, CardDeck} from "react-bootstrap";
 
@@ -22,7 +22,6 @@ class OrgsComponent extends Component {
 		};
 		this.handle_create_org = this.handle_create_org.bind(this);
 		this.handle_update_org = this.handle_update_org.bind(this);
-		this.handle_delete_org = this.handle_delete_org.bind(this);
 	}
 
 	handle_goto_channel = (org_id) => {
@@ -33,20 +32,7 @@ class OrgsComponent extends Component {
 	handle_create_org() {
 		this.props.history.push("/orgs/new");
 	}
-	// Function to Delete the Organisation that the User has Clicked
-	handle_delete_org = (org_id) => {
-		OrgsResources.delete_org(this.state.username, org_id).then((response) => {
-			// Reset using this.refresh_orgs in Callback to Force
-			this.setState(
-				{
-					orgs: [],
-				},
-				() => {
-					this.refresh_orgs();
-				}
-			);
-		});
-	};
+
 	// Function to Update the Organisation that the User clicked
 	handle_update_org = (org_id) => {
 		var url = this.props.history.location.pathname + "/" + org_id;
@@ -54,7 +40,6 @@ class OrgsComponent extends Component {
 	};
 
 	componentDidUpdate() {
-		console.log(this.state.orgs);
 	}
 
 	refresh_orgs = () => {
@@ -104,48 +89,45 @@ class OrgsComponent extends Component {
 	}
 
 	renderButtons(org) {
-		if (org.user_role === "ORG_OWNER") {
-			console.log("calling render for org owner");
+		if (org.user_role === "ORG_OWNER" || org.user_role === "ADMIN") {
 			return (
 				<Card.Footer>
-					<ButtonGroup>
-						<Button onClick={() => this.handle_update_org(org.org_id)} variant="dark">Edit</Button>
-						<Button onClick={() => this.handle_delete_org(org.org_id)} variant="danger">Delete</Button>
-					</ButtonGroup>
+					<Button onClick={() => this.handle_update_org(org.org_id)} variant="info">
+						Edit
+					</Button>
 				</Card.Footer>
 			);
-		} else if (org.user_role === "ADMIN") {
-			return (
-				<Card.Footer>
-					<ButtonGroup>
-						<Button onClick={() => this.handle_update_org(org.org_id)} variant="dark">Edit</Button>
-					</ButtonGroup>
-				</Card.Footer>
-			);
-		} else {
-			return;
 		}
+		return;
 	}
 
 	render() {
 		return (
 			<div className="app-window org-component">
 				<Container fluid className="h-100">
-					<Row
+					<div
 						style={{height: "fit-content"}}
-						className="header-title border-bottom mb-3 align-items-center">
-						<Col style={{height: "fit-content"}}>
-							<h1>Organisations</h1>
-						</Col>
-						<Col  md={1} sm={3} style={{height: "fit-content"}}>
-							<Button style={{whiteSpace: "nowrap"}} variant="primary" onClick={this.handle_create_org}>New org</Button>
-						</Col>
-					</Row>
-					<CardDeck className="window-body" style={{height: "auto", overflowY: "scroll"}}>
+						className="d-flex justify-content-between header-title border-bottom mb-3 align-items-center">
+						<h1>Organisations</h1>
+
+						<Button
+							style={{whiteSpace: "nowrap"}}
+							variant="primary"
+							onClick={this.handle_create_org}>
+							New org
+						</Button>
+					</div>
+					<CardDeck className="window-body" style={{height: "auto", overflowY: "auto"}}>
 						{this.state.orgs.map((org) => (
-							<Card className="org-card" key={org.org_id}>
-								<Link to={"orgs/" + org.org_id + "/channels"} className="cards-fix">
-									<Card.Img variant="top" src={tempImg} />
+							<Card className="org-card mb-1" key={org.org_id}>
+								<Link to={"orgs/" + org.org_id + "/channels"} className="unselectable cards-fix">
+									<Card.Img 
+										className="unselectable"
+										variant="top"
+										width="20rem"
+										height="140px"
+										src={tempImg}
+									/>
 									<Card.Body>
 										<Card.Title>{org.org_title}</Card.Title>
 									</Card.Body>
@@ -157,7 +139,6 @@ class OrgsComponent extends Component {
 					</CardDeck>
 				</Container>
 			</div>
-			
 		);
 	}
 }

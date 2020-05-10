@@ -37,13 +37,8 @@ class ChannelsComponent extends Component {
 		this.props.history.push(url);
 	};
 
-	componentDidUpdate() {
-		console.log(this.state.orgs);
-	}
-
 	refresh_channels = () => {
 		// Retrieves All Channels from the Org Data
-		console.log(this.state.org_id);
 		OrgsResources.retrieve_org(this.state.username, this.state.org_id).then((response) => {
 			this.setState({
 				channels: response.data.channels,
@@ -75,9 +70,7 @@ class ChannelsComponent extends Component {
 	}
 
 	render() {
-		console.log("System - Rendering Page...");
-		console.log(this.props.history.location);
-
+	
 		return (
 			<Container>
 				<Row>

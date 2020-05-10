@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {ListGroup, Button, ButtonGroup} from "react-bootstrap";
 import MemberListComponent from "./MemberListComponent.jsx";
 
-var org_member_details = new Map();
+const org_member_details = new Map();
 
 class ChannelListComponent extends Component {
 	constructor(props) {
@@ -11,7 +11,7 @@ class ChannelListComponent extends Component {
 			memberListOpen: [],
 			channels: props.channels,
 		};
-		org_member_details = new Map(props.org_member_details);
+		props.org_member_details.forEach((value, key) => org_member_details.set(key, value));
 	}
 
 	componentDidMount() {
@@ -54,7 +54,9 @@ class ChannelListComponent extends Component {
 								<Button
 									variant="success"
 									className="btn-sm"
-									onClick={() => this.props.add_users_to_channel(ch.channel_title)}>
+									onClick={() =>
+										this.props.add_users_to_channel(ch.channel_title)
+									}>
 									<i className="fas fa-user-plus"></i>
 								</Button>
 								<Button
@@ -90,6 +92,7 @@ class ChannelListComponent extends Component {
 							}}>
 							<MemberListComponent
 								show_buttons={false}
+								remove_member={this.props.remove_member}
 								username={this.state.username}
 								members={ch.members}
 								org_member_details={org_member_details}

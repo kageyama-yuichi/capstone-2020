@@ -24,7 +24,6 @@ class AddInstancesComponent extends Component {
 		e.preventDefault()
 
 		var error = "";
-		console.log(this.state.instance_title);
 		var internal_error = false;
 		var str2 = this.state.instance_title;
 		
@@ -47,16 +46,13 @@ class AddInstancesComponent extends Component {
 			}
 			
 			if(internal_error){
-				console.log("System - ID Already Used");
 				error=  "ID Already Used"
 				
 			} else {
-				console.log("System - Creating New Instance");
 				let instance = {
 					instance_title: this.state.instance_title,
 					instances: []				
 				}
-				console.log(instance);
 				OrgsResources.create_instance(this.state.username, this.state.org_id, this.state.channel_title, instance).then(() => this.props.history.goBack());
 			}
 		}
@@ -97,7 +93,6 @@ class AddInstancesComponent extends Component {
 	}
 	
 	render() {
-		console.log("System - Rendering Page...");
 		return (
 			<div className="app-window FormInstanceComponent">
 				<Container>

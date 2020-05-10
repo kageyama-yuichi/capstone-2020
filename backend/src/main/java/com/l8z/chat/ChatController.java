@@ -25,6 +25,7 @@ import com.l8z.orgs.Members;
 import com.l8z.orgs.MembersStatus;
 import com.l8z.orgs.Orgs;
 import com.l8z.orgs.OrgsSQL;
+import com.l8z.user.BasicUser;
 import com.l8z.user.User;
 
 
@@ -316,7 +317,7 @@ public class ChatController {
     	}
     	
     }
-	
+   
     // If User One is Less Than User Two's Username, Make U1.U2 Else U2.U1
  	public String create_id(String user_one, String user_two) {
  		return user_one.compareTo(user_two) < 0 ? user_one+"."+user_two : user_two+"."+user_one;

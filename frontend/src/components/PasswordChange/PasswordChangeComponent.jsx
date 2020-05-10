@@ -2,6 +2,7 @@ import React, {Component} from "react";
 import {Container, Form, Button} from "react-bootstrap";
 import PasswordChangeResources from "./PasswordChangeResources.js";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
+import Encryption from '../Chat/Encryption.js';
 
 class PasswordChangeComponent extends Component {
 	constructor(props) {
@@ -11,7 +12,7 @@ class PasswordChangeComponent extends Component {
 			oldPassword: "",
 			newPassword: "",
 			confirmPassword: "",
-			token: ""
+			token: -1
 		};
 		this.handleCancel = this.handleCancel.bind(this);
 		this.handleUpdate = this.handleUpdate.bind(this);
@@ -48,8 +49,10 @@ class PasswordChangeComponent extends Component {
 	
 	handleUpdate(){
 			if(this.state.newPassword === this.state.confirmPassword){
+				this.state.newPassword = Encryption.encrpyt_message(this.state.newPassword)
 				console.log(this.state.username + " " + this.state.newPassword + " " + this.state.token);
 				PasswordChangeResources.updateUserPassword(this.state.username, this.state.newPassword, this.state.token)
+				this.props.history.push(`/dashboard`);
 			}
 			else{
 				console.log("New Password: " +this.state.newPassword);

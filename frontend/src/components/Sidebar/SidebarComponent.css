@@ -21,17 +21,17 @@
     /* width: 55px; */
     height: 6rem;
     /* padding: 10px; */
-    opacity: 50%;
+    opacity: 0.5;
     transition: .3s;  
     width: 80px;
 }
 
 .current-window{
-    opacity: 100%;
+    opacity: 1;
 }
 
 .sidebar-item:hover{
-    opacity: 100%;
+    opacity: 1;
     box-shadow:inset 2px 0px 0px 0px white;
     
 }

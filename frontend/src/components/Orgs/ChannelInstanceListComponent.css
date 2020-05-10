@@ -1,7 +1,7 @@
 .side-channel-list {
     height: 100vh; /* Full-height: remove this if you want "auto" height */
-    width: 350px; /* Set the width of the sidebar */
-    background-color: gainsboro; /* Black */
+    width: 500px; /* Set the width of the sidebar */
+    
     overflow-x: hidden; /* Disable horizontal scroll */
     overflow-y: auto;
   }

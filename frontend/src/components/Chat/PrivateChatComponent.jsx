@@ -48,13 +48,11 @@ class PrivateChatComponent extends Component {
 			extension = "/" + this.state.username + "/" + receiver : 
 			extension = "/" + receiver + "/" + this.state.username;
 
-		console.log("System - Trying to Connect...");
 		// Create the Socket
 		const Stomp = require('stompjs')
 		var SockJS = require('sockjs-client')
 		var socket = new SockJS(API_URL+'/chat')
 		stomp_client = Stomp.over(socket);
-		//console.log(stomp_client);
 		// Disables Console Messages
 		stomp_client.debug = null
 		// Connect the User
@@ -63,7 +61,6 @@ class PrivateChatComponent extends Component {
 	
 	// Subscribe the User to the Private Chat and Send the Server Notification of User
 	on_connected = () => {
-		console.log("System - Session is Connected.");
 		this.setState({
 		  channel_connected: true
 		})
@@ -150,7 +147,6 @@ class PrivateChatComponent extends Component {
 					image_path: obj[i].image_path,
 					date_time: "",
 				}
-				//console.log(user_details);
 				// Set Receiver State
 				if(obj[i].username != this.state.username) {
 					this.setState({
@@ -196,7 +192,6 @@ class PrivateChatComponent extends Component {
 			if (message_text.content === "Stopped Typing") temp.status = "online";
 			
 		} else if (message_text.type === "CHAT") {
-			console.log("System - Chat Message Received");
 			temp.status = "online";
 			// Decrypt
 			messages.push({
@@ -260,19 +255,16 @@ class PrivateChatComponent extends Component {
 	};
 	
 	fetch_private_history = () => {
-		console.log("System - Retrieving Private Old Messages");
 		stomp_client.send("/app/fetch_private_history" + extension + "/" + this.state.username);
 	};
 	
 	fetch_private_members = () => {
-		console.log("System - Retrieving Private Members");
 		stomp_client.send("/app/fetch_private_members" + extension + "/" + this.state.username);
 	};
 	
 	scroll_to_bottom = () => {
 		let chatDiv = document.getElementById("scrollable-chat");
 		if (chatDiv) {
-			//console.log("Chat div ", chatDiv);
 			chatDiv.scrollTop = chatDiv.scrollHeight;
 			this.setState({bottom: false});
 		}
@@ -315,9 +307,7 @@ class PrivateChatComponent extends Component {
 		//let renderedMessages = document.getElementsByClassName("message").length;
 		//console.log("Counter", counter, "Message Counter", messageCounter);
 		if (counter === messageCounter && messageCounter > 0 && this.state.bottom) {
-			console.log("How many rendered", messageCounter, messages.length);
 			this.scroll_to_bottom();
-			console.log("Called scroll");
 		}
 	}
 	componentWillUnmount() {
@@ -339,18 +329,16 @@ class PrivateChatComponent extends Component {
 	mapMessages() {
 		let retDiv;
 		messageCounter = 0;
-		//console.log(messages);
 		retDiv = messages.map((old_msg) => {
 			messageCounter++;
 			return (
-				<MessageComponent key={messageCounter} sender={member_details.get(old_msg.sender)} msg={old_msg}/>
+				<MessageComponent key={messageCounter} senderUsername={old_msg.sender} sender={member_details.get(old_msg.sender)} msg={old_msg}/>
 			);
 		});
 		return retDiv;
 	}
 	
 	render() {
-		console.log("System - Rendering Page... Connection Status: " + this.state.channel_connected);
 
         return (
 			<div className="app-window chat-component">

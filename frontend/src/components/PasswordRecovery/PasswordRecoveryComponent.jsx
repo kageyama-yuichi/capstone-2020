@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Container, Button, Form} from "react-bootstrap";
+import {Container, Button, Form, Spinner} from "react-bootstrap";
 import PasswordRecoveryResources from "./PasswordRecoveryResources.js"
 
 class PasswordRecoveryComponent extends Component {
@@ -10,6 +10,7 @@ class PasswordRecoveryComponent extends Component {
 			valid: false,
 			email: "",
 			emailError: "",
+			loading: false,
 		};
 		this.handleValidation = this.handleValidation.bind(this);
 	}
@@ -39,7 +40,6 @@ class PasswordRecoveryComponent extends Component {
 			emailControl.setCustomValidity("invalid");
 			valid = false;
 			this.setState({emailError: error});
-			console.log(error);
 		} else {
 			emailControl.setCustomValidity("");
 			this.setState({emailError: ""});
@@ -49,8 +49,8 @@ class PasswordRecoveryComponent extends Component {
 
 	onSubmit(e) {
 		e.preventDefault();
+		this.setState({loading: true});
 		if (this.handleValidation()) {
-			console.log(this.state.email);
 			PasswordRecoveryResources.sendTokenForResetPassword(this.state.email).then((response) => {
 				if(response.data) {
 					this.setState({
@@ -59,9 +59,14 @@ class PasswordRecoveryComponent extends Component {
 					})
 				} else {
 					alert("No account is associated with that email");
-					this.setState({validated: false});
+					this.setState({
+						validated: false,
+						loading: false
+					});
 				}
 			});
+		} else {
+			this.setState({loading: false});
 		}
 	}
 
@@ -80,28 +85,33 @@ class PasswordRecoveryComponent extends Component {
 						{this.state.valid ? (
 							<h4 className="p-3 bg-secondary text-white rounded text-center">Your password reset email has been sent!</h4>
 						) : (
-							<Form
-								noValidate
-								validated={this.state.validated}
-								onSubmit={this.onSubmit.bind(this)}
-								className="w-100 d-flex align-items-center flex-column">
-								<Form.Group className="w-75">
-									<Form.Label>Email</Form.Label>
-									<Form.Control
-										onChange={this.handleChange.bind(this)}
-										placeholder="Email"
-										id="email"
-										name="email"
-										type="email"
-									/>
-									<Form.Control.Feedback type="invalid">
-										{this.state.emailError}
-									</Form.Control.Feedback>
-								</Form.Group>
-								<Button className="w-50" type="submit" variant="secondary">
-									RESET PASSWORD
-								</Button>
-							</Form>
+							this.state.loading ? (
+								  <Spinner animation="border" variant="danger" />
+							) : (
+								<Form
+									noValidate
+									validated={this.state.validated}
+									onSubmit={this.onSubmit.bind(this)}
+									className="w-100 d-flex align-items-center flex-column">
+									<Form.Group className="w-75">
+										<Form.Label>Email</Form.Label>
+										<Form.Control
+											onChange={this.handleChange.bind(this)}
+											className="email-control"
+											placeholder="Email"
+											id="email"
+											name="email"
+											type="email"
+										/>
+										<Form.Control.Feedback type="invalid">
+											{this.state.emailError}
+										</Form.Control.Feedback>
+									</Form.Group>
+									<Button className="w-50" type="submit" variant="secondary">
+										RESET PASSWORD
+									</Button>
+								</Form>
+							)
 						)}
 
 						<Button onClick={this.props.handler} className="mt-auto" variant="link">Back to login</Button>

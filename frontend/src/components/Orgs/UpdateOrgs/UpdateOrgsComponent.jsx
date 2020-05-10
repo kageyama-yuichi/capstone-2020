@@ -14,7 +14,7 @@ import {
 	Row,
 	Col,
 	ListGroup,
-	InputGroup,
+	Toast,
 	FormControl,
 	Tabs,
 	Tab,
@@ -39,27 +39,31 @@ class UpdateOrgsComponent extends Component {
 		super(props);
 		this.state = {
 			username: AuthenticationService.getLoggedInUserName(),
-			is_verified: false,
+
 			org_id: this.props.match.params.org_id,
 			old_org_id: this.props.match.params.org_id,
 			org_title: "",
 			search_key: "",
 			members: [],
-			org: [],
 			owned_ids: [],
 			memberListOpen: [],
 			errors: [],
-			member_details_loaded: false,
 			invite_sent: false,
 			show_add_users: false,
 			show_remove_users: false,
 			temp_channel_title: "",
+			deleteOrgInputError: "",
+			deleteOrgButtonDisabled: true,
+			orgIdValidated: false,
+			alerts: [],
 		};
 		this.on_submit = this.on_submit.bind(this);
 		this.handleCancel = this.handleCancel.bind(this);
 		this.invite_user = this.invite_user.bind(this);
 		this.add_users_to_channel = this.add_users_to_channel.bind(this);
-		this.remove_users_from_channel = this.remove_users_from_channel.bind(this)
+		this.remove_users_from_channel = this.remove_users_from_channel.bind(this);
+		this.handleDeleteOrg = this.handleDeleteOrg.bind(this);
+		this.handleDeleteCheck = this.handleDeleteCheck.bind(this);
 	}
 
 	handleValidation(e) {
@@ -99,7 +103,6 @@ class UpdateOrgsComponent extends Component {
 
 		// 	if (!formIsValid) {
 		// 		errors.id = "Org ID already used";
-		// 		console.log("System - ID Already Used");
 		// 	}
 		// }
 
@@ -108,7 +111,6 @@ class UpdateOrgsComponent extends Component {
 
 		//Iterate over input fields and get corresponding error
 		//Flag form as invalid if there is an error
-		console.log(form);
 		formControl.forEach((ele) => {
 			if (errors[ele.name]) {
 				ele.setCustomValidity("invalid");
@@ -118,7 +120,6 @@ class UpdateOrgsComponent extends Component {
 		});
 
 		this.setState({errors: errors});
-		console.log(errors);
 		return formIsValid;
 	}
 
@@ -126,14 +127,12 @@ class UpdateOrgsComponent extends Component {
 		e.preventDefault();
 
 		if (this.handleValidation(e)) {
-			console.log("System - Creating New Organisation");
 			let org_push = {
 				org_id: this.state.org_id,
 				org_title: this.state.org_title,
 				channels: channels,
 				members: this.state.members,
 			};
-			console.log(org_push);
 			OrgsResources.update_org(
 				this.state.username,
 				this.state.old_org_id,
@@ -160,10 +159,8 @@ class UpdateOrgsComponent extends Component {
 		this.props.history.push(url);
 	};
 	handle_delete_channel = (channel_title) => {
-		console.log("Deleteing");
 		OrgsResources.delete_channel(this.state.username, this.state.org_id, channel_title).then(
 			(response) => {
-				console.log("Deleted");
 				// Reset the Channels Variable
 				channels = [];
 				// Retrieves All Channels from the Org Data
@@ -173,19 +170,52 @@ class UpdateOrgsComponent extends Component {
 						this.forceUpdate();
 					}
 				);
+				this.setState((prevState) => ({
+					alerts: [...prevState.alerts, `Channel ${channel_title} successfully deleted`],
+				}));
 			}
 		);
 	};
 	handle_update_channel = (channel) => {
 		var url = this.props.history.location.pathname + "/" + channel.channel_title;
 		this.props.history.push({
-			pathname: url, 
-			state: {channel: channel}
+			pathname: url,
+			state: {channel: channel},
 		});
 	};
 
 	handleCancel() {
 		this.props.history.goBack();
+	}
+
+	handleDeleteCheck(e) {
+		this.setState({deleteOrgButtonDisabled: !e.target.checked});
+	}
+
+	handleDeleteOrg(e) {
+		e.preventDefault();
+		let valid = true;
+		let error = "";
+		const deleteOrgInput = document.getElementById("deleteOrgInput");
+		if (document.getElementById("deleteOrgCheck").checked) {
+			if (deleteOrgInput.value === this.state.org_id) {
+				OrgsResources.delete_org(this.state.username, this.state.org_id).then(() => {
+					this.props.history.goBack();
+				});
+			} else {
+				valid = false;
+				error = "Input must match the Org ID";
+			}
+		} else {
+			valid = false;
+			error = "Checkbox must be checked";
+		}
+
+		if (!valid) {
+			deleteOrgInput.setCustomValidity("invalid");
+		}
+		
+		this.setState({deleteOrgInputError: error, orgIdValidated: true});
 	}
 
 	componentDidUpdate() {
@@ -203,10 +233,7 @@ class UpdateOrgsComponent extends Component {
 				});
 			});
 		}
-		// console.log(this.state.org_id);
-		// console.log(this.state.org_title);
-		// console.log(this.state.channels);
-		// console.log(this.state.members);
+
 	}
 
 	componentDidMount() {
@@ -258,6 +285,32 @@ class UpdateOrgsComponent extends Component {
 		OrgsResources.retrieve_all_name_space().then((response) => {
 			current_namespace = response.data.sort();
 		});
+	}
+
+	loadOrg() {
+		// Retrieves All the Current Org Data
+		OrgsResources.retrieve_org(this.state.username, this.state.old_org_id)
+			.then((response) => {
+				channels = response.data.channels;
+				this.setState(
+					{
+						org_id: response.data.org_id,
+						org_title: response.data.org_title,
+						members: response.data.members,
+					},
+					() => {
+						//Initializing member list dropdown
+						channels.map((channel) => {
+							this.state.memberListOpen[channel.channel_title] = false;
+						});
+
+						this.setState({memberListOpen: this.state.memberListOpen});
+					}
+				);
+			})
+			.then(() => {
+				this.load_org_member_details();
+			});
 	}
 
 	handle_search_new_users = () => {
@@ -428,7 +481,7 @@ class UpdateOrgsComponent extends Component {
 		OrgsResources.retrieve_basic_users_in_orgs(this.state.members).then((response) => {
 			// Go through the Response Data which is the Basic User and Strip Data
 			for (let i = 0; i < response.data.length; i++) {
-				//console.log(response.data[i]);
+
 				let user_details = {
 					fname: response.data[i].fname,
 					lname: response.data[i].lname,
@@ -469,7 +522,10 @@ class UpdateOrgsComponent extends Component {
 	invite_user = (invitee) => {
 		OrgsResources.invite_to_org(this.state.username, invitee, this.state.org_id).then(
 			(response) => {
-				alert("User Successfully Emailed");
+				this.setState((prevState) => ({
+					alerts: [...prevState.alerts, "User Successfully Emailed"],
+				}));
+
 				searched_users = [];
 				// Resetting Fields
 				this.setState({
@@ -529,7 +585,7 @@ class UpdateOrgsComponent extends Component {
 	};
 
 	// Promoting and Demoting Members
-	manage_member = (username, new_role) => {
+	manage_member = (username, type) => {
 		let auth = {
 			username: this.state.username,
 			role: org_member_details.get(this.state.username).role,
@@ -538,9 +594,26 @@ class UpdateOrgsComponent extends Component {
 			username: username,
 			role: org_member_details.get(username).role,
 		};
+
+		let newRole = "";
+		//Error checking in MemberListComponent
+		if (type === "promote") {
+			if (member.role === "TEAM_LEADER") {
+				newRole = "ADMIN";
+			} else if (member.role === "TEAM_MEMBER") {
+				newRole = "TEAM_LEADER";
+			}
+		} else if (type === "demote") {
+			if (member.role === "ADMIN") {
+				newRole = "TEAM_LEADER";
+			} else if (member.role === "TEAM_LEADER") {
+				newRole = "TEAM_MEMBER";
+			}
+		}
+
 		let new_managed = {
 			username: username,
-			role: new_role,
+			role: newRole,
 		};
 		let body = [];
 		body.push(auth);
@@ -548,9 +621,12 @@ class UpdateOrgsComponent extends Component {
 		body.push(new_managed);
 		// Push Request to Server
 		OrgsResources.manage_users_in_org(this.state.org_id, body).then((response) => {
-			alert("The User has been Modified");
+			this.setState((prevState) => ({
+				alerts: [...prevState.alerts, "User has been Modified"],
+			}));
+
 			// Reload the Page as Alot of Modifications can Occur
-			window.location.reload(false);
+			this.loadOrg();
 		});
 	};
 	// Completely Removing a User from the Org
@@ -562,9 +638,12 @@ class UpdateOrgsComponent extends Component {
 		};
 		// Push Request to Server
 		OrgsResources.remove_user_from_org(this.state.org_id, old_member).then((response) => {
-			alert("The User has been Removed");
+			this.setState((prevState) => ({
+				alerts: [...prevState.alerts, "User has been Removed"],
+			}));
+
 			// Reload the Page as Alot of Modifications can Occur
-			window.location.reload(false);
+			this.loadOrg();
 		});
 	};
 
@@ -575,7 +654,7 @@ class UpdateOrgsComponent extends Component {
 		if (mapper.length > 0) {
 			retDiv = mapper.map((usr) => {
 				return (
-					<ListGroup.Item key={usr.username} className="bg-light text-dark">
+					<ListGroup.Item key={`pending-${usr.username}`} className="bg-light text-dark">
 						<div className="d-flex justify-content-between">
 							<p>
 								{usr.fname} {usr.lname}
@@ -619,15 +698,35 @@ class UpdateOrgsComponent extends Component {
 		return retDiv;
 	}
 
+	handleToastAlertClose(index) {
+		let newArr = this.state.alerts;
+		newArr.splice(index, 1);
+		this.setState({alerts: newArr});
+	}
+
+	mapToastAlerts() {
+		let toasts = this.state.alerts.map((alert, index) => {
+			return (
+				<Toast key={index} onClose={() => this.handleToastAlertClose(index)}>
+					<Toast.Header>
+						<strong className="mr-auto">Update Orgs</strong>
+					</Toast.Header>
+					<Toast.Body>{alert}</Toast.Body>
+				</Toast>
+			);
+		});
+
+		return <div style={{position: "absolute", top: 0, right: 0}}>{toasts}</div>;
+	}
+
 	render() {
-		console.log("System - Rendering Page...");
 
 		return !this.state.is_verifed ? null : (
 			<div className="app-window update-org-component">
 				<Container fluid>
-					<Form noValidate validated={this.state.validated} className="update-org-form">
+					<Form noValidate validated={this.state.validated}>
 						<h1>
-							Update: <strong>{this.state.org_title}</strong>
+							Update Org: <strong>{this.state.org_title}</strong>
 						</h1>
 						<Row>
 							<Col>
@@ -664,218 +763,177 @@ class UpdateOrgsComponent extends Component {
 								</Form.Group>
 							</Col>
 						</Row>
-
-						<Tabs defaultActiveKey="members" id="uncontrolled-tab-example">
-							<Tab eventKey="members" style={{height: "1rem"}} title="Member List">
-								<Container fluid>
-									<Row>
-										<Col>
-											<Row>
-												<Col>
-													<h3>Member List</h3>
-												</Col>
-											</Row>
-											{this.state.members.length > 0 &&
-											org_member_details.size > 0 ? (
-												<MemberListComponent
-													show_buttons={true}
-													username={this.state.username}
-													members={this.state.members}
-													org_member_details={org_member_details}
-													manage_member={this.manage_member}
-													remove_member={this.remove_member}
-												/>
-											) : null}
-										</Col>
-										<Col>
-											<Container
-												fluid
-												className="org-new-users overflow-auto">
-												<Row className="org-new-users">
-													<h3>
-														Invite a <strong>New User</strong>
-													</h3>
-												</Row>
-												<Row>
-													<FormControl
-														className="org-new-users"
-														type="text"
-														id="search_user"
-														value={this.state.search_key}
-														onChange={this.handle_typing_search_key}
-														placeholder="Enter the Name of the User"
-														onKeyPress={(event) => {
-															if (event.key === "Enter") {
-																this.handle_search_new_users();
-															}
-														}}
-													/>
-												</Row>
-												<Row>
-													<ListGroup className="org-new-users">
-														{this.mapNonOrgUsers(searched_users, true)}
-													</ListGroup>
-												</Row>
-											</Container>
-										</Col>
-									</Row>
-								</Container>
-							</Tab>
-							<Tab eventKey="channels" style={{height: "1rem"}} title="Channels">
-								<Container fluid>
-									<Row>
-										<Col>
-											<h3>Channels</h3>
-										</Col>
-										<Col md={1}>
-											<Button
-												variant="outline-dark"
-												onClick={this.handle_create_channel}>
-												<i className="fas fa-plus"></i>
-											</Button>
-										</Col>
-									</Row>
-									<Row>
-										<Col>
-											<ChannelListComponent
-												channels={channels}
-												username={this.state.username}
-												org_member_details={org_member_details}
-												handle_delete_channel={this.handle_delete_channel}
-												add_users_to_channel={this.add_users_to_channel}
-												remove_users_from_channel={this.remove_users_from_channel}
-												handle_update_channel={this.handle_update_channel}
-											/>
-
-											{/* <ListGroup className="overflow-auto">
-												{channels.map((ch) => (
-													<ListGroup.Item
-														key={ch.channel_title}
-														className="channels bg-primary text-white">
-														<div className="d-flex justify-content-between">
-															{ch.channel_title}
-															<ButtonGroup className="align-self-end">
-																<Button
-																	variant="secondary"
-																	className="btn-sm"
-																	onClick={() =>
-																		this.toggleMemberListDisplay(
-																			ch.channel_title
-																		)
-																	}>
-																	{this.state.memberListOpen[
-																		ch.channel_title
-																	] ? (
-																		<i className="fas fa-angle-up"></i>
-																	) : (
-																		<i className="fas fa-caret-down"></i>
-																	)}
-																</Button>
-																<Button
-																	variant="success"
-																	className="btn-sm"
-																	onClick={() =>
-																		this.add_users_to_channel(
-																			ch.channel_title
-																		)
-																	}>
-																	<i className="fas fa-user-plus"></i>
-																</Button>
-																<Button
-																	variant="danger"
-																	className="btn-sm"
-																	onClick={() =>
-																		this.remove_users_from_channel(
-																			ch.channel_title
-																		)
-																	}>
-																	<i className="fas fa-user-minus"></i>
-																</Button>
-																<Button
-																	variant="dark"
-																	className="btn-sm"
-																	onClick={() =>
-																		this.handle_update_channel(
-																			ch.channel_title
-																		)
-																	}>
-																	<i className="fas fa-edit"></i>
-																</Button>
-
-																<Button
-																	className="btn-sm"
-																	variant="warning"
-																	onClick={() =>
-																		this.handle_delete_channel(
-																			ch.channel_title
-																		)
-																	}>
-																	<i className="fas fa-trash"></i>
-																</Button>
-															</ButtonGroup>
-														</div>
-
-														<ListGroup
-															style={{
-																display: this.state.memberListOpen[
-																	ch.channel_title
-																]
-																	? "flex"
-																	: "none",
-															}}>
-															<MemberListComponent
-																show_buttons={false}
-																username={this.state.username}
-																members={ch.members}
-																org_member_details={
-																	org_member_details
-																}
-																manage_member={this.manage_member}
-																remove_member={this.remove_member}
-															/>
-														</ListGroup>
-													</ListGroup.Item>
-												))}
-											</ListGroup> */}
-										</Col>
-									</Row>
-								</Container>
-							</Tab>
-							<Tab eventKey="pending" style={{height: "1rem"}} title="Pending">
-								<Container fluid className="org-new-users overflow-auto">
-									<Row>
-										<h3>Pending User Invites</h3>
-									</Row>
-									<Row>
-										<ListGroup className="org-new-users">
-											{this.mapNonOrgUsers(pending_users, false)}
-										</ListGroup>
-									</Row>
-								</Container>
-							</Tab>
-						</Tabs>
-
-						<Row className="fixed-bottom justify-content-end">
-							<Form.Group md="0.5" as={Col}>
-								<Button
-									type="button"
-									variant="outline-primary"
-									onClick={this.handleCancel}>
-									Go Back
-								</Button>
-							</Form.Group>
-							<Form.Group md="2" as={Col}>
-								<Button
-									id="org_update"
-									type="button"
-									variant="secondary"
-									style={{whiteSpace: "nowrap"}}
-									onClick={() => this.on_submit.bind(this)}>
-									Update Organisation
-								</Button>
-							</Form.Group>
-						</Row>
 					</Form>
+
+					<Tabs defaultActiveKey="members">
+						<Tab eventKey="members" style={{height: "1rem"}} title="Member List">
+							<Container fluid>
+								<Row>
+									<Col>
+										<Row>
+											<Col>
+												<h3>Member List</h3>
+											</Col>
+										</Row>
+										{this.state.members.length > 0 &&
+										org_member_details.size > 0 ? (
+											<MemberListComponent
+												show_buttons={true}
+												username={this.state.username}
+												members={this.state.members}
+												org_member_details={org_member_details}
+												manage_member={this.manage_member}
+												remove_member={this.remove_member}
+											/>
+										) : null}
+									</Col>
+									<Col>
+										<Container fluid className="org-new-users overflow-auto">
+											<Row className="org-new-users">
+												<h3>
+													Invite a <strong>New User</strong>
+												</h3>
+											</Row>
+											<Row>
+												<FormControl
+													className="org-new-users"
+													type="text"
+													id="search_user"
+													value={this.state.search_key}
+													onChange={this.handle_typing_search_key}
+													placeholder="Enter the Name of the User"
+													onKeyPress={(event) => {
+														if (event.key === "Enter") {
+															this.handle_search_new_users();
+														}
+													}}
+												/>
+											</Row>
+											<Row>
+												<ListGroup className="org-new-users">
+													{this.mapNonOrgUsers(searched_users, true)}
+												</ListGroup>
+											</Row>
+										</Container>
+									</Col>
+								</Row>
+							</Container>
+						</Tab>
+						<Tab eventKey="channels" style={{height: "1rem"}} title="Channels">
+							<Container fluid>
+								<Row>
+									<Col>
+										<h3>Channels</h3>
+									</Col>
+									<Col md={1}>
+										<Button
+											variant="outline-dark"
+											onClick={this.handle_create_channel}>
+											<i className="fas fa-plus"></i>
+										</Button>
+									</Col>
+								</Row>
+								<Row>
+									<Col>
+										<ChannelListComponent
+											channels={channels}
+											username={this.state.username}
+											org_member_details={org_member_details}
+											handle_delete_channel={this.handle_delete_channel}
+											add_users_to_channel={this.add_users_to_channel}
+											remove_users_from_channel={
+												this.remove_users_from_channel
+											}
+											handle_update_channel={this.handle_update_channel}
+										/>
+									</Col>
+								</Row>
+							</Container>
+						</Tab>
+						<Tab eventKey="pending" style={{height: "1rem"}} title="Pending">
+							<Container fluid className="org-new-users overflow-auto">
+								<Row>
+									<h3>Pending User Invites</h3>
+								</Row>
+								<Row>
+									<ListGroup className="org-new-users">
+										{this.mapNonOrgUsers(pending_users, false)}
+									</ListGroup>
+								</Row>
+							</Container>
+						</Tab>
+						{org_member_details.get(this.state.username).role === "ORG_OWNER" ? (
+							<Tab eventKey="delete" style={{height: "1rem"}} title="Delete">
+								<Container>
+									<Row>
+										<h3>Delete the organisation</h3>
+									</Row>
+									<Row>
+										<Form noValidate validated={this.state.orgIdValidated}>
+											<Form.Group>
+												<Form.Label>
+													Type the organisation ID to delete
+												</Form.Label>
+												<Form.Control
+													id="deleteOrgInput"
+													placeholder="Organisation ID"
+												/>
+												<Form.Control.Feedback type="invalid">
+													{this.state.deleteOrgInputError}
+												</Form.Control.Feedback>
+											</Form.Group>
+										</Form>
+									</Row>
+									<Row className="d-flex flex-column">
+										<Form.Check
+											id="deleteOrgCheck"
+											type="checkbox"
+											onClick={this.handleDeleteCheck}
+											label={`Are you sure you want to delete ${this.state.org_title}?`}
+										/>
+
+										<p>
+											<small>
+												(Once the organisation is deleted, all channels and
+												instances with be PERMANENTLY removed)
+											</small>
+										</p>
+										<Button
+											type="button"
+											id="deleteButton"
+											onClick={this.handleDeleteOrg}
+											size="lg"
+											variant="danger"
+											style={{width: "fit-content"}}
+											disabled={this.state.deleteOrgButtonDisabled}>
+											Delete
+										</Button>
+									</Row>
+								</Container>
+							</Tab>
+						) : null}
+					</Tabs>
+
+					<Row className="fixed-bottom justify-content-end">
+						<Form.Group md="0.5" as={Col}>
+							<Button
+								type="button"
+								variant="outline-primary"
+								onClick={this.handleCancel}>
+								Go Back
+							</Button>
+						</Form.Group>
+						<Form.Group md="2" as={Col}>
+							<Button
+								id="org_update"
+								type="button"
+								variant="secondary"
+								style={{whiteSpace: "nowrap"}}
+								onClick={() => this.on_submit.bind(this)}>
+								Update Organisation
+							</Button>
+						</Form.Group>
+					</Row>
 				</Container>
 				{this.state.show_add_users ? (
 					<AddUserToChannelComponent
@@ -896,6 +954,7 @@ class UpdateOrgsComponent extends Component {
 						current_members_in_channel={current_members_in_channel}
 					/>
 				) : null}
+				{this.mapToastAlerts()}
 			</div>
 		);
 	}

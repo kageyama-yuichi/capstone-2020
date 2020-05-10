@@ -44,13 +44,11 @@ class InstancesComponent extends Component {
 	refresh_instances = () => {
 		// Retrieves All Instances from the Org Data
 		OrgsResources.retrieve_org(this.state.username, this.state.org_id).then((response) => {
-			// console.log(response.data.channels);
 			// Maps the Response Data (Channels.class) to JSONbject
 			for (let i = 0; i < response.data.channels.length; i++) {
 				if (response.data.channels[i].channel_title === this.state.channel_title) {
 					// Map the Response Data (Instances.class) to JSONObject
 					for (let j = 0; j < response.data.channels[i].instances.length; j++) {
-						// console.log(response.data.channels[i]);
 						this.state.instances.push({
 							instance_title: response.data.channels[i].instances[j].instance_title,
 							type: response.data.channels[i].instances[j].type,
@@ -67,7 +65,6 @@ class InstancesComponent extends Component {
 	refresh_todos = () => {
 		// Retrieves the Todos for the Organisation Channels
 		OrgsResources.retrieve_org_todos(this.state.username, this.state.org_id, this.state.channel_title).then((response) => {
-			console.log(response.data);
 		});
 	}
 	
@@ -77,7 +74,6 @@ class InstancesComponent extends Component {
 	}
 
 	render() {
-		console.log("System - Rendering Page...");
 
 		return (
 			<Container>

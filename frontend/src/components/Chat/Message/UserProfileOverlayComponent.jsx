@@ -1,8 +1,9 @@
 import React, {Component} from "react";
 import {Image, Popover, Button, Container} from "react-bootstrap";
+import {Link} from "react-router-dom";
 import tempImg from "../../../assests/ProfileIcon.svg";
 import "./UserProfileOverlayComponent.css";
-
+import ContactsResource from "../../Contacts/ContactsResource.js"
 class UserProfileOverlayComponent extends Component {
 	constructor(props) {
 		super(props);
@@ -10,7 +11,15 @@ class UserProfileOverlayComponent extends Component {
 			name: props.sender.name,
 			bio: props.sender.bio,
 			imagePath: props.sender.imagePath,
+			username: props.senderUsername
 		};
+		this.addContact = this.addContact.bind(this)
+	}
+
+	addContact() {
+		let username = sessionStorage.getItem("authenticatedUser");
+		console.log(username); console.log(this.state.username);
+	    ContactsResource.addContact(username, this.state.username)
 	}
 
 	render() {
@@ -40,11 +49,21 @@ class UserProfileOverlayComponent extends Component {
 				<Popover.Content style={{minWidth: "350px"}} className=" p-0">
 					<Button
 						style={{borderRadius: "0px"}}
+						className="p-1 w-100"
+						variant="secondary"
+						type="button"
+					onClick={this.addContact}>
+						Add to contacts
+					</Button>
+					<Link to={"/private/" + this.state.username}>
+					<Button
+						style={{borderRadius: "0px"}}
 						className="p-1 w-100 rounded-bottom"
 						variant="secondary"
 						type="button">
-						Add to contacts
-					</Button>
+						Private Chat
+						</Button>
+					</Link>
 				</Popover.Content>
 			</Popover>
 		);
