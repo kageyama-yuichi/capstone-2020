@@ -6,6 +6,7 @@ import PasswordRecoveryComponent from "../PasswordRecovery/PasswordRecoveryCompo
 import logoSVG from "../../assests/Logo_v4.png";
 import {Container, Form, Button} from "react-bootstrap";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
+import Encryption from '../Chat/Encryption.js';
 
 class LandingComponent extends Component {
 	constructor(props) {
@@ -63,10 +64,13 @@ class LandingComponent extends Component {
 
 	handleSubmit(e) {
 		e.preventDefault();
+		this.state.password = Encryption.encrpyt_message(this.state.password);
 		AuthenticationService.executeJwtAuthenticationService(
 			this.state.username,
 			this.state.password
 		).then((response) => {
+			console.log(this.state.password);
+			console.log("Inner Authetnication");
 			AuthenticationService.registerSuccessfulLoginForJwt(
 				this.state.username,
 				response.data.token

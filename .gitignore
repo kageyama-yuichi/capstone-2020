@@ -1,4 +1,6 @@
 client-secret.json
 start-server
+start-frontend
 /.metadata/
 git-update
+.settings/

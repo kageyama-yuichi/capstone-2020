@@ -2,6 +2,8 @@ package com.l8z.jwt.resource;
 
 import java.io.Serializable;
 
+import com.l8z.jwt.JwtPasswordDecryption;
+
 public class  JwtTokenRequest implements Serializable {
 	// Members
 	private static final long serialVersionUID = -5616176897013108345L;

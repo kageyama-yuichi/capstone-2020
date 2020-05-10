@@ -11,6 +11,12 @@ class Encryption {
 	decrypt_message = (value) => {
 		return CryptoJS.AES.decrypt(value, "L8Z").toString(CryptoJS.enc.Utf8);
 	}
+
+	/* //Test Encrypt
+	test_encrypt = (value) => {
+		var cipher = crypto.createCipheriv('AES-128-CBC', "L8Z", '0102030405060708');
+		return cipher.update(value, 'utf-8', 'base64') + cipher.final('base64');
+	} */
 }
 
 export default new Encryption()

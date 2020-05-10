@@ -44,7 +44,7 @@ class MessageComponent extends Component {
 					rootClose={true}
 					overlay={
 						<UserProfileOverlayComponent
-							senderUsername={this.props.senderUsername}
+							senderusername={this.props.senderUsername}
 							sender={this.props.sender}
 						/>
 					}>

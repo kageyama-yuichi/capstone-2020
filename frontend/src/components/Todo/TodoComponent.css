@@ -26,12 +26,18 @@
 }
 
 .done-col button {
+
+	white-space: nowrap;
 	height: fit-content;
 	width: 55px;
 	padding: 5px;
 	font-size: 15px;
 	font-weight: 500;
 	border-radius: 15px;
+}
+
+.done-col button:focus{
+	outline: none;
 }
 
 .done-button {

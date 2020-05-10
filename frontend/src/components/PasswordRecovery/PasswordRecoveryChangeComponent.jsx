@@ -1,6 +1,8 @@
 import React, {Component} from "react";
 import {Container, Form, Button} from "react-bootstrap";
 import PasswordRecoveryResources from "./PasswordRecoveryResources.js";
+import Encryption from '../Chat/Encryption.js';
+
 
 class PasswordRecoveryChangeComponent extends Component {
 	constructor(props) {
@@ -40,6 +42,7 @@ class PasswordRecoveryChangeComponent extends Component {
 		console.log(this.state.password);
 		console.log(this.state.token);
 		console.log(this.state.id);
+		this.state.password = Encryption.encrpyt_message(this.state.password);
 		
 		PasswordRecoveryResources.updateUserPassword(this.state.username, this.state.password, this.state.id).then((response) => {
 			if(response.data){
