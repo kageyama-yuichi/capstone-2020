@@ -505,10 +505,7 @@ public class OrgsJpaResource {
 		}
 		// Save the Org
 		orgsjpa.save(sql);
-		
-		// Add the Channel Title to the User's Name
-		user_meta_data_jpa_resouce.channel_added(username, org_id, channel.get_channel_title());
-
+	
 		return ResponseEntity.noContent().build();
 	}
 
@@ -634,10 +631,14 @@ public class OrgsJpaResource {
 			}
 			// Add the Channel Back to the Org
 			temp_org.add_channel(temp_channel);
-
+			
 			// Save the Org
 			orgsjpa.save(
 					new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org), recent_date_time));
+			
+			// Add the Channel Title to the User's Name
+			user_meta_data_jpa_resouce.channel_added(username, org_id, channel_title);
+			
 		} catch (JsonProcessingException e) {
 			System.out.println("System - Error Updating Org");
 		}
@@ -670,6 +671,10 @@ public class OrgsJpaResource {
 			// Save the Org
 			orgsjpa.save(
 					new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org), recent_date_time));
+			
+			// Deleted the Channel Title to the User's Name
+			user_meta_data_jpa_resouce.channel_deleted(username, org_id, channel_title);
+
 		} catch (JsonProcessingException e) {
 			System.out.println("System - Error Updating Org");
 		}
