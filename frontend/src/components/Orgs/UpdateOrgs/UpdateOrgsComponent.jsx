@@ -477,7 +477,8 @@ class UpdateOrgsComponent extends Component {
 	};
 
 	load_org_member_details() {
-		// Create the Map for the Member Details
+		// Create the Map for the Member Detail
+		org_member_details.clear();
 		OrgsResources.retrieve_basic_users_in_orgs(this.state.members).then((response) => {
 			// Go through the Response Data which is the Basic User and Strip Data
 			for (let i = 0; i < response.data.length; i++) {
@@ -520,13 +521,12 @@ class UpdateOrgsComponent extends Component {
 	}
 
 	invite_user = (invitee) => {
+		searched_users = [];
 		OrgsResources.invite_to_org(this.state.username, invitee, this.state.org_id).then(
 			(response) => {
 				this.setState((prevState) => ({
 					alerts: [...prevState.alerts, "User Successfully Emailed"],
 				}));
-
-				searched_users = [];
 				// Resetting Fields
 				this.setState({
 					search_key: "",

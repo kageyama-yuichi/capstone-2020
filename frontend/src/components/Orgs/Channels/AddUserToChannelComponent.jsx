@@ -30,7 +30,6 @@ class AddUserToChannelComponent extends Component {
 				// if they are in the Value, Push
 				if(this.props.members[i].username === this.state.value[j]){
 					new_users_to_channels.push(this.props.members[i]);
-					break; // Speed up Execution
 				}
 			}
 		}

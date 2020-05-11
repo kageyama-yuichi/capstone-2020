@@ -3,6 +3,8 @@ package com.l8z.resources;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
@@ -44,15 +46,16 @@ public class OrgsJpaResource {
 	private OrgsJpaRepository orgsjpa;
 	@Autowired
 	private OrgsTodoJpaRepository orgstodojpa;
-	@Autowired
-	private UserJpaRepository userjpa;
+
 	// Used for Saving Organisation ID to the User's Name
 	@Autowired
 	private UserMetaDataJpaResource user_meta_data_jpa_resouce = new UserMetaDataJpaResource();
 	@Autowired
-	private PendingInvitesJpaRepository pendingjpa;
+	protected UserJpaRepository userjpa;
 	@Autowired
-	private JavaMailSender mail;
+	protected PendingInvitesJpaRepository pendingjpa;
+	@Autowired
+	protected JavaMailSender mail;
 	// Used to Read a JSON Document and Convert to Object
 	private ObjectMapper json_mapper = new ObjectMapper();
 
@@ -235,10 +238,11 @@ public class OrgsJpaResource {
 			// Remove the Organiation from Every User's List and OrgTodo Table
 			for (int i = 0; i < members.size(); i++) {
 				// Remove the Organsiation ID from the User's Name
-				user_meta_data_jpa_resouce.user_leaves_org(username, org_id);
+				user_meta_data_jpa_resouce.user_leaves_org(members.get(i).get_username(), org_id);
 			}
 			// Remove the Organisation ID from the OrgTodo Table
-			// Method
+			orgstodojpa.deleteByOrgId(org_id);
+			pendingjpa.deleteByOrgId(org_id);
 
 		}
 		return ResponseEntity.noContent().build();
@@ -296,23 +300,29 @@ public class OrgsJpaResource {
 			@PathVariable String invitee) {
 		String unique = org_id + "." + invitee;
 		pendingjpa.save(new PendingInvites(unique, "", inviter, invitee, org_id));
+		
+		Thread mailThread = new Thread() {
+			public void run() {
+				SimpleMailMessage msg = new SimpleMailMessage();
+				User user = userjpa.findByUsername(invitee);
+				System.out.println(invitee);
+				
+				// Set the Email
+				msg.setTo(user.getEmail());
+				// Set the Subject
+				msg.setSubject("L8Z - New Organisation Invite");
+				// Set the Body Content
+				msg.setText("Hello " + user.getFname() + " " + user.getLname() + ",\n\n"
+						+ "Your L8Z account has received a new organisation invite! You currently have "
+						+ pendingjpa.findByInvitee(invitee).size() + " pending invites.\n\n"
+						+ "Thank you for choosing L8Z,\nL8Z Team.");
 
-		// Create the Simple Mail Message and Set the Email, Subject and Message
-		SimpleMailMessage msg = new SimpleMailMessage();
-		User user = userjpa.findByUsername(invitee);
-		// Set the Email
-		msg.setTo(user.getEmail());
-		// Set the Subject
-		msg.setSubject("L8Z - New Organisation Invite");
-		// Set the Body Content
-		msg.setText("Hello " + user.getFname() + " " + user.getLname() + ",\n\n"
-				+ "Your L8Z account has received a new organisation invite! You currently have "
-				+ pendingjpa.findByInvitee(invitee).size() + " pending invites.\n\n"
-				+ "Thank you for choosing L8Z,\nL8Z Team.");
-
-		// Send the Email
-		mail.send(msg);
-
+				// Send the Email
+				mail.send(msg);
+			}
+		};
+		mailThread.start();
+		
 		return ResponseEntity.noContent().build();
 	}
 
@@ -436,7 +446,7 @@ public class OrgsJpaResource {
 			temp_org.remove_member(old_member);
 			// Removes the Org from their MetaData
 			user_meta_data_jpa_resouce.user_leaves_org(old_member.get_username(), org_id);
-			
+
 			// Save the Organisation
 			orgsjpa.save(new OrgsSQL(org_id, json_mapper.writeValueAsString(temp_org), recent_date_time));
 		} catch (JsonMappingException e) {
@@ -505,7 +515,7 @@ public class OrgsJpaResource {
 		}
 		// Save the Org
 		orgsjpa.save(sql);
-	
+
 		return ResponseEntity.noContent().build();
 	}
 
@@ -631,14 +641,14 @@ public class OrgsJpaResource {
 			}
 			// Add the Channel Back to the Org
 			temp_org.add_channel(temp_channel);
-			
+
 			// Save the Org
 			orgsjpa.save(
 					new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org), recent_date_time));
-			
+
 			// Add the Channel Title to the User's Name
 			user_meta_data_jpa_resouce.channel_added(username, org_id, channel_title);
-			
+
 		} catch (JsonProcessingException e) {
 			System.out.println("System - Error Updating Org");
 		}
@@ -671,7 +681,7 @@ public class OrgsJpaResource {
 			// Save the Org
 			orgsjpa.save(
 					new OrgsSQL(temp_org.get_org_id(), json_mapper.writeValueAsString(temp_org), recent_date_time));
-			
+
 			// Deleted the Channel Title to the User's Name
 			user_meta_data_jpa_resouce.channel_deleted(username, org_id, channel_title);
 
@@ -766,15 +776,15 @@ public class OrgsJpaResource {
 		orgstodojpa.deleteById(id);
 		return ResponseEntity.noContent().build();
 	}
-	
+
 	@GetMapping("/jpa/orgs/todos/{username}")
-	public List<List<OrgTodo>> retrieveAllOrgTodos(@PathVariable String username){
-		
+	public List<List<OrgTodo>> retrieveAllOrgTodos(@PathVariable String username) {
+
 		List<String> orgChannels = user_meta_data_jpa_resouce.getUserChannels(username);
 		List<List<OrgTodo>> orgTodos = new ArrayList<List<OrgTodo>>();
-		
+
 		orgChannels.forEach((n) -> orgTodos.add(orgstodojpa.getByOrgChannel(n)));
-		
+
 		return orgTodos;
 	}
 
@@ -915,4 +925,19 @@ public class OrgsJpaResource {
 		return ResponseEntity.noContent().build();
 	}
 
+}
+
+class MailThread extends Thread {
+
+	private String invitee;
+	
+	
+	public MailThread(String invitee) {
+		this.invitee = invitee;
+	}
+	
+	public void run() {
+		// Create the Simple Mail Message and Set the Email, Subject and Message
+		
+	}
 }

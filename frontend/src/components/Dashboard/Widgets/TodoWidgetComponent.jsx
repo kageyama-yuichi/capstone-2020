@@ -34,6 +34,7 @@ class TodoWidgetComponent extends Component {
 	refreshOrgTodos() {
 		OrgResources.retrieveAllOrgTodos(this.state.username).then((response) => {
 			let teamTodos = [];
+			console.log(response.data)
 			for (var i in response.data) {
 				for (var j in response.data[i]) {
 					teamTodos.push(response.data[i][j]);
@@ -55,7 +56,6 @@ class TodoWidgetComponent extends Component {
 	}
 
 	render() {
-		console.log(this.state.teamTodos,this.state.personalTodos)
 		return this.state.personalTodosLoaded && this.state.teamTodosLoaded ? (
 			<div className="w-100" style={{overflowY: "auto"}}>
 				<TodoComponent showHeader={true} isWidget={true} title="Personal Todos" callback={this.refreshPersonalTodos} todos={this.state.personalTodos} />

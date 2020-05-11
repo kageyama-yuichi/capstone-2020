@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import InvitesResources from "./InvitesResources.js";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
 import "./InvitesComponent.css";
-
+import {withRouter} from "react-router-dom"
 import {Button, ButtonGroup, Container, Row, Col, ListGroup} from "react-bootstrap";
 
 const inviter_details = new Map();
@@ -131,4 +131,4 @@ class InvitesComponent extends Component {
 	}
 }
 
-export default InvitesComponent;
+export default withRouter(InvitesComponent);

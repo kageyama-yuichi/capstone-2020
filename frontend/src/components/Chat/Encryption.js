@@ -1,7 +1,7 @@
 //Import key variable wherever stored
 const CryptoJS = require("crypto-js");
 
-var encrypt_key = process.env.REACT_APP_SECRET_KEY;
+var encrypt_key = "L8Z";
 
 class Encryption {
     //Encrypt Messages

@@ -28,7 +28,6 @@ class RemoveUserFromChannelComponent extends Component {
 				// if they are in the Value, Push
 				if(this.props.current_members_in_channel[i].username === this.state.value[j]){
 					removed_users_from_channel.push(this.props.current_members_in_channel[i]);
-					break; // Speed up Execution
 				}
 			}
 		}
