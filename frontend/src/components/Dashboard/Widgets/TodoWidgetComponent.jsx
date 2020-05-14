@@ -16,7 +16,7 @@ class TodoWidgetComponent extends Component {
 			teamTodosLoaded: false,
 		};
 		this.refreshOrgTodos = this.refreshOrgTodos.bind(this);
-		this.refreshPersonalTodos = this.refreshPersonalTodos.bind(this)
+		this.refreshPersonalTodos = this.refreshPersonalTodos.bind(this);
 	}
 
 	componentDidMount() {
@@ -34,7 +34,7 @@ class TodoWidgetComponent extends Component {
 	refreshOrgTodos() {
 		OrgResources.retrieveAllOrgTodos(this.state.username).then((response) => {
 			let teamTodos = [];
-			console.log(response.data)
+			console.log(response.data);
 			for (var i in response.data) {
 				for (var j in response.data[i]) {
 					teamTodos.push(response.data[i][j]);
@@ -58,9 +58,26 @@ class TodoWidgetComponent extends Component {
 	render() {
 		return this.state.personalTodosLoaded && this.state.teamTodosLoaded ? (
 			<div className="w-100" style={{overflowY: "auto"}}>
-				<TodoComponent showHeader={true} isWidget={true} title="Personal Todos" callback={this.refreshPersonalTodos} todos={this.state.personalTodos} />
-                
-                <TodoComponent showHeader={false} isWidget={true} showNewButton={false} disableDoneButton={true} callback={this.refreshOrgTodos} title="Channel Todos" todos={this.state.teamTodos}/>
+				{this.state.personalTodos.length > 0 ? (
+					<TodoComponent
+						showHeader={true}
+						isWidget={true}
+						title="Personal Todos"
+						callback={this.refreshPersonalTodos}
+						todos={this.state.personalTodos}
+					/>
+				) : null}
+				{this.state.teamTodos.length > 0 ? (
+					<TodoComponent
+						showHeader={false}
+						isWidget={true}
+						showNewButton={false}
+						disableDoneButton={true}
+						callback={this.refreshOrgTodos}
+						title="Channel Todos"
+						todos={this.state.teamTodos}
+					/>
+				) : null}
 			</div>
 		) : null;
 	}
