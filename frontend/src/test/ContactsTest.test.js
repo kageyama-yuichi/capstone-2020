@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import ContactComponent from '../components/Contacts/ContactComponent';
 
-    describe('Chat component tests', ()=> {
+    describe('Contact component tests', ()=> {
         const wrapper = shallow(<ContactComponent />);
 		
 		it('Should render contact components', ()=> {
