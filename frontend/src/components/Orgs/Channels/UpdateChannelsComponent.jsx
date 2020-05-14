@@ -11,10 +11,10 @@ import {
 	Tab,
 	Tabs,
 	ListGroup,
-	ButtonGroup,
 	InputGroup,
 	FormControl,
-	ListGroupItem,
+	OverlayTrigger,
+	Tooltip
 } from "react-bootstrap";
 import MemberListComponent from "../UpdateOrgs/MemberListComponent";
 import {Input} from "reactstrap";
@@ -500,11 +500,16 @@ class UpdateChannelsComponent extends Component {
 											<h3>Instances</h3>
 										</Col>
 										<Col md={1}>
-											<Button
-												variant="outline-dark"
-												onClick={this.handleAddInstanceClick}>
-												<i className="fas fa-plus"></i>
-											</Button>
+											<OverlayTrigger delay={{ show: 400, hide: 0 }}
+												delay={{ show: 400, hide: 0 }}
+												placement="left"
+												overlay={<Tooltip>New Instance</Tooltip>}>
+												<Button
+													variant="outline-dark"
+													onClick={this.handleAddInstanceClick}>
+													<i className="fas fa-plus"></i>
+												</Button>
+											</OverlayTrigger>
 										</Col>
 									</Row>
 									<Row>
