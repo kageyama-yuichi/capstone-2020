@@ -105,13 +105,19 @@ class ChannelListComponent extends Component {
 				size="sm"
 				className="mt-auto mb-auto"
 				style={{height: "fit-content"}}>
-				<OverlayTrigger delay={{ show: 400, hide: 0 }}placement="bottom" overlay={<Tooltip>Favourite</Tooltip>}>
+				<OverlayTrigger
+					delay={{show: 400, hide: 0}}
+					placement="bottom"
+					overlay={<Tooltip>Favourite</Tooltip>}>
 					<Button onClick={() => this.onClick(ch.channel_title)} variant="dark">
 						<i className="text-warning fas fa-star"></i>
 					</Button>
 				</OverlayTrigger>
 				{role !== "TEAM_MEMBER" ? (
-					<OverlayTrigger delay={{ show: 400, hide: 0 }}placement="bottom" overlay={<Tooltip>New Instance</Tooltip>}>
+					<OverlayTrigger
+						delay={{show: 400, hide: 0}}
+						placement="bottom"
+						overlay={<Tooltip>New Instance</Tooltip>}>
 						<Button
 							variant="dark"
 							onClick={() => this.handleAddInstanceClick(ch.channel_title)}>
@@ -120,7 +126,10 @@ class ChannelListComponent extends Component {
 					</OverlayTrigger>
 				) : null}
 				{role !== "TEAM_MEMBER" ? (
-					<OverlayTrigger delay={{ show: 400, hide: 0 }}placement="bottom" overlay={<Tooltip>Remove Users</Tooltip>}>
+					<OverlayTrigger
+						delay={{show: 400, hide: 0}}
+						placement="bottom"
+						overlay={<Tooltip>Remove Users</Tooltip>}>
 						<Button variant="dark" onClick={() => this.handleChannelSettingsClick(ch)}>
 							<i className="fas fa-cog"></i>
 						</Button>
@@ -178,6 +187,7 @@ class ChannelListComponent extends Component {
 														this.getRole(ch.members)
 													)
 												}>
+												<i className=" p-1 fas fa-list-ol"></i>
 												Todo List
 											</ListGroup.Item>
 											{ch.instances.map((instance) => (
@@ -191,6 +201,8 @@ class ChannelListComponent extends Component {
 														)
 													}
 													key={instance.instance_title}>
+													<i className="p-1 fas fa-comment-alt"></i>
+
 													{instance.instance_title}
 												</ListGroup.Item>
 											))}
