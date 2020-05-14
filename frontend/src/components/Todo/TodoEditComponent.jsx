@@ -17,8 +17,7 @@ class TodoEditComponent extends Component {
 			username: AuthenticationService.getLoggedInUserName(),
 			desc: todo.desc ? todo.desc : "",
 			date: todo.date ? todo.date : moment().format("YYYY-MM-DD"),
-			descError: "",
-			dateError: "",
+			errors: [],
 			status: todo.status ? todo.status : false,
 			color: "#808080",
 			displayColorPicker: false,
@@ -129,7 +128,7 @@ class TodoEditComponent extends Component {
 								value={this.state.desc}
 							/>
 							<Form.Control.Feedback type="invalid">
-								{this.state.descError}
+								{this.state.errors.desc}
 							</Form.Control.Feedback>
 						</Form.Group>
 
@@ -143,7 +142,7 @@ class TodoEditComponent extends Component {
 								value={this.state.date}
 							/>
 							<Form.Control.Feedback type="invalid">
-								{this.state.dateError}
+								{this.state.errors.date}
 							</Form.Control.Feedback>
 						</Form.Group>
 						<Form.Group>
