@@ -526,12 +526,10 @@ class UpdateOrgsComponent extends Component {
 			(response) => {
 				this.setState((prevState) => ({
 					alerts: [...prevState.alerts, "User Successfully Emailed"],
-				}));
-				// Resetting Fields
-				this.setState({
 					search_key: "",
 					invite_sent: true,
-				});
+				}));
+			
 			}
 		);
 	};
@@ -540,9 +538,10 @@ class UpdateOrgsComponent extends Component {
 			(response) => {
 				pending_users = [];
 				// Re-render the Page
-				this.setState({
+				this.setState((prevState) => ({
+					alerts: [...prevState.alerts, "Pending invite removed"],
 					invite_sent: true,
-				});
+				}));
 			}
 		);
 	};
