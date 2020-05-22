@@ -76,7 +76,7 @@ class LandingComponent extends Component {
 			);
 			let url = "/dashboard";
 			this.props.history.push(url);
-		}).catch(this.setState({loginError: true}));
+		}).catch((err) =>this.setState({loginError: true}));
 	}
 
 	componentDidMount() {

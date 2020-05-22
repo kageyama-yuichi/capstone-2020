@@ -22,6 +22,7 @@ class ChannelListComponent extends Component {
 			channels: [],
 			isExpanded: [],
 			channel_title: "",
+			org_title: ""
 		};
 
 		this.handleAddInstanceClick = this.handleAddInstanceClick.bind(this);
@@ -39,6 +40,7 @@ class ChannelListComponent extends Component {
 				isExpanded[ch.channel_title] = false;
 			});
 			this.setState({
+				org_title: response.data.org_title,
 				channels: response.data.channels,
 				isExpanded: isExpanded,
 			});
@@ -144,7 +146,7 @@ class ChannelListComponent extends Component {
 			<div className="side-channel-list border-right bg-light">
 				<Container fluid>
 					<div className="d-flex justify-content-between">
-						<h3>{this.state.org_id}</h3>
+						<h3>{this.state.org_title}</h3>
 					</div>
 
 					{this.state.channels.map((ch) =>
