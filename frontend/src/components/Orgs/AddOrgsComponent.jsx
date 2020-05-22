@@ -23,11 +23,11 @@ class AddOrgsComponent extends Component {
 		var formIsValid = true;
 		var str2 = this.state.org_id;
 		var errors = {};
-		var idRegex = new RegExp("^[a-z0-9_]+$");
+		var idRegex = new RegExp("[^A-Z\\s]+");
 		if (this.state.org_id.length < 3 || this.state.org_id === "new") {
 			errors.id = "Org ID is too short";
 			formIsValid = false;
-		} else if (this.state.org_id.match(idRegex)) {
+		} else if (this.state.org_id.match(".*?[A-Z\\s].*")) {
 			errors.id = "Org ID can only contain letters numbers and underscores"
 			formIsValid = false;
 		}
@@ -131,6 +131,7 @@ class AddOrgsComponent extends Component {
 						<Form.Group controlId="formOrgId">
 							<Form.Label>Organisation Id</Form.Label>
 							<Form.Control
+								autoComplete="off123"
 								name="id"
 								type="text"
 								value={this.state.org_id}
