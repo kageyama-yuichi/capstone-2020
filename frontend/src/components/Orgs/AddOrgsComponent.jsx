@@ -23,8 +23,12 @@ class AddOrgsComponent extends Component {
 		var formIsValid = true;
 		var str2 = this.state.org_id;
 		var errors = {};
+		var idRegex = new RegExp("^[a-z0-9_]+$");
 		if (this.state.org_id.length < 3 || this.state.org_id === "new") {
 			errors.id = "Org ID is too short";
+			formIsValid = false;
+		} else if (this.state.org_id.match(idRegex)) {
+			errors.id = "Org ID can only contain letters numbers and underscores"
 			formIsValid = false;
 		}
 		// Ensure Length is 3 or Greater
@@ -159,41 +163,6 @@ class AddOrgsComponent extends Component {
 				</Container>
 			</div>
 
-			// <div className="add-orgs-component app-window">
-			// 	<h1 className="title-container">Register an Organisation</h1>
-			// 	<form className="add-orgs-form">
-			// 		<div className="input-container">
-			// 			<h2>Organisation ID</h2>
-			// 			<input
-			// 				className="input-field"
-			// 				type="text"
-			// 				name="org_id"
-			// 				id="org_id"
-			// 				value={this.state.org_id}
-			// 				onChange={this.handle_typing_org_id}
-			// 				placeholder="Organisation ID"
-			// 			/>
-			// 		</div>
-			// 		<div className="input-container">
-			// 			<h2>Organisation Title</h2>
-			// 			<input
-			// 				className="input-field"
-			// 				type="text"
-			// 				name="org_title"
-			// 				id="org_title"
-			// 				value={this.state.org_title}
-			// 				onChange={this.handle_typing_org_title}
-			// 				placeholder="Organisation Title"
-			// 			/>
-			// 		</div>
-			// 		<input
-			// 			id="org_create"
-			// 			type="submit"
-			// 			value="Create Organisation"
-			// 			onClick={this.on_submit}
-			// 		/>
-			// 	</form>
-			// </div>
 		);
 	}
 }

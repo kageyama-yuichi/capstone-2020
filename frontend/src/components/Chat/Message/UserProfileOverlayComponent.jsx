@@ -46,6 +46,7 @@ class UserProfileOverlayComponent extends Component {
 						</Container>
 					</Container>
 				</Popover.Content>
+				{this.props.renderButtons ? 
 				<Popover.Content style={{minWidth: "350px"}} className=" p-0">
 					<ButtonGroup className="w-100">
 						<Button variant="secondary" type="button" style={{ borderTopLeftRadius: "0px" }} onClick={this.addContact}>
@@ -55,7 +56,7 @@ class UserProfileOverlayComponent extends Component {
 							Private Chat
 						</Button>
 					</ButtonGroup>
-				</Popover.Content>
+				</Popover.Content> : null}
 			</Popover>
 		);
 	}

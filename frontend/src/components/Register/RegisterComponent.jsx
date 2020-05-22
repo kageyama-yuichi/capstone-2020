@@ -3,7 +3,7 @@ import "./RegisterComponent.css";
 import {Form, Button, Col, Container, Spinner} from "react-bootstrap";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
 import PlacesAutoComplete from "../Places/PlacesAutoComplete.jsx";
-import Encryption from '../Chat/Encryption.js';
+import Encryption from "../Chat/Encryption.js";
 
 // What's left to be done:
 // When they register, redirect to Dashboard/username
@@ -141,36 +141,27 @@ class RegisterComponent extends Component {
 			};
 			//RegisterResources.registerUser(this.state.username, user);
 			AuthenticationService.checkForUser(this.state.username).then((response) => {
-				if (response.data === true) {
-					this.setState({
-						username: "",
-						firstname: "",
-						lastname: "",
-						email: "",
-						address: "",
-						password: "",
-					});
+				if (response.data) {
+					const newErrors = this.state.errors.slice(); //copy the array
+					newErrors.username = "Username already exists"; //execute the manipulations
+					this.setState({errors: newErrors}); //set the new state
+					document.getElementById("register-username").setCustomValidity("invalid");
 				} else {
 					AuthenticationService.registerNewUser(user).then((response) => {
+						let encPassword = Encryption.encrpyt_message(this.state.password);
 						AuthenticationService.executeJwtAuthenticationService(
 							this.state.username,
-							this.state.password
+							encPassword
 						).then((response) => {
 							AuthenticationService.registerSuccessfulLoginForJwt(
 								this.state.username,
 								response.data.token
 							);
-							/*
-							let url = '/dashboard/'+this.state.username;
-							console.log(this.props.history);
-							this.props.history.push(url);
-							*/
+							this.props.submitHandler();
 						});
 					});
 				}
 			});
-
-			this.props.submitHandler();
 		}
 
 		this.setState({validated: true});
@@ -269,6 +260,7 @@ class RegisterComponent extends Component {
 										<Form.Control
 											type="text"
 											name="username"
+											id="register-username"
 											placeholder="Username"
 											onChange={this.handleChange.bind(this)}
 											value={this.state.username}

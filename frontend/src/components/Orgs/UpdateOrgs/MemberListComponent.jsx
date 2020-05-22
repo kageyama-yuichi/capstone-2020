@@ -15,15 +15,15 @@ class MemberListComponent extends Component {
 	}
 
 	roleToString(role) {
-		let ret = ""
+		let ret = "";
 
 		if (role === "ORG_OWNER") {
-			ret = "Org Owner"
+			ret = "Org Owner";
 		} else if (role === "ADMIN") {
-			ret = "Admin"
+			ret = "Admin";
 		} else if (role === "TEAM_LEADER") {
-			ret = "Team Leader"
-		} 
+			ret = "Team Leader";
+		}
 
 		return ret;
 	}
@@ -39,13 +39,10 @@ class MemberListComponent extends Component {
 							<p>
 								{org_member_details.get(member.username).name}{" "}
 								{member.role === "TEAM_MEMBER" ? null : (
-									<OverlayTrigger
-										
+									<OverlayTrigger delay={{ show: 400, hide: 0 }}
 										placement="right"
 										overlay={
-											<Tooltip id={`tooltip-top`}>
-												{this.roleToString(member.role)}
-											</Tooltip>
+											<Tooltip>{this.roleToString(member.role)}</Tooltip>
 										}>
 										<i className={getRoleIconClassName(member.role)}> </i>
 									</OverlayTrigger>
@@ -75,28 +72,34 @@ class MemberListComponent extends Component {
 
 		//Set to null if show_manage_buttons prop is false
 		let demote = this.props.show_manage_buttons ? (
-			<Button
+			<OverlayTrigger delay={{ show: 400, hide: 0 }}
 				key={username + "demote"}
-				variant="warning"
-				onClick={() => this.manage_member(username, "demote")}>
-				<i className="fas fa-chevron-down"></i>
-			</Button>
+				placement="bottom"
+				overlay={<Tooltip>Demote</Tooltip>}>
+				<Button variant="warning" onClick={() => this.manage_member(username, "demote")}>
+					<i className="fas fa-chevron-down"></i>
+				</Button>
+			</OverlayTrigger>
 		) : null;
 		let promote = this.props.show_manage_buttons ? (
-			<Button
+			<OverlayTrigger delay={{ show: 400, hide: 0 }}
 				key={username + "promote"}
-				variant="success"
-				onClick={() => this.manage_member(username, "promote")}>
-				<i className="fas fa-chevron-up"></i>
-			</Button>
+				placement="bottom"
+				overlay={<Tooltip>Promote</Tooltip>}>
+				<Button variant="success" onClick={() => this.manage_member(username, "promote")}>
+					<i className="fas fa-chevron-up"></i>
+				</Button>
+			</OverlayTrigger>
 		) : null;
 		let remove = (
-			<Button
+			<OverlayTrigger delay={{ show: 400, hide: 0 }}
 				key={username + "remove"}
-				variant="danger"
-				onClick={() => this.remove_member(username)}>
-				<i className="fas fa-times"></i>
-			</Button>
+				placement="bottom"
+				overlay={<Tooltip>Remove</Tooltip>}>
+				<Button variant="danger" onClick={() => this.remove_member(username)}>
+					<i className="fas fa-times"></i>
+				</Button>
+			</OverlayTrigger>
 		);
 
 		// if the Managing User is an Organisation Owner

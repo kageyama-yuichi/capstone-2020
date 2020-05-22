@@ -76,6 +76,7 @@ class PasswordChangeComponent extends Component {
 								placeholder="New Password" required
 								className="newPassword-input"
 								name="newPassword" 
+								type="password"
 								onChange={this.handleChange.bind(this)}
 								value={this.state.newPassword}/>
 							<Form.Control.Feedback></Form.Control.Feedback>
@@ -86,6 +87,7 @@ class PasswordChangeComponent extends Component {
 								placeholder="Confirm New Password" required
 								className="confirmPassword-input"
 								name="confirmPassword" 
+								type="password"
 								onChange={this.handleChange.bind(this)}
 								value={this.state.confirmPassword}/>
 							<Form.Control.Feedback></Form.Control.Feedback>
