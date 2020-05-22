@@ -713,7 +713,7 @@ class UpdateOrgsComponent extends Component {
 	mapToastAlerts() {
 		let toasts = this.state.alerts.map((alert, index) => {
 			return (
-				<Toast key={index} onClose={() => this.handleToastAlertClose(index)}>
+				<Toast key={index} onClose={() => this.handleToastAlertClose(index)} delay={2000} autohide>
 					<Toast.Header>
 						<strong className="mr-auto">Update Orgs</strong>
 					</Toast.Header>
