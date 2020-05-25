@@ -507,8 +507,14 @@ class ChatComponent extends Component {
 		retDiv = [...instance_member_details.keys()].map((key) => {
 			return (
 				<p key={key}>
-					{instance_member_details.get(key).name} (
-					{instance_member_details.get(key).status}) @{key}
+					<span
+						className={
+							instance_member_details.get(key).status === "offline"
+								? "offline-dot"
+								: "online-dot"
+						}></span>{" "}
+					{instance_member_details.get(key).name} @{key} {" "}
+					{instance_member_details.get(key).status === "typing..." ? "typing..." : ""}
 				</p>
 			);
 		});
@@ -573,7 +579,7 @@ class ChatComponent extends Component {
 								fluid
 								className="pl-0 pr-0 ml-0 mr-0 h-100 flex-fill"
 								style={{minWidth: "150px", maxWidth: "300px"}}>
-								<div className="h-100 bg-light"> 
+								<div className="h-100 bg-light">
 									<Tabs className="text-light" defaultActiveKey="users">
 										<Tab eventKey="users" title="Users">
 											<div className="user-list">{this.mapUsers()}</div>
