@@ -3,7 +3,7 @@ import {Container, Image, OverlayTrigger, Overlay} from "react-bootstrap";
 import tempImg from "../../../assests/ProfileIcon.svg";
 import moment from "moment";
 import UserProfileOverlayComponent from "./UserProfileOverlayComponent.jsx";
-import {create} from "domain";
+import AuthenticationService from "../../Authentication/AuthenticationService";
 
 var target = null;
 
@@ -11,6 +11,7 @@ class MessageComponent extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			username: AuthenticationService.getLoggedInUserName(),
 			name: props.msg.name,
 			dateTime: moment(props.msg.date_time, "LT (DD/MM/YYYY)"),
 			sender: props.msg.sender,
@@ -44,6 +45,7 @@ class MessageComponent extends Component {
 					rootClose={true}
 					overlay={
 						<UserProfileOverlayComponent
+							renderButtons={this.state.username !== this.props.senderUsername}
 							senderusername={this.props.senderUsername}
 							sender={this.props.sender}
 						/>

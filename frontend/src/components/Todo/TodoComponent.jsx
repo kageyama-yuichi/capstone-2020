@@ -4,7 +4,7 @@ import OrgResources from "../Orgs/OrgsResources.js";
 import "./TodoComponent.css";
 import moment from "moment";
 import TodoEditComponent from "./TodoEditComponent.jsx";
-import {Container, Button} from "react-bootstrap";
+import {Container, Button, Tooltip, OverlayTrigger} from "react-bootstrap";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
 import equal from "fast-deep-equal";
 
@@ -76,7 +76,7 @@ class TodoComponent extends Component {
 	};
 	handleEditClick = (todo) => {
 		this.setState({editTodo: todo}, this.toggleOverlay());
-		
+
 		// var url = this.state.username + "/" + id;
 		// this.props.history.push(url);
 	};
@@ -147,6 +147,7 @@ class TodoComponent extends Component {
 	}
 
 	render() {
+		console.log(this.state.todos);
 		return (
 			<div className="todo-component">
 				<Container fluid>
@@ -176,43 +177,71 @@ class TodoComponent extends Component {
 									{this.state.todos.map((todo) => (
 										<tr key={todo.id}>
 											<td style={{width: "50px"}} className="done-col">
-												<button
-													className={
-														todo.status ? "done-button" : "doing-button"
-													}
-													style={todo.status ? {backgroundColor: todo.color} : {borderColor: todo.color}}
-													onClick={() => this.handleDoneClick(todo.id)}
-													disabled={
-														this.props.role === "TEAM_MEMBER" ||
-														this.props.disableDoneButton
-													}>
-													{todo.status ? "Done" : "Doing"}
-												</button>
+												<OverlayTrigger
+													delay={{show: 400, hide: 0}}
+													placement="bottom"
+													overlay={<Tooltip>Update Status</Tooltip>}>
+													<button
+														className={
+															todo.status
+																? "done-button"
+																: "doing-button"
+														}
+														style={
+															todo.status
+																? {backgroundColor: todo.color}
+																: {borderColor: todo.color}
+														}
+														onClick={() =>
+															this.handleDoneClick(todo.id)
+														}
+														disabled={
+															this.props.role === "TEAM_MEMBER" ||
+															this.props.disableDoneButton
+														}>
+														{todo.status ? "Done" : "Doing"}
+													</button>
+												</OverlayTrigger>
 											</td>
 											<td className="desc-col">{todo.desc}</td>
-											<td className="date-col">
-												{moment().isSame(todo.date, "date")
-													? "Today"
-													: moment(todo.date).format("ll")}
-											</td>
+											{this.props.isWidget ? null : (
+												<td className="date-col">
+													{moment().isSame(todo.date, "date")
+														? "Today"
+														: moment(todo.date).format("ll")}
+												</td>
+											)}
+
 											{this.props.isWidget ||
 											this.props.role === "TEAM_MEMBER" ? null : (
 												<td className="update-col">
-													<button
-														onClick={() => this.handleEditClick(todo)}>
-														<i className="fas fa-edit"></i>
-													</button>
+													<OverlayTrigger
+														delay={{show: 400, hide: 0}}
+														placement="bottom"
+														overlay={<Tooltip>Edit</Tooltip>}>
+														<button
+															onClick={() =>
+																this.handleEditClick(todo)
+															}>
+															<i className="fas fa-edit"></i>
+														</button>
+													</OverlayTrigger>
 												</td>
 											)}
 											{this.props.isWidget ||
 											this.props.role === "TEAM_MEMBER" ? null : (
 												<td className="delete-col">
-													<button
-														onClick={() =>
-															this.handleDeleteClick(todo.id)
-														}>
-														<i className="fas fa-minus-circle"></i>
-													</button>
+													<OverlayTrigger
+														delay={{show: 400, hide: 0}}
+														placement="bottom"
+														overlay={<Tooltip>Delete</Tooltip>}>
+														<button
+															onClick={() =>
+																this.handleDeleteClick(todo.id)
+															}>
+															<i className="fas fa-minus-circle"></i>
+														</button>
+													</OverlayTrigger>
 												</td>
 											)}
 										</tr>

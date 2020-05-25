@@ -1,5 +1,14 @@
 import React, {Component} from "react";
-import {Accordion, Card, Container, ListGroup, Button, ButtonGroup} from "react-bootstrap";
+import {
+	Accordion,
+	Card,
+	Container,
+	ListGroup,
+	Button,
+	ButtonGroup,
+	OverlayTrigger,
+	Tooltip,
+} from "react-bootstrap";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
 import "./ChannelInstanceListComponent.css";
 import OrgsResources from "./OrgsResources.js";
@@ -13,6 +22,7 @@ class ChannelListComponent extends Component {
 			channels: [],
 			isExpanded: [],
 			channel_title: "",
+			org_title: ""
 		};
 
 		this.handleAddInstanceClick = this.handleAddInstanceClick.bind(this);
@@ -30,6 +40,7 @@ class ChannelListComponent extends Component {
 				isExpanded[ch.channel_title] = false;
 			});
 			this.setState({
+				org_title: response.data.org_title,
 				channels: response.data.channels,
 				isExpanded: isExpanded,
 			});
@@ -96,20 +107,35 @@ class ChannelListComponent extends Component {
 				size="sm"
 				className="mt-auto mb-auto"
 				style={{height: "fit-content"}}>
-				<Button onClick={() => this.onClick(ch.channel_title)} variant="dark">
-					<i className="text-warning fas fa-star"></i>
-				</Button>
-				{role !== "TEAM_MEMBER" ? (
-					<Button
-						variant="dark"
-						onClick={() => this.handleAddInstanceClick(ch.channel_title)}>
-						<i className="text-success fas fa-plus"></i>
+				<OverlayTrigger
+					delay={{show: 400, hide: 0}}
+					placement="bottom"
+					overlay={<Tooltip>Favourite</Tooltip>}>
+					<Button onClick={() => this.onClick(ch.channel_title)} variant="dark">
+						<i className="text-warning fas fa-star"></i>
 					</Button>
+				</OverlayTrigger>
+				{role !== "TEAM_MEMBER" ? (
+					<OverlayTrigger
+						delay={{show: 400, hide: 0}}
+						placement="bottom"
+						overlay={<Tooltip>New Instance</Tooltip>}>
+						<Button
+							variant="dark"
+							onClick={() => this.handleAddInstanceClick(ch.channel_title)}>
+							<i className="text-success fas fa-plus"></i>
+						</Button>
+					</OverlayTrigger>
 				) : null}
 				{role !== "TEAM_MEMBER" ? (
-					<Button variant="dark" onClick={() => this.handleChannelSettingsClick(ch)}>
-						<i className="fas fa-cog"></i>
-					</Button>
+					<OverlayTrigger
+						delay={{show: 400, hide: 0}}
+						placement="bottom"
+						overlay={<Tooltip>Channel Settings</Tooltip>}>
+						<Button variant="dark" onClick={() => this.handleChannelSettingsClick(ch)}>
+							<i className="fas fa-cog"></i>
+						</Button>
+					</OverlayTrigger>
 				) : null}
 			</ButtonGroup>
 		);
@@ -120,16 +146,7 @@ class ChannelListComponent extends Component {
 			<div className="side-channel-list border-right bg-light">
 				<Container fluid>
 					<div className="d-flex justify-content-between">
-						<h3>{this.state.org_id}</h3>
-
-						<Button
-							size="sm"
-							className="align-self-center"
-							style={{height: "fit-content"}}
-							variant="outline-dark"
-							onClick={this.handle_create_channel}>
-							<i className="fas fa-plus"></i>
-						</Button>
+						<h3>{this.state.org_title}</h3>
 					</div>
 
 					{this.state.channels.map((ch) =>
@@ -172,6 +189,7 @@ class ChannelListComponent extends Component {
 														this.getRole(ch.members)
 													)
 												}>
+												<i className=" p-1 fas fa-list-ol"></i>
 												Todo List
 											</ListGroup.Item>
 											{ch.instances.map((instance) => (
@@ -185,6 +203,8 @@ class ChannelListComponent extends Component {
 														)
 													}
 													key={instance.instance_title}>
+													<i className="p-1 fas fa-comment-alt"></i>
+
 													{instance.instance_title}
 												</ListGroup.Item>
 											))}

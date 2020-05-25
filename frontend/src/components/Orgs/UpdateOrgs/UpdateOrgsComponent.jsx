@@ -18,6 +18,8 @@ import {
 	FormControl,
 	Tabs,
 	Tab,
+	Tooltip,
+	OverlayTrigger,
 } from "react-bootstrap";
 
 /*
@@ -214,7 +216,7 @@ class UpdateOrgsComponent extends Component {
 		if (!valid) {
 			deleteOrgInput.setCustomValidity("invalid");
 		}
-		
+
 		this.setState({deleteOrgInputError: error, orgIdValidated: true});
 	}
 
@@ -233,7 +235,6 @@ class UpdateOrgsComponent extends Component {
 				});
 			});
 		}
-
 	}
 
 	componentDidMount() {
@@ -477,11 +478,11 @@ class UpdateOrgsComponent extends Component {
 	};
 
 	load_org_member_details() {
-		// Create the Map for the Member Details
+		// Create the Map for the Member Detail
+		org_member_details.clear();
 		OrgsResources.retrieve_basic_users_in_orgs(this.state.members).then((response) => {
 			// Go through the Response Data which is the Basic User and Strip Data
 			for (let i = 0; i < response.data.length; i++) {
-
 				let user_details = {
 					fname: response.data[i].fname,
 					lname: response.data[i].lname,
@@ -520,18 +521,15 @@ class UpdateOrgsComponent extends Component {
 	}
 
 	invite_user = (invitee) => {
+		searched_users = [];
 		OrgsResources.invite_to_org(this.state.username, invitee, this.state.org_id).then(
 			(response) => {
 				this.setState((prevState) => ({
 					alerts: [...prevState.alerts, "User Successfully Emailed"],
-				}));
-
-				searched_users = [];
-				// Resetting Fields
-				this.setState({
 					search_key: "",
 					invite_sent: true,
-				});
+				}));
+			
 			}
 		);
 	};
@@ -540,9 +538,10 @@ class UpdateOrgsComponent extends Component {
 			(response) => {
 				pending_users = [];
 				// Re-render the Page
-				this.setState({
+				this.setState((prevState) => ({
+					alerts: [...prevState.alerts, "Pending invite removed"],
 					invite_sent: true,
-				});
+				}));
 			}
 		);
 	};
@@ -677,21 +676,27 @@ class UpdateOrgsComponent extends Component {
 		let retDiv;
 		if (is_searched) {
 			retDiv = (
-				<Button
-					key={username + "invite"}
-					variant="success"
-					onClick={() => this.invite_user(username)}>
-					<i className="fas fa-plus"></i>
-				</Button>
+				<OverlayTrigger delay={{ show: 400, hide: 0 }} placement="bottom" overlay={<Tooltip>Invite</Tooltip>}>
+					<Button
+						key={username + "invite"}
+						variant="success"
+						onClick={() => this.invite_user(username)}>
+						<i className="fas fa-plus"></i>
+					</Button>
+				</OverlayTrigger>
 			);
 		} else {
 			retDiv = (
-				<Button
-					key={username + "destroy"}
-					variant="danger"
-					onClick={() => this.remove_invited_user(this.state.org_id + "." + username)}>
-					<i className="fas fa-times"></i>
-				</Button>
+				<OverlayTrigger delay={{ show: 400, hide: 0 }} placement="bottom" overlay={<Tooltip>Remove</Tooltip>}>
+					<Button
+						key={username + "destroy"}
+						variant="danger"
+						onClick={() =>
+							this.remove_invited_user(this.state.org_id + "." + username)
+						}>
+						<i className="fas fa-times"></i>
+					</Button>
+				</OverlayTrigger>
 			);
 		}
 
@@ -707,7 +712,7 @@ class UpdateOrgsComponent extends Component {
 	mapToastAlerts() {
 		let toasts = this.state.alerts.map((alert, index) => {
 			return (
-				<Toast key={index} onClose={() => this.handleToastAlertClose(index)}>
+				<Toast key={index} onClose={() => this.handleToastAlertClose(index)} delay={2000} autohide>
 					<Toast.Header>
 						<strong className="mr-auto">Update Orgs</strong>
 					</Toast.Header>
@@ -720,7 +725,6 @@ class UpdateOrgsComponent extends Component {
 	}
 
 	render() {
-
 		return !this.state.is_verifed ? null : (
 			<div className="app-window update-org-component">
 				<Container fluid>
@@ -826,11 +830,15 @@ class UpdateOrgsComponent extends Component {
 										<h3>Channels</h3>
 									</Col>
 									<Col md={1}>
-										<Button
-											variant="outline-dark"
-											onClick={this.handle_create_channel}>
-											<i className="fas fa-plus"></i>
-										</Button>
+										<OverlayTrigger delay={{ show: 400, hide: 0 }}
+											placement="left"
+											overlay={<Tooltip>Create New A Channel</Tooltip>}>
+											<Button
+												variant="outline-dark"
+												onClick={this.handle_create_channel}>
+												<i className="fas fa-plus"></i>
+											</Button>
+										</OverlayTrigger>
 									</Col>
 								</Row>
 								<Row>

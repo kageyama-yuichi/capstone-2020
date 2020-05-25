@@ -4,6 +4,7 @@ import OrgResources from "../../Orgs/OrgsResources.js";
 import TodoResources from "../../Todo/TodoResources.js";
 import AuthenticationService from "../../Authentication/AuthenticationService";
 import moment from "moment";
+import {Container} from "react-bootstrap"
 class TodoWidgetComponent extends Component {
 	constructor(props) {
 		super(props);
@@ -16,7 +17,7 @@ class TodoWidgetComponent extends Component {
 			teamTodosLoaded: false,
 		};
 		this.refreshOrgTodos = this.refreshOrgTodos.bind(this);
-		this.refreshPersonalTodos = this.refreshPersonalTodos.bind(this)
+		this.refreshPersonalTodos = this.refreshPersonalTodos.bind(this);
 	}
 
 	componentDidMount() {
@@ -45,22 +46,35 @@ class TodoWidgetComponent extends Component {
 	}
 
 	getTodayTodos(todos) {
-		for (var i in todos) {
-			console.log(moment().isSame(todos[i].date, "day"));
-			if (!moment().isSame(todos[i].date, "day")) {
-				todos.splice(i, 1);
-			}
-		}
-		return todos;
+		var retTodos = todos.filter((todo) => {
+			return	moment(todo.date).isSame(moment(), "day");
+		})
+		return retTodos;
 	}
 
 	render() {
-		console.log(this.state.teamTodos,this.state.personalTodos)
 		return this.state.personalTodosLoaded && this.state.teamTodosLoaded ? (
 			<div className="w-100" style={{overflowY: "auto"}}>
-				<TodoComponent showHeader={true} isWidget={true} title="Personal Todos" callback={this.refreshPersonalTodos} todos={this.state.personalTodos} />
-                
-                <TodoComponent showHeader={false} isWidget={true} showNewButton={false} disableDoneButton={true} callback={this.refreshOrgTodos} title="Channel Todos" todos={this.state.teamTodos}/>
+				{this.state.personalTodos.length > 0 ? (
+					<TodoComponent
+						showHeader={true}
+						isWidget={true}
+						title="Personal Todos"
+						callback={this.refreshPersonalTodos}
+						todos={this.state.personalTodos}
+					/>
+				) :	<Container fluid>No personal Todos!</Container>}
+				{this.state.teamTodos.length > 0 ? (
+					<TodoComponent
+						showHeader={false}
+						isWidget={true}
+						showNewButton={false}
+						disableDoneButton={true}
+						callback={this.refreshOrgTodos}
+						title="Channel Todos"
+						todos={this.state.teamTodos}
+					/>
+				) :  <Container fluid>No channel Todos!</Container>}
 			</div>
 		) : null;
 	}

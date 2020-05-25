@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {ListGroup, Button, ButtonGroup} from "react-bootstrap";
+import {ListGroup, Button, ButtonGroup, OverlayTrigger, Tooltip} from "react-bootstrap";
 import MemberListComponent from "./MemberListComponent.jsx";
 
 const org_member_details = new Map();
@@ -41,46 +41,68 @@ class ChannelListComponent extends Component {
 						<div className="d-flex justify-content-between">
 							{ch.channel_title}
 							<ButtonGroup className="align-self-end">
-								<Button
-									variant="secondary"
-									className="btn-sm"
-									onClick={() => this.toggleMemberListDisplay(ch.channel_title)}>
-									{this.state.memberListOpen[ch.channel_title] ? (
-										<i className="fas fa-angle-up"></i>
-									) : (
-										<i className="fas fa-caret-down"></i>
-									)}
-								</Button>
-								<Button
-									variant="success"
-									className="btn-sm"
-									onClick={() =>
-										this.props.add_users_to_channel(ch.channel_title)
-									}>
-									<i className="fas fa-user-plus"></i>
-								</Button>
-								<Button
-									variant="danger"
-									className="btn-sm"
-									onClick={() =>
-										this.props.remove_users_from_channel(ch.channel_title)
-									}>
-									<i className="fas fa-user-minus"></i>
-								</Button>
-								<Button
-									variant="dark"
-									className="btn-sm"
-									onClick={() => this.props.handle_update_channel(ch)}>
-									<i className="fas fa-edit"></i>
-								</Button>
-								<Button
-									className="btn-sm"
-									variant="warning"
-									onClick={() =>
-										this.props.handle_delete_channel(ch.channel_title)
-									}>
-									<i className="fas fa-trash"></i>
-								</Button>
+								<OverlayTrigger delay={{ show: 400, hide: 0 }}
+									placement="bottom"
+									overlay={<Tooltip>Members</Tooltip>}>
+									<Button
+										variant="secondary"
+										className="btn-sm"
+										onClick={() =>
+											this.toggleMemberListDisplay(ch.channel_title)
+										}>
+										{this.state.memberListOpen[ch.channel_title] ? (
+											<i className="fas fa-angle-up"></i>
+										) : (
+											<i className="fas fa-caret-down"></i>
+										)}
+									</Button>
+								</OverlayTrigger>
+								<OverlayTrigger delay={{ show: 400, hide: 0 }}
+									placement="bottom"
+									overlay={<Tooltip>Add Users</Tooltip>}>
+									<Button
+										variant="success"
+										className="btn-sm"
+										onClick={() =>
+											this.props.add_users_to_channel(ch.channel_title)
+										}>
+										<i className="fas fa-user-plus"></i>
+									</Button>
+								</OverlayTrigger>
+								<OverlayTrigger delay={{ show: 400, hide: 0 }}
+									placement="bottom"
+									overlay={<Tooltip>Remove Users</Tooltip>}>
+									<Button
+										variant="danger"
+										className="btn-sm"
+										onClick={() =>
+											this.props.remove_users_from_channel(ch.channel_title)
+										}>
+										<i className="fas fa-user-minus"></i>
+									</Button>
+								</OverlayTrigger>
+								<OverlayTrigger delay={{ show: 400, hide: 0 }}
+									placement="bottom"
+									overlay={<Tooltip>Edit Channel</Tooltip>}>
+									<Button
+										variant="dark"
+										className="btn-sm"
+										onClick={() => this.props.handle_update_channel(ch)}>
+										<i className="fas fa-edit"></i>
+									</Button>
+								</OverlayTrigger>
+								<OverlayTrigger delay={{ show: 400, hide: 0 }}
+									placement="bottom"
+									overlay={<Tooltip>Delete Channel</Tooltip>}>
+									<Button
+										className="btn-sm"
+										variant="warning"
+										onClick={() =>
+											this.props.handle_delete_channel(ch.channel_title)
+										}>
+										<i className="fas fa-trash"></i>
+									</Button>
+								</OverlayTrigger>
 							</ButtonGroup>
 						</div>
 

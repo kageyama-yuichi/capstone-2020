@@ -150,17 +150,17 @@ public class UserMetaDataJpaResource {
 		}
 	}
 
-	public List<String> getUserChannels(String username){
-	
+	public List<String> getUserChannels(String username) {
+
 		// Stores all the org_channels of the User
 		List<String> org_channels = new ArrayList<String>();
-	
+
 		UserMetaData sql = null;
-		
+
 		try {
 			// Get the Current Data from Database if it Exists
 			sql = repo.findByUsername(username);
-			if (sql != null) {				
+			if (sql != null) {
 				// Convert to List of Strings Object
 				org_channels = json_mapper.readValue(sql.get_org_channels(),
 						json_mapper.getTypeFactory().constructCollectionType(List.class, String.class));
@@ -171,18 +171,18 @@ public class UserMetaDataJpaResource {
 		} catch (JsonProcessingException e) {
 			System.out.println("System - Error Updating Database");
 		}
-		
+
 		return org_channels;
 	}
-	
+
 /////////////////////
 //Channel Related //
 /////////////////////		
 
-	public void channel_added(String username, String org_id, String org_channel) {
+	public void channel_added(String username, String org_id, String channel_title) {
 		System.out.println("System - Adding Channel into User's Name");
 		// Stores all the org_ids of the User
-		List<String> org_ids = new ArrayList<String>();
+		String org_ids = "[]";
 		// Stores all the org_channels of the User
 		List<String> org_channels = new ArrayList<String>();
 		// Stores all the org_channels_istance_chat_time of the User
@@ -197,9 +197,8 @@ public class UserMetaDataJpaResource {
 		try {
 			// Get the Current Data from Database if it Exists
 			sql = repo.findByUsername(username);
-			// Convert to List of Strings Object
-			org_ids = json_mapper.readValue(sql.get_org_ids(),
-					json_mapper.getTypeFactory().constructCollectionType(List.class, String.class));
+			// Get the Current String
+			org_ids = sql.get_org_ids();
 			// Convert to List of Strings Object
 			org_channels = json_mapper.readValue(sql.get_org_channels(),
 					json_mapper.getTypeFactory().constructCollectionType(List.class, String.class));
@@ -211,12 +210,53 @@ public class UserMetaDataJpaResource {
 			fav_channel = sql.get_fav_channel();
 
 			// Add the channel
-			org_channels.add(new String(org_id + "." + org_channel));
+			org_channels.add(new String(org_id + "." + channel_title));
 
 			// Save it
-			repo.save(new UserMetaData(username, json_mapper.writeValueAsString(org_ids),
-					json_mapper.writeValueAsString(org_channels), org_channel_instances_chat_time, contact_list,
-					fav_channel));
+			repo.save(new UserMetaData(username, org_ids, json_mapper.writeValueAsString(org_channels),
+					org_channel_instances_chat_time, contact_list, fav_channel));
+		} catch (JsonMappingException e) {
+			System.out.println("System - Error Updating Database");
+		} catch (JsonProcessingException e) {
+			System.out.println("System - Error Updating Database");
+		}
+	}
+
+	public void channel_deleted(String username, String org_id, String channel_title) {
+		System.out.println("System - Removing channel into User's Name");
+		// Stores all the org_ids of the User
+		String org_ids = "[]";
+		// Stores all the org_channels of the User
+		List<String> org_channels = new ArrayList<String>();
+		// Stores all the org_channels_istance_chat_time of the User
+		String org_channel_instances_chat_time = "[]";
+		// Stores the users contact_list
+		String contact_list = "[]";
+		// Stores the favourite channel of the User
+		String fav_channel = "[]";
+		// Used to Store Retrieved Data from Database
+		UserMetaData sql = null;
+
+		try {
+			// Get the Current Data from Database if it Exists
+			sql = repo.findByUsername(username);
+			// Get the Current String
+			org_ids = sql.get_org_ids();
+			// Convert to List of Strings Object
+			org_channels = json_mapper.readValue(sql.get_org_channels(),
+					json_mapper.getTypeFactory().constructCollectionType(List.class, String.class));
+			// Get the Current String
+			org_channel_instances_chat_time = sql.get_org_channel_instances_chat_time();
+			// Get Current Contact List
+			contact_list = sql.get_contact_list();
+			// Get Favourite Channel
+			fav_channel = sql.get_fav_channel();
+
+			org_channels.remove(new String(org_id + "." + channel_title));
+
+			// Save it
+			repo.save(new UserMetaData(username, org_ids, json_mapper.writeValueAsString(org_channels),
+					org_channel_instances_chat_time, contact_list, fav_channel));
 		} catch (JsonMappingException e) {
 			System.out.println("System - Error Updating Database");
 		} catch (JsonProcessingException e) {
@@ -328,8 +368,7 @@ public class UserMetaDataJpaResource {
 			@PathVariable String channel_title, @PathVariable String instance_title, @RequestBody String time) {
 
 		System.out.println(time);
-			
-		
+
 		String newTime = time.replace("\"", "");
 
 		// Stores all the org_ids of the User
@@ -345,7 +384,7 @@ public class UserMetaDataJpaResource {
 		String fav_channel = "[]";
 		// Used to Store Retrieved Data from Database
 		UserMetaData sql = null;
-		
+
 		try {
 			// Get the Current Data from Database if it Exists
 			sql = repo.findByUsername(username);
@@ -369,7 +408,7 @@ public class UserMetaDataJpaResource {
 				}
 			}
 			org_channel_instances_chat_time.add(org_id + "." + channel_title + "." + instance_title + "@" + newTime);
-			
+
 			// Save it
 			repo.save(new UserMetaData(username, org_ids, org_channels,
 					json_mapper.writeValueAsString(org_channel_instances_chat_time), contact_list, fav_channel));

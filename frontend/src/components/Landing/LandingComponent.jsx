@@ -17,6 +17,7 @@ class LandingComponent extends Component {
 			showRegister: false,
 			showRecovery: false,
 			windowSize: "",
+			loginError: false,
 		};
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.registerSubmitHandler = this.registerSubmitHandler.bind(this);
@@ -64,20 +65,18 @@ class LandingComponent extends Component {
 
 	handleSubmit(e) {
 		e.preventDefault();
-		this.state.password = Encryption.encrpyt_message(this.state.password);
+		let encPassword = Encryption.encrpyt_message(this.state.password);
 		AuthenticationService.executeJwtAuthenticationService(
 			this.state.username,
-			this.state.password
+			encPassword
 		).then((response) => {
-			console.log(this.state.password);
-			console.log("Inner Authetnication");
 			AuthenticationService.registerSuccessfulLoginForJwt(
 				this.state.username,
 				response.data.token
 			);
 			let url = "/dashboard";
 			this.props.history.push(url);
-		});
+		}).catch((err) =>this.setState({loginError: true}));
 	}
 
 	componentDidMount() {
@@ -116,6 +115,7 @@ class LandingComponent extends Component {
 										onChange={this.handleChange.bind(this)}
 										value={this.state.password}></input>
 								</Form.Group>
+								{this.state.loginError ? <p className="text-danger">Incorrect username or password</p> : null}
 								<div className="password-reset">
 									<Button
 										variant="link"

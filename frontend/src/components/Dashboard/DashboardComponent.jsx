@@ -44,7 +44,7 @@ class DashboardComponent extends Component {
 											as={Card.Header}
 											variant="link"
 											eventKey="0">
-											<h3>Todos</h3>
+											<h3>Today's Todos</h3>
 										</Accordion.Toggle>
 										<Accordion.Collapse eventKey="0">
 											<Card.Body className="p-0">
