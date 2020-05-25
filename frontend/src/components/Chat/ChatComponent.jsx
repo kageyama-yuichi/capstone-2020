@@ -438,7 +438,8 @@ class ChatComponent extends Component {
 				this.state.channel_title,
 				this.state.instance_title
 			).then((response) => {
-				this.setState({readLast: response.data});
+				this.setState({ readLast: response.data });
+				console.log(response.data)
 			});
 		}
 	}
@@ -476,6 +477,7 @@ class ChatComponent extends Component {
 									<MessagesListComponent
 										instance_member_details={instance_member_details}
 										messages={messages}
+										readLast={this.state.readLast}
 										handleScroll={this.handleScroll}
 										setMessageCounter={this.setMessageCounter}
 										oldMessageLength={oldMessageLength}
