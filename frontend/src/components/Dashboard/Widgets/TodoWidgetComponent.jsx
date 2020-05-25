@@ -4,6 +4,7 @@ import OrgResources from "../../Orgs/OrgsResources.js";
 import TodoResources from "../../Todo/TodoResources.js";
 import AuthenticationService from "../../Authentication/AuthenticationService";
 import moment from "moment";
+import {Container} from "react-bootstrap"
 class TodoWidgetComponent extends Component {
 	constructor(props) {
 		super(props);
@@ -34,7 +35,6 @@ class TodoWidgetComponent extends Component {
 	refreshOrgTodos() {
 		OrgResources.retrieveAllOrgTodos(this.state.username).then((response) => {
 			let teamTodos = [];
-			console.log(response.data);
 			for (var i in response.data) {
 				for (var j in response.data[i]) {
 					teamTodos.push(response.data[i][j]);
@@ -46,13 +46,10 @@ class TodoWidgetComponent extends Component {
 	}
 
 	getTodayTodos(todos) {
-		for (var i in todos) {
-			console.log(moment().isSame(todos[i].date, "day"));
-			if (!moment().isSame(todos[i].date, "day")) {
-				todos.splice(i, 1);
-			}
-		}
-		return todos;
+		var retTodos = todos.filter((todo) => {
+			return	moment(todo.date).isSame(moment(), "day");
+		})
+		return retTodos;
 	}
 
 	render() {
@@ -66,7 +63,7 @@ class TodoWidgetComponent extends Component {
 						callback={this.refreshPersonalTodos}
 						todos={this.state.personalTodos}
 					/>
-				) : null}
+				) :	<Container fluid>No personal Todos!</Container>}
 				{this.state.teamTodos.length > 0 ? (
 					<TodoComponent
 						showHeader={false}
@@ -77,7 +74,7 @@ class TodoWidgetComponent extends Component {
 						title="Channel Todos"
 						todos={this.state.teamTodos}
 					/>
-				) : null}
+				) :  <Container fluid>No channel Todos!</Container>}
 			</div>
 		) : null;
 	}

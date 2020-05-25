@@ -204,11 +204,14 @@ class TodoComponent extends Component {
 												</OverlayTrigger>
 											</td>
 											<td className="desc-col">{todo.desc}</td>
-											<td className="date-col">
-												{moment().isSame(todo.date, "date")
-													? "Today"
-													: moment(todo.date).format("ll")}
-											</td>
+											{this.props.isWidget ? null : (
+												<td className="date-col">
+													{moment().isSame(todo.date, "date")
+														? "Today"
+														: moment(todo.date).format("ll")}
+												</td>
+											)}
+
 											{this.props.isWidget ||
 											this.props.role === "TEAM_MEMBER" ? null : (
 												<td className="update-col">

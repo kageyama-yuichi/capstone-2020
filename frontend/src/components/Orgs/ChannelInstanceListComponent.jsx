@@ -131,7 +131,7 @@ class ChannelListComponent extends Component {
 					<OverlayTrigger
 						delay={{show: 400, hide: 0}}
 						placement="bottom"
-						overlay={<Tooltip>Remove Users</Tooltip>}>
+						overlay={<Tooltip>Channel Settings</Tooltip>}>
 						<Button variant="dark" onClick={() => this.handleChannelSettingsClick(ch)}>
 							<i className="fas fa-cog"></i>
 						</Button>
