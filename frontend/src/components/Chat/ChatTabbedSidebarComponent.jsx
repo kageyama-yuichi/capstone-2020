@@ -11,8 +11,14 @@ class ChatTabbedSidebarComponent extends Component {
 		retDiv = [...this.props.instance_member_details.keys()].map((key) => {
 			return (
 				<p key={key}>
-					{this.props.instance_member_details.get(key).name} (
-					{this.props.instance_member_details.get(key).status}) @{key}
+					<span
+						className={
+							this.props.instance_member_details.get(key).status === "offline"
+								? "offline-dot"
+								: "online-dot"
+						}></span>{" "}
+					{this.props.instance_member_details.get(key).name} @{key} {" "}
+					{this.props.instance_member_details.get(key).status === "typing..." ? "..." : ""}
 				</p>
 			);
 		});
