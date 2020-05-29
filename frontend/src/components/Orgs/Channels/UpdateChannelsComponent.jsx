@@ -14,10 +14,10 @@ import {
 	InputGroup,
 	FormControl,
 	OverlayTrigger,
-	Tooltip
+	Tooltip,
+	Toast,
 } from "react-bootstrap";
 import MemberListComponent from "../UpdateOrgs/MemberListComponent";
-import {Input} from "reactstrap";
 
 const org_member_details = new Map();
 
@@ -38,14 +38,17 @@ class UpdateChannelsComponent extends Component {
 			is_verifed: false,
 			search_key: "",
 			searched_users: [],
+			alerts: [],
 		};
 		this.on_submit = this.on_submit.bind(this);
 		this.handleCancel = this.handleCancel.bind(this);
 		this.handleAddInstanceClick = this.handleAddInstanceClick.bind(this);
+		this.handleInstanceDelete = this.handleInstanceDelete.bind(this)
 	}
 
 	on_submit = (e) => {
 		e.preventDefault();
+		e.stopPropagation();
 		var internal_error = false;
 		var error = "";
 		var str2 = this.state.channel_title;
@@ -215,8 +218,6 @@ class UpdateChannelsComponent extends Component {
 		return retDiv;
 	}
 
-	componentDidUpdate() {}
-
 	componentDidMount() {
 		this.loadOrg();
 	}
@@ -336,7 +337,9 @@ class UpdateChannelsComponent extends Component {
 			this.state.old_channel_title,
 			remove
 		).then((response) => {
-			alert("User Removed from Channel ", this.state.old_channel_title);
+			this.setState((prevState) => ({
+				alerts: [...prevState.alerts, `Channel ${username} successfully removed`],
+			}));
 			this.loadChannel();
 		});
 	};
@@ -382,12 +385,49 @@ class UpdateChannelsComponent extends Component {
 			}
 		});
 	}
+	handleToastAlertClose(index) {
+		let newArr = this.state.alerts;
+		newArr.splice(index, 1);
+		this.setState({alerts: newArr});
+	}
+	mapToastAlerts() {
+		let toasts = this.state.alerts.map((alert, index) => {
+			return (
+				<Toast
+					key={index}
+					onClose={() => this.handleToastAlertClose(index)}
+					delay={2000}
+					autohide>
+					<Toast.Header>
+						<strong className="mr-auto">Update Orgs</strong>
+					</Toast.Header>
+					<Toast.Body>{alert}</Toast.Body>
+				</Toast>
+			);
+		});
+
+		return <div style={{position: "absolute", top: 0, right: 0}}>{toasts}</div>;
+	}
+
+	handleInstanceDelete(instance_title) {
+		OrgsResources.delete_instance(
+			this.state.username,
+			this.state.org_id,
+			this.state.channel_title,
+			instance_title
+		).then(() => {
+			this.setState((prevState) => ({
+				alerts: [...prevState.alerts, `Instance ${instance_title} successfully removed`],
+			}));
+			this.loadChannel();
+		});
+	}
 
 	render() {
 		return (
 			<div className="app-window update-org-component">
 				<Container fluid>
-					<Form noValidate validated={this.state.validated} className="update-org-form">
+					<Form noValidate validated={this.state.validated} onSubmit={e => {e.preventDefault()}} className="update-org-form">
 						<h1>
 							Update Channel: <strong>{this.state.channel.channel_title}</strong>
 						</h1>
@@ -500,8 +540,9 @@ class UpdateChannelsComponent extends Component {
 											<h3>Instances</h3>
 										</Col>
 										<Col md={1}>
-											<OverlayTrigger delay={{ show: 400, hide: 0 }}
-												delay={{ show: 400, hide: 0 }}
+											<OverlayTrigger
+												delay={{show: 400, hide: 0}}
+												delay={{show: 400, hide: 0}}
 												placement="left"
 												overlay={<Tooltip>New Instance</Tooltip>}>
 												<Button
@@ -524,7 +565,31 @@ class UpdateChannelsComponent extends Component {
 															)
 														}
 														action>
-														{instance.instance_title}
+														<div className="d-flex justify-content-between">
+															{instance.instance_title}
+															<OverlayTrigger
+																delay={{show: 400, hide: 0}}
+																key={
+																	instance.instance_title +
+																	"remove"
+																}
+																placement="bottom"
+																overlay={<Tooltip>Remove</Tooltip>}>
+																<Button
+																	type="button"
+																	variant="danger"
+																	onClick={(e) => {
+																		e.preventDefault();
+																		e.stopPropagation();
+																		
+																		this.handleInstanceDelete(
+																			instance.instance_title
+																		);
+																	}}>
+																	<i className="fas fa-times"></i>
+																</Button>
+															</OverlayTrigger>
+														</div>
 													</ListGroup.Item>
 												))}
 											</ListGroup>
@@ -555,6 +620,7 @@ class UpdateChannelsComponent extends Component {
 						</Row>
 					</Form>
 				</Container>
+				{this.mapToastAlerts()}
 			</div>
 		);
 	}

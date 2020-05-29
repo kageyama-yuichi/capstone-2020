@@ -57,30 +57,7 @@ class ChannelListComponent extends Component {
 										)}
 									</Button>
 								</OverlayTrigger>
-								<OverlayTrigger delay={{ show: 400, hide: 0 }}
-									placement="bottom"
-									overlay={<Tooltip>Add Users</Tooltip>}>
-									<Button
-										variant="success"
-										className="btn-sm"
-										onClick={() =>
-											this.props.add_users_to_channel(ch.channel_title)
-										}>
-										<i className="fas fa-user-plus"></i>
-									</Button>
-								</OverlayTrigger>
-								<OverlayTrigger delay={{ show: 400, hide: 0 }}
-									placement="bottom"
-									overlay={<Tooltip>Remove Users</Tooltip>}>
-									<Button
-										variant="danger"
-										className="btn-sm"
-										onClick={() =>
-											this.props.remove_users_from_channel(ch.channel_title)
-										}>
-										<i className="fas fa-user-minus"></i>
-									</Button>
-								</OverlayTrigger>
+								
 								<OverlayTrigger delay={{ show: 400, hide: 0 }}
 									placement="bottom"
 									overlay={<Tooltip>Edit Channel</Tooltip>}>
