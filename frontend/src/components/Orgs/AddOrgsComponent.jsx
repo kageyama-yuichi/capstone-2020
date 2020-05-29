@@ -23,8 +23,12 @@ class AddOrgsComponent extends Component {
 		var formIsValid = true;
 		var str2 = this.state.org_id;
 		var errors = {};
+		var idRegex = new RegExp("[^A-Z\\s]+");
 		if (this.state.org_id.length < 3 || this.state.org_id === "new") {
 			errors.id = "Org ID is too short";
+			formIsValid = false;
+		} else if (this.state.org_id.match(".*?[A-Z\\s].*")) {
+			errors.id = "Org ID can only contain letters numbers and underscores"
 			formIsValid = false;
 		}
 		// Ensure Length is 3 or Greater
@@ -45,7 +49,6 @@ class AddOrgsComponent extends Component {
 
 			if (!formIsValid) {
 				errors.id = "Org ID already used";
-				console.log("System - ID Already Used");
 			}
 		}
 
@@ -71,14 +74,12 @@ class AddOrgsComponent extends Component {
 		e.preventDefault();
 
 		if (this.handleValidation(e)) {
-			console.log("System - Creating New Organisation");
 			let org = {
 				org_id: this.state.org_id,
 				org_title: this.state.org_title,
 				channels: [],
 				members: [],
 			};
-			console.log(org);
 			OrgsResources.create_org(this.state.username, org).then(() =>
 				this.props.history.goBack()
 			);
@@ -119,7 +120,6 @@ class AddOrgsComponent extends Component {
 	}
 
 	render() {
-		console.log("System - Rendering Page...");
 		return (
 			<div className="add-orgs-component app-window">
 				<Container className="add-orgs-container">
@@ -131,6 +131,7 @@ class AddOrgsComponent extends Component {
 						<Form.Group controlId="formOrgId">
 							<Form.Label>Organisation Id</Form.Label>
 							<Form.Control
+								autoComplete="off123"
 								name="id"
 								type="text"
 								value={this.state.org_id}
@@ -163,41 +164,6 @@ class AddOrgsComponent extends Component {
 				</Container>
 			</div>
 
-			// <div className="add-orgs-component app-window">
-			// 	<h1 className="title-container">Register an Organisation</h1>
-			// 	<form className="add-orgs-form">
-			// 		<div className="input-container">
-			// 			<h2>Organisation ID</h2>
-			// 			<input
-			// 				className="input-field"
-			// 				type="text"
-			// 				name="org_id"
-			// 				id="org_id"
-			// 				value={this.state.org_id}
-			// 				onChange={this.handle_typing_org_id}
-			// 				placeholder="Organisation ID"
-			// 			/>
-			// 		</div>
-			// 		<div className="input-container">
-			// 			<h2>Organisation Title</h2>
-			// 			<input
-			// 				className="input-field"
-			// 				type="text"
-			// 				name="org_title"
-			// 				id="org_title"
-			// 				value={this.state.org_title}
-			// 				onChange={this.handle_typing_org_title}
-			// 				placeholder="Organisation Title"
-			// 			/>
-			// 		</div>
-			// 		<input
-			// 			id="org_create"
-			// 			type="submit"
-			// 			value="Create Organisation"
-			// 			onClick={this.on_submit}
-			// 		/>
-			// 	</form>
-			// </div>
 		);
 	}
 }

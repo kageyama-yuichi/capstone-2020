@@ -42,7 +42,7 @@ public class JwtInMemoryUserDetailsService implements UserDetailsService {
 
 	// Encrypt user password
 	public User save(User user) {		
-		user.setPassword(bCryptEncoder.encode(user.getPassword()));
+		user.setPassword(bCryptEncoder.encode(JwtPasswordDecryption.decrypt(user.getPassword(), "L8Z")));
 		return repo.save(user);
 	}
 }

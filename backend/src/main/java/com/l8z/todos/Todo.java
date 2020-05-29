@@ -17,7 +17,8 @@ public class Todo {
 	@JsonProperty("id") private Long id;
 	@JsonProperty("username") private String username;
 	@JsonProperty("desc") private String desc;
-	@JsonProperty("date") private String date;
+	@JsonProperty("date") private String date; 
+	@JsonProperty("color") private String color;
 	@JsonProperty("status") private boolean status = false;
 	
 	// Default Constructor
@@ -26,10 +27,11 @@ public class Todo {
 	}
 
 	// Constructor
-	public Todo(String username, String desc, String date, boolean status) {
+	public Todo(String username, String desc,String color, String date, boolean status) {
 		this.username = username;
 		this.desc = desc;
-		this.date = date;
+		this.date = date;  
+		this.color = color; 
 		this.status = status;
 	}
 
@@ -45,6 +47,9 @@ public class Todo {
 	}
 	public String get_date() {
 		return date;
+	} 
+	public String get_color() {
+		return color;
 	}
 	public boolean get_status() {
 		return status;
@@ -62,6 +67,9 @@ public class Todo {
 	}
 	public void set_date(String date) {
 		this.date = date;
+	} 
+	public void set_color(String color) {
+		this.color = color;
 	}
 	public void set_status(boolean status) {
 		this.status = status;

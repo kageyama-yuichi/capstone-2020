@@ -13,10 +13,11 @@
 }
 
 .title-header{
+    margin-bottom: 0px;
     height: 50px;
 }
 .window-body{
-    height: calc(100% - 50px);
+    height: calc(100vh - 50px);
 }
 
 /* To override user agent stylesheet */
@@ -42,6 +43,16 @@ label{
 
 a, button, input[type=button], input[type=submit]{
     cursor: pointer;
+}
+
+.unselectable {
+    
+    -moz-user-select: none; 
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    -webkit-user-drag: none; 
 }
 
 @font-face {

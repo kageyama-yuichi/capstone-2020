@@ -24,7 +24,6 @@ class UpdateInstancesComponent extends Component {
 		e.preventDefault();
 		var error = "";
 
-		console.log(this.state.instance_title);
 		var internal_error = false;
 		var str2 = this.state.instance_title;
 
@@ -45,10 +44,8 @@ class UpdateInstancesComponent extends Component {
 			}
 
 			if (internal_error) {
-				console.log("System - ID Already Used");
 				error = "ID Already Used";
 			} else {
-				console.log("System - Creating New Instance");
 				let instance = {
 					instance_title: this.state.instance_title,
 					/*
@@ -57,7 +54,6 @@ class UpdateInstancesComponent extends Component {
 					members: [],
 					instances: [],
 				};
-				console.log(instance);
 				OrgsResources.update_instance(
 					this.state.username,
 					this.state.org_id,
@@ -105,7 +101,6 @@ class UpdateInstancesComponent extends Component {
 	}
 
 	render() {
-		console.log("System - Rendering Page...");
 		return (
 			<div className="app-window FormInstanceComponent">
 				<Container>

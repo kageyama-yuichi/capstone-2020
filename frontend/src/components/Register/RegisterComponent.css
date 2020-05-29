@@ -12,9 +12,7 @@
     width:100%;
     position: absolute;
     top: 0;
-    z-index: 3;
-    
-        
+    z-index: 5;       
 }
 @supports ((-webkit-backdrop-filter: blur(0.1em)) or (backdrop-filter: blur(0.1em))) {
     .bg {
@@ -25,7 +23,7 @@
 }
 
 .overlay{
-    border-radius: 1rem;
+    border-radius: 0.25rem;
     margin:10% auto;
     height:fit-content;
     width: 50%;
@@ -127,5 +125,5 @@
 	height: 100%;
 	z-index: 9999;
     background: 50% 50% no-repeat rgb(249, 249, 249);
-    opacity: 20%;
+    opacity: 0.2;
 }

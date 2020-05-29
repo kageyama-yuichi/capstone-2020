@@ -3,7 +3,6 @@ package com.l8z.chat;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -17,7 +16,7 @@ public class ChatMessage {
 	@JsonProperty("content") private String content;
 	@JsonProperty("sender") private String sender;
 	@JsonProperty("receiver") private String receiver;
-    @JsonProperty("date_time") private String date_time = (new SimpleDateFormat("hh:mm (dd/MM/yyyy)", Locale.getDefault())).format(new Date()); 
+    @JsonProperty("date_time") private String date_time = (new SimpleDateFormat("h:mm:ss:SS a (dd/MM/yyyy)").format(new Date())).toUpperCase(); 
 
     // Enumeration Class to define Types
     public enum MessageType {

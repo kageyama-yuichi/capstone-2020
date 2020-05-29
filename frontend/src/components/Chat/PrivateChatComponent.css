@@ -1,5 +1,3 @@
-
-
 .chat-component{
     width: 100%;
     background-color: white; 
@@ -92,23 +90,4 @@
     font-weight: 500;
     font-size : 20px;
     outline: none;
-}
-
-.user-container{
-    flex: 1;
-    border-left: 1px solid black;
-    background-color: var(--bg-tertiary);
-    color: white;
-    
-}
-
-.user-title{
-    border-bottom: 1px solid black;
-    padding: 15px;
-    height:fit-content;
-}
-
-.user-list{
-    padding: 5px 15px;
-	height: 25px;
 }

@@ -1,37 +1,27 @@
 import React, {Component} from "react";
 import "./TodoEditComponent.css";
 import moment from "moment";
-import TodoResources from './TodoResources.js'
+import TodoResources from "./TodoResources.js";
 import {Form, Button} from "react-bootstrap";
-import AuthenticationService from '../Authentication/AuthenticationService.js'
+import AuthenticationService from "../Authentication/AuthenticationService.js";
+import {TwitterPicker} from "react-color";
 
 class TodoEditComponent extends Component {
 	constructor(props) {
 		super(props);
 
-        let todo = this.props.editTodo;
-        if (todo.length === 0) {
-            
-            this.state = {
-                id: "",
-                username: AuthenticationService.getLoggedInUserName(),
-                desc: "",
-                date: moment().format("YYYY-MM-DD"),
-                descError: "",
-                dateError: "",
-                status: false
-            }
-        } else {
-            this.state = {
-                id: todo.id,
-                username: AuthenticationService.getLoggedInUserName(),
-                desc: todo.desc,
-                date: todo.date,
-                descError: "",
-                dateError: "",
-                status: todo.status
-            }
-        }
+		let todo = this.props.editTodo;
+
+		this.state = {
+			id: todo.id ? todo.id : "",
+			username: AuthenticationService.getLoggedInUserName(),
+			desc: todo.desc ? todo.desc : "",
+			date: todo.date ? todo.date : moment().format("YYYY-MM-DD"),
+			errors: [],
+			status: todo.status ? todo.status : false,
+			color: "#808080",
+			displayColorPicker: false,
+		};
 	}
 
 	validateForm(e) {
@@ -77,38 +67,45 @@ class TodoEditComponent extends Component {
 		let todo = {
 			username: this.state.username,
 			desc: this.state.desc,
-			date: this.state.date,
+			date: this.state.date, 
+			color: this.state.color,
 			status: this.state.status,
 		};
 
 		if (this.validateForm(e)) {
 			if (this.state.id) {
-				TodoResources.update_todo(this.state.username, this.state.id, todo).then(() =>
-					this.props.saveCallback()
-				);
+				this.props.updateCallback(this.state.id, todo);
 			} else {
-				TodoResources.create_todo(this.state.username, todo).then(() =>
-					this.props.saveCallback()
-				);
+				this.props.createCallback(todo);
 			}
 		}
 		this.setState({validated: true});
 	}
 
 	handleChange(event) {
-		const { name: fieldName, value } = event.target;
-		console.log(value, this.state.date)
+		const {name: fieldName, value} = event.target;
 		this.setState({
 			[fieldName]: value,
 		});
-		
 	}
+
+	handleColorChange = ({hex}) => {
+		this.setState({color: hex});
+		this.handleColorClose();
+	};
+
+	handleColorClick = () => {
+		this.setState({displayColorPicker: !this.state.displayColorPicker});
+	};
+
+	handleColorClose = () => {
+		this.setState({displayColorPicker: false});
+	};
 
 	render() {
 		return (
 			<div className="wrapper">
 				<div className="bg bg-full" onClick={this.props.closeHandler}></div>
-
 				<div className="overlay todo-overlay">
 					<button className="exit-button" onClick={this.props.closeHandler}>
 						X
@@ -117,10 +114,10 @@ class TodoEditComponent extends Component {
 					<Form
 						noValidate
 						validated={this.state.validated}
-						className="todo-form"
+						className="w-100 p-3"
 						onSubmit={this.handleSubmit.bind(this)}>
 						<h2>Create a new todo</h2>
-						<Form.Group className="group">
+						<Form.Group>
 							<Form.Label>Description</Form.Label>
 							<Form.Control
 								className="desc-input"
@@ -131,11 +128,11 @@ class TodoEditComponent extends Component {
 								value={this.state.desc}
 							/>
 							<Form.Control.Feedback type="invalid">
-								{this.state.descError}
+								{this.state.errors.desc}
 							</Form.Control.Feedback>
 						</Form.Group>
 
-						<Form.Group className="group">
+						<Form.Group>
 							<Form.Label>Date</Form.Label>
 							<Form.Control
 								className="date-input"
@@ -145,11 +142,36 @@ class TodoEditComponent extends Component {
 								value={this.state.date}
 							/>
 							<Form.Control.Feedback type="invalid">
-								{this.state.dateError}
+								{this.state.errors.date}
 							</Form.Control.Feedback>
 						</Form.Group>
+						<Form.Group>
+							<Form.Label>Colour</Form.Label>
 
-						<Button variant="secondary" className="save-button" type="submit">
+							<div className="d-flex">
+								
+								<div
+									style={{backgroundColor: this.state.color}}
+									onClick={this.handleColorClick}
+									className="swatch"></div>
+							</div>
+						</Form.Group>
+						<div className="d-flex align-items-center">
+							{this.state.displayColorPicker ? (
+								<div className="colorpicker-popover">
+									<div
+										className="colorpicker-cover"
+										onClick={this.handleColorClose}
+									/>
+									<TwitterPicker
+										color="#333"
+										onChangeComplete={this.handleColorChange}
+									/>
+								</div>
+							) : null}
+						</div>
+
+						<Button variant="secondary" className="w-100 p-2 save-button" type="submit">
 							Save
 						</Button>
 					</Form>

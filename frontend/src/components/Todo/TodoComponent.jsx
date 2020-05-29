@@ -1,17 +1,23 @@
 import React, {Component} from "react";
 import TodoResources from "./TodoResources.js";
+import OrgResources from "../Orgs/OrgsResources.js";
 import "./TodoComponent.css";
 import moment from "moment";
 import TodoEditComponent from "./TodoEditComponent.jsx";
-import {Container, Button} from "react-bootstrap";
+import {Container, Button, Tooltip, OverlayTrigger} from "react-bootstrap";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
+import equal from "fast-deep-equal";
 
+//TODO: remove todos that have a date that is in the past.
+//		should probably do this in backend when getting the todos
 class TodoComponent extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			username: AuthenticationService.getLoggedInUserName(),
-			todos: [],
+			todos: props.todos ? props.todos : [],
+			orgId: props.isTeamTodo ? props.orgId : "",
+			channelTitle: props.isTeamTodo ? props.channelTitle : "",
 			showOverlay: false,
 			editTodo: "",
 		};
@@ -19,6 +25,8 @@ class TodoComponent extends Component {
 		this.handleDeleteClick = this.handleDeleteClick.bind(this);
 		this.handleEditClick = this.handleEditClick.bind(this);
 		this.handleCreateClick = this.handleCreateClick.bind(this);
+		this.handleCreateCallback = this.handleCreateCallback.bind(this);
+		this.handleUpdateCallback = this.handleUpdateCallback.bind(this);
 	}
 
 	toggleOverlay = () => {
@@ -33,20 +41,42 @@ class TodoComponent extends Component {
 	};
 
 	handleDoneClick(id) {
-		TodoResources.update_todo_status(this.state.username, id).then((response) => {
-			this.refresh_todos();
-		});
+		if (this.props.isTeamTodo) {
+			OrgResources.update_org_todo_status(
+				this.state.username,
+				this.state.org_id,
+				this.state.channel_title,
+				id
+			).then((response) => {
+				this.refresh_todos();
+			});
+		} else {
+			TodoResources.update_todo_status(this.state.username, id).then((response) => {
+				this.refresh_todos();
+			});
+		}
 	}
 
 	handleDeleteClick = (id) => {
-		TodoResources.delete_todo(this.state.username, id).then((response) => {
-			// Reset using this.refresh_todos in Callback to Force
-			this.refresh_todos();
-		});
+		if (this.props.isTeamTodo) {
+			OrgResources.delete_org_todo(
+				this.state.username,
+				this.state.org_id,
+				this.state.channel_title,
+				id
+			).then(() => {
+				this.refresh_todos();
+			});
+		} else {
+			TodoResources.delete_todo(this.state.username, id).then((response) => {
+				// Reset using this.refresh_todos in Callback to Force
+				this.refresh_todos();
+			});
+		}
 	};
 	handleEditClick = (todo) => {
-		this.setState({editTodo: todo});
-		this.toggleOverlay();
+		this.setState({editTodo: todo}, this.toggleOverlay());
+
 		// var url = this.state.username + "/" + id;
 		// this.props.history.push(url);
 	};
@@ -56,31 +86,60 @@ class TodoComponent extends Component {
 		this.toggleOverlay();
 	}
 
-	componentDidUpdate() {
-		//console.log(this.state.todos);
+	handleUpdateCallback(id, todo) {
+		if (this.props.isTeamTodo) {
+			OrgResources.update_org_todo(
+				this.state.username,
+				this.state.orgId,
+				this.state.channelTitle,
+				id,
+				todo
+			).then(() => this.saveCallback());
+		} else {
+			TodoResources.update_todo(this.state.username, id, todo).then(() =>
+				this.saveCallback()
+			);
+		}
+	}
+
+	handleCreateCallback(todo) {
+		if (this.props.isTeamTodo) {
+			OrgResources.create_org_todo(
+				this.state.username,
+				this.state.orgId,
+				this.state.channelTitle,
+				todo
+			).then(() => this.saveCallback());
+		} else {
+			TodoResources.create_todo(this.state.username, todo).then(() => this.saveCallback());
+		}
+	}
+
+	componentDidUpdate(prevProps) {
+		if (!equal(this.props.todos, prevProps.todos)) {
+			// Check if it's a new user, you can also use some unique property, like the ID  (this.props.user.id !== prevProps.user.id)
+			this.setState({todos: this.props.todos});
+		}
+	}
+
+	getTodos() {
+		let todos = [];
+
+		TodoResources.retrieve_todos(this.state.username).then((response) => {
+			todos = response.data;
+			todos.sort((a, b) => new moment(a.date) - new moment(b.date));
+
+			this.setState({todos: todos});
+		});
 	}
 
 	refresh_todos = () => {
-		this.setState({
-			todos: [],
-		});
-		// Retrieves the Todos for the User from the Server
-		TodoResources.retrieve_todos(this.state.username).then((response) => {
-			let todos = [];
-			// Maps the Response Data (Todo.class) to JSObject
-			for (let i = 0; i < response.data.length; i++) {
-				todos.push({
-					id: response.data[i].id,
-					username: response.data[i].username,
-					desc: response.data[i].desc,
-					date: response.data[i].date,
-					status: response.data[i].status,
-				});
-			}
-			todos.sort((a, b) => new moment(a.date) - new moment(b.date));
-			this.setState({todos: todos});
-		});
-		this.forceUpdate();
+		if (this.props.callback) {
+			this.props.callback();
+		} else {
+			this.getTodos();
+			this.forceUpdate();
+		}
 	};
 
 	componentDidMount() {
@@ -88,98 +147,129 @@ class TodoComponent extends Component {
 	}
 
 	render() {
+		console.log(this.state.todos);
 		return (
 			<div className="todo-component">
 				<Container fluid>
-					<div className="d-flex title-header border-bottom mb-3 w-100 justify-content-between">
-						<h1 style={{height: "fit-content"}}>Todo List</h1>
+					<div className="d-flex border-bottom w-100 justify-content-between">
+						<h3>{this.props.title}</h3>
 
-						<Button className="align-self-center" variant="outline-primary" onClick={this.handleCreateClick}>
-							New Todo
-						</Button>
+						{this.props.role === "TEAM_MEMBER" || !this.props.showNewButton ? null : (
+							//Team members cannot add todos
+
+							<Button
+								className="align-self-baseline"
+								variant="outline-primary"
+								onClick={this.handleCreateClick}>
+								New Todo
+							</Button>
+						)}
 					</div>
+					{this.state.todos.length > 0 ? (
+						<div
+							style={
+								this.props.isWidget
+									? {}
+									: {height: "calc(100vh - 92px)", overflowY: "auto"}
+							}>
+							<table cellSpacing="0" className="todo-table">
+								<tbody>
+									{this.state.todos.map((todo) => (
+										<tr key={todo.id}>
+											<td style={{width: "50px"}} className="done-col">
+												<OverlayTrigger
+													delay={{show: 400, hide: 0}}
+													placement="bottom"
+													overlay={<Tooltip>Update Status</Tooltip>}>
+													<button
+														className={
+															todo.status
+																? "done-button"
+																: "doing-button"
+														}
+														style={
+															todo.status
+																? {backgroundColor: todo.color}
+																: {borderColor: todo.color}
+														}
+														onClick={() =>
+															this.handleDoneClick(todo.id)
+														}
+														disabled={
+															this.props.role === "TEAM_MEMBER" ||
+															this.props.disableDoneButton
+														}>
+														{todo.status ? "Done" : "Doing"}
+													</button>
+												</OverlayTrigger>
+											</td>
+											<td className="desc-col">{todo.desc}</td>
+											{this.props.isWidget ? null : (
+												<td className="date-col">
+													{moment().isSame(todo.date, "date")
+														? "Today"
+														: moment(todo.date).format("ll")}
+												</td>
+											)}
 
-					{/* <Col style={{height: "100%"}} style={{whiteSpace: "nowrap"}} className="justify-content-end"> */}
-
-					<div className="window-body todo-container">
-						<table cellSpacing="0" className="todo-table">
-							<tbody>
-								{this.state.todos.map((todo) => (
-									<tr key={todo.id}>
-										<td className="done-col">
-											<button
-												className={
-													todo.status ? "done-button" : "doing-button"
-												}
-												onClick={() => this.handleDoneClick(todo.id)}>
-												{todo.status ? "Done" : "Doing"}
-											</button>
-										</td>
-										<td className="desc-col">{todo.desc}</td>
-										<td className="date-col">
-											{moment().isSame(todo.date, "date")
-												? "Today"
-												: moment(todo.date).format("ll")}
-										</td>
-
-										<td className="update-col">
-											<button onClick={() => this.handleEditClick(todo)}>
-												<i className="fas fa-edit"></i>
-											</button>
-										</td>
-
-										<td className="delete-col">
-											<button onClick={() => this.handleDeleteClick(todo.id)}>
-												<i className="fas fa-minus-circle"></i>
-											</button>
-										</td>
-									</tr>
-								))}
-							</tbody>
-						</table>
-						{this.state.showOverlay ? (
-							<TodoEditComponent
-								closeHandler={this.toggleOverlay}
-								saveCallback={this.saveCallback}
-								editTodo={this.state.editTodo}
-							/>
-						) : null}
-					</div>
+											{this.props.isWidget ||
+											this.props.role === "TEAM_MEMBER" ? null : (
+												<td className="update-col">
+													<OverlayTrigger
+														delay={{show: 400, hide: 0}}
+														placement="bottom"
+														overlay={<Tooltip>Edit</Tooltip>}>
+														<button
+															onClick={() =>
+																this.handleEditClick(todo)
+															}>
+															<i className="fas fa-edit"></i>
+														</button>
+													</OverlayTrigger>
+												</td>
+											)}
+											{this.props.isWidget ||
+											this.props.role === "TEAM_MEMBER" ? null : (
+												<td className="delete-col">
+													<OverlayTrigger
+														delay={{show: 400, hide: 0}}
+														placement="bottom"
+														overlay={<Tooltip>Delete</Tooltip>}>
+														<button
+															onClick={() =>
+																this.handleDeleteClick(todo.id)
+															}>
+															<i className="fas fa-minus-circle"></i>
+														</button>
+													</OverlayTrigger>
+												</td>
+											)}
+										</tr>
+									))}
+								</tbody>
+							</table>
+						</div>
+					) : null}
+					{this.state.showOverlay ? (
+						<TodoEditComponent
+							closeHandler={this.toggleOverlay}
+							updateCallback={this.handleUpdateCallback}
+							createCallback={this.handleCreateCallback}
+							saveCallback={this.saveCallback}
+							editTodo={this.state.editTodo}
+						/>
+					) : null}
 				</Container>
 			</div>
 		);
 	}
-	// render() {
-	// 	console.log("System - Rendering Page...");
-	//     return (
-	//         <div className="todo-component">
-	// 			<h1>{this.state.username}'s Todos</h1>
-	// 			<input
-	// 				className="new_todo"
-	// 				type="button"
-	// 				value="+"
-	// 				onClick={this.handle_create_todo}
-	// 			/>
-	// 			{this.state.todos.map(todo =>
-	// 				<div key={todo.id} className='todos'>
-	// 					<input
-	// 						className="delete_todo"
-	// 						type="button"
-	// 						value="-"
-	// 						onClick={() => this.handle_delete_todo(todo.id)}
-	// 					/>
-	// 					<input
-	// 						className="update_todo"
-	// 						type="button"
-	// 						value="#"
-	// 						onClick={() => this.handle_update_todo(todo.id)}
-	// 					/>
-	// 					<p key={todo.id}>{todo.desc}, {todo.status.toString()}, {todo.date}</p>
-	// 				</div>
-	// 			)}
-	// 		</div>
-	//     )
-	// }
 }
+TodoComponent.defaultProps = {
+	isTeamTodo: false,
+	isWidget: false,
+	title: "Todo List",
+	showNewButton: true,
+	disableDoneButton: false,
+};
 
 export default TodoComponent;
