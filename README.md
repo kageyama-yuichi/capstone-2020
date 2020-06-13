@@ -1,4 +1,4 @@
-![L8Z Logo](https://imgur.com/a/b0wTt6O)
+<img src="https://i.imgur.com/fMmwBpY.png" width="300" />
 
 # L8Z 
 
