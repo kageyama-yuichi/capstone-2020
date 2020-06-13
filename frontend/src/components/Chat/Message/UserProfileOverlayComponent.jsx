@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {Image, Popover, Button, ButtonGroup, Container} from "react-bootstrap";
-import {Link, withRouter} from "react-router-dom";
+import {Link} from "react-router-dom";
 import tempImg from "../../../assests/ProfileIcon.svg";
 import "./UserProfileOverlayComponent.css";
 import ContactsResource from "../../Contacts/ContactsResource.js";

@@ -22,13 +22,6 @@ import {
 	OverlayTrigger,
 } from "react-bootstrap";
 
-/*
-	Left to do:
-	Styling the Search User Textbox
-	Completing the Autocomplete for the Search User Textbook using the current_namespace
-	Work out how to Update a Member Role
-	Fix all the this.on_submit() validation
-*/
 var channels = [];
 var current_members_in_channel = [];
 var current_namespace = [];
@@ -92,21 +85,6 @@ class UpdateOrgsComponent extends Component {
 			errors.title = "Org Title is too short";
 			formIsValid = false;
 		}
-
-		// if (formIsValid) {
-		// 	// Check if the ID Exists
-		// 	for (let i = 0; i < this.state.owned_ids.length; i++) {
-		// 		var str1 = new String(this.state.owned_ids[i].org_id);
-		// 		// Compare the String Values
-		// 		if (str1.valueOf() == str2.valueOf()) {
-		// 			formIsValid = false;
-		// 		}
-		// 	}
-
-		// 	if (!formIsValid) {
-		// 		errors.id = "Org ID already used";
-		// 	}
-		// }
 
 		let form = e.currentTarget;
 		var formControl = Array.prototype.slice.call(form.querySelectorAll(".form-control"));
@@ -225,7 +203,7 @@ class UpdateOrgsComponent extends Component {
 		if (this.state.invite_sent === true) {
 			OrgsResources.retrieve_pending_users_in_orgs(this.state.org_id).then((response) => {
 				// if there is no Data, Don't Sort
-				if (response.data != "") {
+				if (response.data !== "") {
 					pending_users = response.data.sort(this.sort_by_alphabetical_order_pending);
 				} else {
 					pending_users = response.data;
@@ -240,7 +218,7 @@ class UpdateOrgsComponent extends Component {
 	componentDidMount() {
 		OrgsResources.retrieve_pending_users_in_orgs(this.state.org_id).then((response) => {
 			// if there is no Data, Don't Sort
-			if (response.data != "") {
+			if (response.data !== "") {
 				pending_users = response.data.sort(this.sort_by_alphabetical_order_pending);
 			} else {
 				pending_users = response.data;
@@ -315,7 +293,7 @@ class UpdateOrgsComponent extends Component {
 	}
 
 	handle_search_new_users = () => {
-		if (this.state.search_key != "") {
+		if (this.state.search_key !== "") {
 			// Search for the Users Specified and Update Area
 			OrgsResources.retrieve_all_basic_users_by_name(this.state.search_key).then(
 				(response) => {
@@ -529,7 +507,6 @@ class UpdateOrgsComponent extends Component {
 					search_key: "",
 					invite_sent: true,
 				}));
-			
 			}
 		);
 	};
@@ -629,7 +606,6 @@ class UpdateOrgsComponent extends Component {
 		});
 	};
 	// Completely Removing a User from the Org
-
 	remove_member = (username) => {
 		let old_member = {
 			username: username,
@@ -676,7 +652,10 @@ class UpdateOrgsComponent extends Component {
 		let retDiv;
 		if (is_searched) {
 			retDiv = (
-				<OverlayTrigger delay={{ show: 400, hide: 0 }} placement="bottom" overlay={<Tooltip>Invite</Tooltip>}>
+				<OverlayTrigger
+					delay={{show: 400, hide: 0}}
+					placement="bottom"
+					overlay={<Tooltip>Invite</Tooltip>}>
 					<Button
 						key={username + "invite"}
 						variant="success"
@@ -687,7 +666,10 @@ class UpdateOrgsComponent extends Component {
 			);
 		} else {
 			retDiv = (
-				<OverlayTrigger delay={{ show: 400, hide: 0 }} placement="bottom" overlay={<Tooltip>Remove</Tooltip>}>
+				<OverlayTrigger
+					delay={{show: 400, hide: 0}}
+					placement="bottom"
+					overlay={<Tooltip>Remove</Tooltip>}>
 					<Button
 						key={username + "destroy"}
 						variant="danger"
@@ -712,7 +694,11 @@ class UpdateOrgsComponent extends Component {
 	mapToastAlerts() {
 		let toasts = this.state.alerts.map((alert, index) => {
 			return (
-				<Toast key={index} onClose={() => this.handleToastAlertClose(index)} delay={2000} autohide>
+				<Toast
+					key={index}
+					onClose={() => this.handleToastAlertClose(index)}
+					delay={2000}
+					autohide>
 					<Toast.Header>
 						<strong className="mr-auto">Update Orgs</strong>
 					</Toast.Header>
@@ -740,7 +726,6 @@ class UpdateOrgsComponent extends Component {
 										type="text"
 										name="id"
 										id="org_id"
-										disabled="true"
 										value={this.state.org_id}
 										placeholder="Organisation ID"
 										disabled
@@ -830,7 +815,8 @@ class UpdateOrgsComponent extends Component {
 										<h3>Channels</h3>
 									</Col>
 									<Col md={1}>
-										<OverlayTrigger delay={{ show: 400, hide: 0 }}
+										<OverlayTrigger
+											delay={{show: 400, hide: 0}}
 											placement="left"
 											overlay={<Tooltip>Create New A Channel</Tooltip>}>
 											<Button

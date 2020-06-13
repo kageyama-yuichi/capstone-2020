@@ -5,13 +5,8 @@ import "./OrgsComponent.css";
 import {Link} from "react-router-dom";
 import tempImg from "../../assests/orgImg.svg";
 
-import {Button, ButtonGroup, Container, Row, Col, Card, CardDeck} from "react-bootstrap";
+import {Button, Card, CardDeck, Container} from "react-bootstrap";
 
-/*
-	Left to do:
-	Display the Delete Button Only for ORG_OWNER
-	Display the Update Button Only for ORG_OWNER and ADMIN
-*/
 
 class OrgsComponent extends Component {
 	constructor(props) {
@@ -66,21 +61,6 @@ class OrgsComponent extends Component {
 				});
 			}
 
-			// this.state.orgs.push({
-			// 	org_id: "testorg1",
-			// 	org_title: "This is a text org when user is an admin",
-			// 	user_role: "ADMIN",
-			// 	members: []
-			// })
-			// this.state.orgs.push({
-			// 	org_id: "testorg2",
-			// 	org_title: "This is a text org when user is a USER",
-			// 	user_role: "USER",
-			// 	members: []
-			// })
-			// this.setState({
-			// 	orgs: this.state.orgs
-			// })
 		});
 	};
 

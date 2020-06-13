@@ -5,8 +5,6 @@ import OrgsResources from "../Orgs/OrgsResources.js"
 import AuthenticationService from "../Authentication/AuthenticationService.js"
 
 var searched_users = [];
-var pending_users = [];
-const org_member_details = new Map();
 
 class ContactComponent extends Component {
 
@@ -51,9 +49,7 @@ class ContactComponent extends Component {
 	};
 
 	handle_search_new_users = () => {
-		if (this.state.search_key != "") {
-			//var url = this.props.history.location.pathname;
-			//var url2 = this.props.history.location.pathname + "/" + contact;
+		if (this.state.search_key !== "") {
 			OrgsResources.retrieve_all_basic_users_by_name(this.state.search_key).then((response) => {
 				// Assign the Searched Users that Are Not in the Org to the Array
 				searched_users = [];

@@ -1,8 +1,7 @@
 import React, {Component} from "react";
 import "./DashboardComponent.css";
-import TodoComponent from "../Todo/TodoComponent.jsx";
 import InvitesComponent from "../Invites/InvitesComponent.jsx";
-import {Container, Row, Col, Accordion, Card, Button} from "react-bootstrap";
+import {Container, Row, Col, Accordion, Card} from "react-bootstrap";
 import OrgsWidgetComponent from "./Widgets/OrgsWidgetComponent";
 import TodoWidgetComponent from "./Widgets/TodoWidgetComponent";
 
@@ -36,7 +35,7 @@ class DashboardComponent extends Component {
 									</Card>
 								</Accordion>
 
-								<Accordion className="flex-fill" defaultActiveKey="0" className="w-100">
+								<Accordion className="w-100" defaultActiveKey="0">
 									<Card>
 										<Accordion.Toggle
 											className="unselectable"

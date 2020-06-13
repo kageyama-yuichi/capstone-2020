@@ -57,10 +57,6 @@ public class UserJpaResource {
 	@PostMapping("/jpa/profile/{username}")
 	public ResponseEntity<Void> updateUserProfile(@PathVariable String username, @RequestBody User profile) {
 		User userUpdate = repo.getOne(profile.getID());
-		// Future Updates Possibly?
-		// userUpdate.setUsername(profile.getUsername());
-		// userUpdate.setPassword(profile.getPassword());
-		// userUpdate.setEmail(profile.getEmail());
 
 		userUpdate.setFname(profile.getFname());
 		userUpdate.setLname(profile.getLname());
@@ -69,7 +65,6 @@ public class UserJpaResource {
 		userUpdate.setBio(profile.getBio());
 		userUpdate.setImagePath(profile.getImagePath());
 
-		// userUpdate.displayUser();
 		// Update Profile
 		repo.save(userUpdate);
 		return ResponseEntity.noContent().build();

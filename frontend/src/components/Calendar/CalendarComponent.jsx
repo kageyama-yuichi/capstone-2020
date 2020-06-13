@@ -21,6 +21,7 @@ class CalendarComponent extends Component {
     //Formats events so they are useable by RBC
 	createEvents() {
 		var events = [];
+
 		this.props.todos.map((todo) => {
 			events.push({
 				username: todo.username,

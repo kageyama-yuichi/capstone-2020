@@ -6,11 +6,6 @@ class TodoResources {
     retrieve_todos(username) {
 		return axios.get(`${JPA_URL}/dashboard/${username}`);
     }
-	/*
-	retrieve_todos(username, date) {
-		return axios.get(`${JPA_URL}/dashboard/${username}`, date);
-    }
-	*/
 	retrieve_todo(username, id) {
 		return axios.get(`${JPA_URL}/dashboard/${username}/${id}`);
     }

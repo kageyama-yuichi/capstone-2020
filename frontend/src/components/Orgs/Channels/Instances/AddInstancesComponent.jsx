@@ -126,26 +126,7 @@ class AddInstancesComponent extends Component {
 				</Container>
 			</div>
 		);
-        // return (
-        //     <div className="app-window FormInstanceComponent">
-		// 		<h1>Register a Instance</h1>
-		// 		<h2>Instance Title</h2>
-		// 		<input 
-		// 			type="text"
-		// 			name="instance_title"
-		// 			id="instance_title"
-		// 			value={this.state.instance_title}
-		// 			onChange={this.handle_typing_instance_title}
-		// 			placeholder="Instance Title"
-		// 		/>
-		// 		<input
-		// 			id="instance_create"
-		// 			type="button"
-		// 			value="Create Instance"
-		// 			onClick={this.on_submit}
-		// 		/>
-		// 	</div>
-        // )
+       
     }
 }
 

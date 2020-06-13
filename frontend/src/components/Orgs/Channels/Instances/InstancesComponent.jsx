@@ -4,12 +4,6 @@ import AuthenticationService from "../../../Authentication/AuthenticationService
 import "../../OrgsComponent.css";
 import {Container, Button, Row, Col, ListGroup} from "react-bootstrap";
 
-/*
-	Left to do:
-	Display the Delete Button Only for ORG_OWNER
-	Display the Update Button Only for ORG_OWNER and ADMIN
-*/
-
 class InstancesComponent extends Component {
 	constructor(props) {
 		super(props);

@@ -13,13 +13,6 @@ var counter = 0;
 var messageCounter = 0;
 var messages = [];
 const member_details = new Map();
-// Sender in All Instances are the Usernames of the User
-
-/* Things Left to Do:
-	- Add Side Bar on Left Hand Side showing Contacts List Summary
-	- Fix UI
-	- Make it Right Side is Sender (You) Left Side is Receiver (Other)
-*/
 
 class PrivateChatComponent extends Component {
 	constructor (props) {
@@ -148,7 +141,7 @@ class PrivateChatComponent extends Component {
 					date_time: "",
 				}
 				// Set Receiver State
-				if(obj[i].username != this.state.username) {
+				if(obj[i].username !== this.state.username) {
 					this.setState({
 						receiver_name: user_details.name,
 					})

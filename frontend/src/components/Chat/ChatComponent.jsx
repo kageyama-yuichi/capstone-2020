@@ -4,7 +4,6 @@ import AuthenticationService from "../Authentication/AuthenticationService.js";
 import "./ChatComponent.css";
 import Encryption from "./Encryption.js";
 import {Container} from "react-bootstrap";
-import MessageComponent from "./Message/MessageComponent.jsx";
 import OrgResources from "../Orgs/OrgsResources.js";
 import MessageInputComponent from "./MessageInputComponent.jsx";
 import ChatTabbedSidebarComponent from "./ChatTabbedSidebarComponent.jsx";
@@ -23,11 +22,6 @@ var oldMessageLength = 0;
 var shouldScrollToBottom = true;
 const instance_member_details = new Map();
 
-// Sender in All Instances are the Usernames of the User
-
-/* Things Left to Do:
-	- Bubbles for Users (Pull Users infromation from instance_member_details
-*/
 
 class ChatComponent extends Component {
 	constructor(props) {
@@ -387,13 +381,14 @@ class ChatComponent extends Component {
 				this.state.org_id,
 				this.state.channel_title,
 				this.state.instance_title,
-				new String(messages[visible].date_time)
+				messages[visible].date_time
 			);
 		}
 
 		this.resetLocalVariables();
 	}
 
+	//Called when message list div is scrolled to update the viewed last of the user
 	handleScroll(event) {
 		var messageContainerHeight = 863;
 		var chatDiv = document.getElementById("scrollable-chat");

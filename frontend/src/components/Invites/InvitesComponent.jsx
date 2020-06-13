@@ -3,7 +3,7 @@ import InvitesResources from "./InvitesResources.js";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
 import "./InvitesComponent.css";
 import {withRouter} from "react-router-dom"
-import {Button, ButtonGroup, Container, Row, Col, ListGroup} from "react-bootstrap";
+import {Button, ButtonGroup, Container, ListGroup} from "react-bootstrap";
 
 const inviter_details = new Map();
 var invites = [];
@@ -84,7 +84,6 @@ class InvitesComponent extends Component {
 		// Ensure the Array Has Data
 		if (invites.length > 0 && inviter_details.size > 0) {
 			retDiv = invites.map((inv) => {
-				let temp_inviter = inviter_details.get(inv.inviter);
 				return (
 					<ListGroup.Item key={inv.uniqueId} className="invites bg-light text-dark">
 						<div className="d-flex justify-content-between">

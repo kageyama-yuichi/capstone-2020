@@ -48,8 +48,9 @@ class PasswordChangeComponent extends Component {
 	}
 	
 	handleUpdate(){
-			if(this.state.newPassword === this.state.confirmPassword){
-				this.state.newPassword = Encryption.encrpyt_message(this.state.newPassword)
+		if (this.state.newPassword === this.state.confirmPassword) {
+				this.setState({newPassword : Encryption.encrpyt_message(this.state.newPassword)})
+				
 				console.log(this.state.username + " " + this.state.newPassword + " " + this.state.token);
 				PasswordChangeResources.updateUserPassword(this.state.username, this.state.newPassword, this.state.token)
 				this.props.history.push(`/dashboard`);

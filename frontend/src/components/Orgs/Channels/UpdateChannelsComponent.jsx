@@ -51,7 +51,6 @@ class UpdateChannelsComponent extends Component {
 		e.stopPropagation();
 		var internal_error = false;
 		var error = "";
-		var str2 = this.state.channel_title;
 
 		// Ensure Length is 3 or Greater
 		if (this.state.channel_title.length < 3 || this.state.channel_title === "new") {
@@ -112,7 +111,7 @@ class UpdateChannelsComponent extends Component {
 
 	//Searches for members that are not in the channel but in the org
 	handle_search_new_users = () => {
-		if (this.state.search_key != "") {
+		if (this.state.search_key !== "") {
 			// Search for the Users Specified and Update Area
 
 			// Assign the Searched Users that Are Not in the Org to the Array
@@ -363,10 +362,7 @@ class UpdateChannelsComponent extends Component {
 			this.setState({
 				member_details_loaded: true,
 			});
-			// // Sort this.state.members to correct Heirarchy
-			// this.sort_by_role();
-			// // Sort this.state.channel[i].members to correct Heirarchy
-			// this.sort_by_role_channels();
+
 
 			// Check if they are in the Organisation
 			if (org_member_details.has(this.state.username)) {
@@ -439,7 +435,6 @@ class UpdateChannelsComponent extends Component {
 										type="text"
 										name="id"
 										id="org_id"
-										disabled="true"
 										value={this.state.org_id}
 										placeholder="Organisation ID"
 										disabled
@@ -541,7 +536,6 @@ class UpdateChannelsComponent extends Component {
 										</Col>
 										<Col md={1}>
 											<OverlayTrigger
-												delay={{show: 400, hide: 0}}
 												delay={{show: 400, hide: 0}}
 												placement="left"
 												overlay={<Tooltip>New Instance</Tooltip>}>
