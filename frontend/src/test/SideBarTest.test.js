@@ -17,8 +17,7 @@ import { Link } from 'react-router';
         });
 		
 		
-		
-		//Pathing Check Tests later
+	
 		
 		
   });

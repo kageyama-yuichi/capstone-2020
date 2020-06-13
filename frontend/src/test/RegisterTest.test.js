@@ -28,11 +28,6 @@ import RegisterComponent from '../components/Register/RegisterComponent';
             expect(wrapper.find('[type="email"]')).toHaveLength(1);
         });
 		
-		//it('should have input for address', ()=> {
-       //     //Should have input for address
-        //    expect(wrapper.find({ name: 'address' })).toHaveLength(1);	
-       // });
-		
 		it('should have input for username and password', ()=> {
             //Should have input for username
             expect(wrapper.find('[name="username"]')).toHaveLength(1);

@@ -172,36 +172,4 @@ class OrgsTests {
 }
 
 
-/* Checklist
- * Orgs :
- * Getters x
- * Members List x
- * Has Members x
- * Retrieve Member x
- * Get Channels x
- * Setters are done in setup
- * Add member done in setup
- * Add instance done in setup
- * Remove Instance x
- * Remove Channel x
- * Manange Members x
- * 
- * Channels :
- * Channel title x
- * Channel owner x
- * Channel List members x
- * Has Members test x
- * Channel Instance List test x
- * Channel title done in setup
- * Set owner done in setup
- * Add Member done in setup
- * Removing Members from channel x
- * Managing Members in channels x
- * Add Instance done in setup x
- * Remove instance x
- * 
- * Instances:
- * Instance Type x
- * Instance Title set is done in setup
- * Instance set type is done in setup
- */
+
