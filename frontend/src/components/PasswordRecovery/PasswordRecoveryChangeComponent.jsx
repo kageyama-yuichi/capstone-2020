@@ -57,7 +57,7 @@ class PasswordRecoveryChangeComponent extends Component {
 	handleTypingPassword = (event) => {
 		this.setState({
 			password: event.target.value,
-			password_error: false,
+			passwordError: false,
 		});
 	};
 

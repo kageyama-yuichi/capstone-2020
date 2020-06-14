@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import OrgsResources from "../OrgsResources.js";
 import AuthenticationService from "../../Authentication/AuthenticationService.js";
 import "../OrgsComponent.css";
-import {Container, Button, ButtonGroup, Row, Col, ListGroup} from "react-bootstrap";
+import {Container, Button, Row, Col, ListGroup} from "react-bootstrap";
 import {getRoleIconClassName} from "../OrgHelpers.js";
 
 /*

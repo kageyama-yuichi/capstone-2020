@@ -19,7 +19,7 @@ class MessageinputComponent extends Component {
 		if (event.target.value === "") {
 			// Set the is_typing boolean to false
 			this.setState({
-				is_typing: false,
+				isTyping: false,
 			});
 			// Send a Message to the Server that User Stopped
 			this.props.send_message("TYPING", "Stopped Typing");
@@ -27,7 +27,7 @@ class MessageinputComponent extends Component {
 			// If the User was Not Typing, Set it to They Are
 			if (this.state.is_typing === false) {
 				this.setState({
-					is_typing: true,
+					isTyping: true,
 				});
 				// Send the Message off and Save if not "Started Typing"
 				this.props.send_message("TYPING", "Started Typing");

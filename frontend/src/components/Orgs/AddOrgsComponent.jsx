@@ -90,7 +90,7 @@ class AddOrgsComponent extends Component {
 	handleTypingOrgId = (event) => {
 		// Organisation ID Must Be Lowercase and have NO SPACES and Special Characters
 		this.setState({
-			org_id: event.target.value
+			orgId: event.target.value
 				.toLowerCase()
 				.trim()
 				.replace(/[^\w\s]/gi, ""),
@@ -99,7 +99,7 @@ class AddOrgsComponent extends Component {
 	};
 	handleTypingOrgTitle = (event) => {
 		this.setState({
-			org_title: event.target.value,
+			orgTitle: event.target.value,
 			error: false,
 		});
 	};
@@ -112,7 +112,7 @@ class AddOrgsComponent extends Component {
 					org_id: response.data[i],
 				});
 				this.setState({
-					owned_ids: this.state.ownedIds,
+					ownedIds: this.state.ownedIds,
 				});
 			}
 		});

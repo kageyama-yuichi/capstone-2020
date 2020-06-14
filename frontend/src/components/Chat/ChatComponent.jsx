@@ -58,7 +58,7 @@ class ChatComponent extends Component {
 	// Subscribe the User to the Groups and Send the Server member of User
 	onConnected = () => {
 		this.setState({
-			channel_connected: true,
+			channelConnected: true,
 		});
 		// Subscribe to Fetching History and Members
 		// This has changed to Subscribe based on your Username so that when others join
@@ -179,7 +179,7 @@ class ChatComponent extends Component {
 			does_require_sorting = true;
 
 			this.setState({
-				bell_ring: true,
+				bellRing: true,
 			});
 		} else if (message_text.type === "LEAVE") {
 			// Assign User to Offline
@@ -188,7 +188,7 @@ class ChatComponent extends Component {
 			does_require_sorting = true;
 
 			this.setState({
-				bell_ring: true,
+				bellRing: true,
 			});
 		} else if (message_text.type === "TYPING") {
 			// Assign User to Typing or Online depending on State
@@ -234,7 +234,7 @@ class ChatComponent extends Component {
 				temp.date_time = message_text.date_time;
 
 				this.setState({
-					bell_ring: true,
+					bellRing: true,
 				});
 			} else {
 				if (message_text.type === "LEAVE") {
@@ -243,7 +243,7 @@ class ChatComponent extends Component {
 					temp.date_time = message_text.date_time;
 
 					this.setState({
-						bell_ring: true,
+						bellRing: true,
 					});
 				}
 			}
@@ -351,8 +351,8 @@ class ChatComponent extends Component {
 			this.resetLocalVariables();
 			this.setState(
 				{
-					channel_title: this.props.channel_title,
-					instance_title: this.props.instance_title,
+					channelTitle: this.props.channel_title,
+					instanceTitle: this.props.instance_title,
 					joined: false,
 					bottom: true,
 				},
@@ -444,13 +444,13 @@ class ChatComponent extends Component {
 		this.getReadLast();
 
 		this.setState({
-			current_time: new Date().toLocaleString(),
+			currentTime: new Date().toLocaleString(),
 		});
 		this.timerID = setInterval(
 			() =>
 				this.state.bellRing
 					? this.setState({
-							bell_ring: false,
+							bellRing: false,
 					  })
 					: "",
 			10000

@@ -60,14 +60,14 @@ class AddChannelsComponent extends Component {
 			e.currentTarget.querySelector(".form-control").setCustomValidity("invalid");
 		}
 
-		this.setState({channel_title_error: error, validated: true});
+		this.setState({channelTitleError: error, validated: true});
 	};
 
 	handleTypingChannelTitle = (event) => {
 		// Organisation ID Must Be Lowercase and have NO SPACES and Special Characters
 		this.setState({
-			channel_title: event.target.value,
-			channel_title_error: false,
+			channelTitle: event.target.value,
+			channelTitleError: false,
 		});
 	};
 
@@ -80,7 +80,7 @@ class AddChannelsComponent extends Component {
 						channel_title: response.data[i],
 					});
 					this.setState({
-						owned_ids: this.state.owned_ids,
+						ownedIds: this.state.owned_ids,
 					});
 				}
 			}

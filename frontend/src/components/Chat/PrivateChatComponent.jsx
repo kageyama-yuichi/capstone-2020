@@ -54,7 +54,7 @@ class PrivateChatComponent extends Component {
 	// Subscribe the User to the Private Chat and Send the Server Notification of User
 	onConnected = () => {
 		this.setState({
-		  channel_connected: true
+		  channelConnected: true
 		})
 		
 		// Subscribe to Fetching History
@@ -142,7 +142,7 @@ class PrivateChatComponent extends Component {
 				// Set Receiver State
 				if(obj[i].username !== this.state.username) {
 					this.setState({
-						receiver_name: user_details.name,
+						receiverName: user_details.name,
 					})
 				}
 				// Add them to the Members
@@ -168,7 +168,7 @@ class PrivateChatComponent extends Component {
 			temp.date_time = message_text.date_time;
 			
 			this.setState({
-				bell_ring: true,
+				bellRing: true,
 			});
 		} else if (message_text.type === "LEAVE") {
 			// Assign User to Offline
@@ -176,7 +176,7 @@ class PrivateChatComponent extends Component {
 			temp.date_time = message_text.date_time;
 			
 			this.setState({
-				bell_ring: true,
+				bellRing: true,
 			});
 		} else if (message_text.type === "TYPING") {
 			// Assign User to Typing or Online depending on State
@@ -220,7 +220,7 @@ class PrivateChatComponent extends Component {
 				temp.date_time = message_text.date_time;
 				
 				this.setState({
-					bell_ring: true,
+					bellRing: true,
 				});
 			} else {
 				if (message_text.type === "LEAVE") {
@@ -229,7 +229,7 @@ class PrivateChatComponent extends Component {
 				temp.date_time = message_text.date_time;
 				
 				this.setState({
-					bell_ring: true,
+					bellRing: true,
 				});
 				} 
 			}
@@ -279,7 +279,7 @@ class PrivateChatComponent extends Component {
 		if(event.target.value === ""){
 			// Set the is_typing boolean to false
 			this.setState({
-				is_typing: false
+				isTyping: false
 			})
 			// Send a Message to the Server that User Stopped
 			this.sendMessage("TYPING", "Stopped Typing");
@@ -287,7 +287,7 @@ class PrivateChatComponent extends Component {
 			// If the User was Not Typing, Set it to They Are
 			if (this.state.isTyping === false){
 				this.setState({
-					is_typing: true
+					isTyping: true
 				})
 				// Send the Message off and Save if not "Started Typing"
 				this.sendMessage("TYPING", "Started Typing");
@@ -308,11 +308,11 @@ class PrivateChatComponent extends Component {
 	componentDidMount() {
 		this.myConnect();
 		this.setState({
-			current_time: new Date().toLocaleString()
+			currentTime: new Date().toLocaleString()
 		})
 		this.timerID = setInterval(
 			() => this.state.bell_ring ? this.setState({
-			bell_ring: false
+			bellRing: false
 			}) : "",
 			10000	
 		);

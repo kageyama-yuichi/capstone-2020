@@ -73,7 +73,7 @@ class UpdateChannelsComponent extends Component {
 				if (!response.data) {
 					error = "ID already used";
 					this.setState({
-						channel_title_error: true,
+						channelTitleError: true,
 					});
 				} else {
 					let channel = this.state.channel;
@@ -92,20 +92,20 @@ class UpdateChannelsComponent extends Component {
 			document.getElementById("org_title").setCustomValidity("invalid");
 		}
 
-		this.setState({channel_title_error: error, validated: true});
+		this.setState({channelTitleError: error, validated: true});
 	};
 
 	handleTypingChannelTitle = (event) => {
 		// Organisation ID Must Be Lowercase and have NO SPACES and Special Characters
 		this.setState({
-			channel_title: event.target.value,
-			channel_title_error: false,
+			channelTitle: event.target.value,
+			channelTitleError: false,
 		});
 	};
 
 	handleTypingSearchKey = (event) => {
 		this.setState({
-			search_key: event.target.value.replace(/[^a-zA-Z ']/gi, ""),
+			searchKey: event.target.value.replace(/[^a-zA-Z ']/gi, ""),
 		});
 	};
 
@@ -132,7 +132,7 @@ class UpdateChannelsComponent extends Component {
 				}
 			});
 
-			this.setState({searched_users: searched_users});
+			this.setState({searchedUsers: searched_users});
 		} else {
 			// Do Nothing
 		}
@@ -188,7 +188,7 @@ class UpdateChannelsComponent extends Component {
 		).then((response) => {
 			this.loadChannel();
 			this.loadOrg();
-			this.setState({searched_users: [], search_key: ""});
+			this.setState({searchedUsers: [], search_key: ""});
 		});
 	};
 
@@ -360,7 +360,7 @@ class UpdateChannelsComponent extends Component {
 				orgMemberDetails.set(response.data[i].username, user_details);
 			}
 			this.setState({
-				member_details_loaded: true,
+				memberDetailsLoaded: true,
 			});
 
 			// Check if they are in the Organisation
@@ -371,7 +371,7 @@ class UpdateChannelsComponent extends Component {
 					orgMemberDetails.get(this.state.username).role === "ADMIN"
 				) {
 					this.setState({
-						is_verifed: true,
+						isVerifed: true,
 					});
 				} else {
 					alert("You don't have permissions to view this page");

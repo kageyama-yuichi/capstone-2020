@@ -66,14 +66,14 @@ class UpdateInstancesComponent extends Component {
 			e.currentTarget.querySelector(".form-control").setCustomValidity("invalid");
 		}
 
-		this.setState({instance_title_error: error, validated: true});
+		this.setState({instanceTitleError: error, validated: true});
 	};
 
 	handle_typing_instance_title = (event) => {
 		// Organisation ID Must Be Lowercase and have NO SPACES and Special Characters
 		this.setState({
-			instance_title: event.target.value,
-			instance_title_error: false,
+			instanceTitle: event.target.value,
+			instanceTitleError: false,
 		});
 	};
 
@@ -93,7 +93,7 @@ class UpdateInstancesComponent extends Component {
 						instance_title: response.data[i],
 					});
 					this.setState({
-						owned_ids: this.state.owned_ids,
+						ownedIds: this.state.owned_ids,
 					});
 				}
 			}

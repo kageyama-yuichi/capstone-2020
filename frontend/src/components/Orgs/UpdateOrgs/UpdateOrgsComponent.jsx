@@ -1,8 +1,6 @@
 import React, {Component} from "react";
 import OrgsResources from "../OrgsResources.js";
 import AuthenticationService from "../../Authentication/AuthenticationService.js";
-import AddUserToChannelComponent from "../Channels/AddUserToChannelComponent.jsx";
-import RemoveUserFromChannelComponent from "../Channels/RemoveUserFromChannelComponent.jsx";
 import "./UpdateOrgsComponent.css";
 import MemberListComponent from "./MemberListComponent.jsx";
 import ChannelListComponent from "./ChannelListComponent.jsx";
@@ -23,10 +21,9 @@ import {
 } from "react-bootstrap";
 
 var channels = [];
-var currentMembersInChannel = [];
-var currentNamespace = [];
 var searchedUsers = [];
 var pendingUsers = [];
+var currentNamespace = [];
 const orgMemberDetails = new Map();
 
 class UpdateOrgsComponent extends Component {
@@ -54,9 +51,6 @@ class UpdateOrgsComponent extends Component {
 		};
 		this.onSubmit = this.onSubmit.bind(this);
 		this.handleCancel = this.handleCancel.bind(this);
-		this.inviteUser = this.inviteUser.bind(this);
-		this.add_users_to_channel = this.addUsersToChannel.bind(this);
-		this.remove_users_from_channel = this.removeUsersFromChannel.bind(this);
 		this.handleDeleteOrg = this.handleDeleteOrg.bind(this);
 		this.handleDeleteCheck = this.handleDeleteCheck.bind(this);
 	}
@@ -122,13 +116,13 @@ class UpdateOrgsComponent extends Component {
 	};
 	handleTypingOrgTitle = (event) => {
 		this.setState({
-			org_title: event.target.value,
+			orgTitle: event.target.value,
 			error: false,
 		});
 	};
 	handleTypingSearchKey = (event) => {
 		this.setState({
-			search_key: event.target.value.replace(/[^a-zA-Z ']/gi, ""),
+			searchKey: event.target.value.replace(/[^a-zA-Z ']/gi, ""),
 		});
 	};
 
@@ -207,7 +201,7 @@ class UpdateOrgsComponent extends Component {
 					pendingUsers = response.data;
 				}
 				this.setState({
-					invite_sent: false,
+					inviteSent: false,
 				});
 			});
 		}
@@ -231,7 +225,7 @@ class UpdateOrgsComponent extends Component {
 						org_id: response.data[i],
 					});
 					this.setState({
-						owned_ids: this.state.ownedIds,
+						ownedIds: this.state.ownedIds,
 					});
 				}
 			}
@@ -242,8 +236,8 @@ class UpdateOrgsComponent extends Component {
 				channels = response.data.channels;
 				this.setState(
 					{
-						org_id: response.data.org_id,
-						org_title: response.data.org_title,
+						orgId: response.data.org_id,
+						orTitle: response.data.org_title,
 						members: response.data.members,
 					},
 					() => {
@@ -271,8 +265,8 @@ class UpdateOrgsComponent extends Component {
 				channels = response.data.channels;
 				this.setState(
 					{
-						org_id: response.data.org_id,
-						org_title: response.data.org_title,
+						orgId: response.data.org_id,
+						orgTitle: response.data.org_title,
 						members: response.data.members,
 					},
 					() => {
@@ -313,7 +307,7 @@ class UpdateOrgsComponent extends Component {
 					}
 					// Re-render the Page to Display Array
 					this.setState({
-						search_key: "",
+						searchKey: "",
 					});
 				}
 			);
@@ -471,7 +465,7 @@ class UpdateOrgsComponent extends Component {
 				orgMemberDetails.set(response.data[i].username, user_details);
 			}
 			this.setState({
-				member_details_loaded: true,
+				memberDetailsLoaded: true,
 			});
 			// Sort this.state.members to correct Heirarchy
 			this.sortByRole();
@@ -486,7 +480,7 @@ class UpdateOrgsComponent extends Component {
 					orgMemberDetails.get(this.state.username).role === "ADMIN"
 				) {
 					this.setState({
-						is_verifed: true,
+						isVerifed: true,
 					});
 				} else {
 					alert("You don't have permissions to view this page");
@@ -495,69 +489,7 @@ class UpdateOrgsComponent extends Component {
 			}
 		});
 	}
-
-	inviteUser = (invitee) => {
-		searchedUsers = [];
-		OrgsResources.invite_to_org(this.state.username, invitee, this.state.orgId).then(
-			(response) => {
-				this.setState((prevState) => ({
-					alerts: [...prevState.alerts, "User Successfully Emailed"],
-					search_key: "",
-					invite_sent: true,
-				}));
-			}
-		);
-	};
-	removeInvitedUser = (unique_id) => {
-		OrgsResources.remove_invited_user_from_org(this.state.username, unique_id).then(
-			(response) => {
-				pendingUsers = [];
-				// Re-render the Page
-				this.setState((prevState) => ({
-					alerts: [...prevState.alerts, "Pending invite removed"],
-					invite_sent: true,
-				}));
-			}
-		);
-	};
-
-	addUsersToChannel(channel_title) {
-		currentMembersInChannel = [];
-		// Get the Current Channel Members
-		for (let i = 0; i < channels.length; i++) {
-			if (channels[i].channel_title === channel_title) {
-				currentMembersInChannel = channels[i].members;
-				break;
-			}
-		}
-		this.setState({
-			show_add_users: !this.state.showAddUsers,
-			temp_channel_title: channel_title,
-		});
-	}
-	removeUsersFromChannel(channel_title) {
-		currentMembersInChannel = [];
-		// Get the Current Channel Members
-		for (let i = 0; i < channels.length; i++) {
-			if (channels[i].channel_title === channel_title) {
-				currentMembersInChannel = channels[i].members;
-				break;
-			}
-		}
-		this.setState({
-			show_remove_users: !this.state.showRemoveUsers,
-			temp_channel_title: channel_title,
-		});
-	}
-	onExit = () => {
-		currentMembersInChannel = [];
-		this.setState({
-			show_add_users: false,
-			show_remove_users: false,
-			temp_channel_title: "",
-		});
-	};
-
+	
 	// Promoting and Demoting Members
 	manageMember = (username, type) => {
 		let auth = {
@@ -830,8 +762,6 @@ class UpdateOrgsComponent extends Component {
 											username={this.state.username}
 											org_member_details={orgMemberDetails}
 											handle_delete_channel={this.handleDeleteChannel}
-											add_users_to_channel={this.addUsersToChannel}
-											remove_users_from_channel={this.removeUsersFromChannel}
 											handle_update_channel={this.handleUpdateChannel}
 										/>
 									</Col>
@@ -923,25 +853,7 @@ class UpdateOrgsComponent extends Component {
 						</Form.Group>
 					</Row>
 				</Container>
-				{this.state.showAddUsers ? (
-					<AddUserToChannelComponent
-						handler={this.onExit}
-						org_id={this.state.orgId}
-						channel_title={this.state.tempChannelTitle}
-						members={this.state.members}
-						org_member_details={orgMemberDetails}
-						current_members_in_channel={currentMembersInChannel}
-					/>
-				) : null}
-				{this.state.showRemoveUsers ? (
-					<RemoveUserFromChannelComponent
-						handler={this.onExit}
-						org_id={this.state.orgId}
-						channel_title={this.state.tempChannelTitle}
-						org_member_details={orgMemberDetails}
-						current_members_in_channel={currentMembersInChannel}
-					/>
-				) : null}
+				
 				{this.mapToastAlerts()}
 			</div>
 		);

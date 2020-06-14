@@ -44,7 +44,7 @@ class ContactComponent extends Component {
 
 	handleTypingSearchKey = (event) => {
 		this.setState({
-			search_key: event.target.value.replace(/[^a-zA-Z1-9 ']/gi, ""),
+			searchKey: event.target.value.replace(/[^a-zA-Z1-9 ']/gi, ""),
 		});
 	};
 
@@ -70,7 +70,7 @@ class ContactComponent extends Component {
 				}
 				// Re-render the Page to Display Array
 				this.setState({
-					search_key: "",
+					searchKey: "",
 				});
 			});
 		} else {
@@ -84,7 +84,7 @@ class ContactComponent extends Component {
 			searched_users = [];
 			// Re-render the Page to Display Array
 			this.setState({
-				search_key: "",
+				searchKey: "",
 			});
 			this.refreshContacts();
 		});

@@ -21,8 +21,8 @@ class OrgWrapperComponent extends Component {
 	handleInstanceClick(channel_title, instance_title) {
 		this.setState({
 			instanceSelected: true,
-			channel_title: channel_title,
-			instance_title: instance_title,
+			channelTitle: channel_title,
+			instanceTitle: instance_title,
 		});
 
 		this.forceUpdate();
@@ -31,7 +31,7 @@ class OrgWrapperComponent extends Component {
 	handleTodoClick(channel_title, role) {
 		this.setState({
 			instanceSelected: false,
-			channel_title: channel_title,
+			channelTitle: channel_title,
 			role: role,
 		});
 
