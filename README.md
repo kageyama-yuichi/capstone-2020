@@ -12,6 +12,36 @@ The most important features that L8Z possess are:
     
 3.  TCP/IP Encrypted Organisational and Private Messaging with Chat History Persistence and Exportation
 
+## Installation Instructions
+Follow these steps to run the application locally for development
+
+### Prerequisites
+```
+Node JS https://nodejs.org/en/download/
+```
+```
+JDK https://www.oracle.com/au/java/technologies/javase-downloads.html
+```
+```
+Eclipse https://www.eclipse.org/downloads/
+```
+
+### Installation
+#### Running the front end development environment
+1. Open a command line terminal and navigate to the cloned repository
+2. Type `cd frontend`
+3. Type `npm install`
+4. Type `npm start`
+
+#### Running the back end development environment
+1. Open Eclipse
+2. Click File->Import
+3. In the popup window, go to Maven->Existing Maven Projects and hit next
+4. Click browse and go to the cloned repository and select the backend folder
+5. Click finish
+6. Go to src/main/java/com.l8z/L8zApplication.java 
+7. Right click and Run As -> Java Application
+
 
 ## Team
 | <a href="https://github.com/s3662507" target="_blank">**Michael Aygur**</a> | <a href="https://github.com/rmit-S3488937-Tyler-Larrad" target="_blank">**Tyler Larrad**</a> | <a href="https://github.com/micallefmatthew" target="_blank">**Matthew Micallef**</a> | 
