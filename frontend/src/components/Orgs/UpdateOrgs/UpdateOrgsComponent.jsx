@@ -31,7 +31,7 @@ class UpdateOrgsComponent extends Component {
 		super(props);
 		this.state = {
 			username: AuthenticationService.getLoggedInUserName(),
-
+			isVerified: false,
 			orgId: this.props.match.params.org_id,
 			oldOrgId: this.props.match.params.org_id,
 			orgTitle: "",
@@ -49,6 +49,8 @@ class UpdateOrgsComponent extends Component {
 			orgIdValidated: false,
 			alerts: [],
 		};
+		this.inviteUser = this.inviteUser.bind(this);
+
 		this.onSubmit = this.onSubmit.bind(this);
 		this.handleCancel = this.handleCancel.bind(this);
 		this.handleDeleteOrg = this.handleDeleteOrg.bind(this);
@@ -195,6 +197,9 @@ class UpdateOrgsComponent extends Component {
 		if (this.state.inviteSent === true) {
 			OrgsResources.retrieve_pending_users_in_orgs(this.state.orgId).then((response) => {
 				// if there is no Data, Don't Sort
+
+				console.log(response.data)
+
 				if (response.data !== "") {
 					pendingUsers = response.data.sort(this.sortByAlphabeticalOrderPending);
 				} else {
@@ -237,7 +242,7 @@ class UpdateOrgsComponent extends Component {
 				this.setState(
 					{
 						orgId: response.data.org_id,
-						orTitle: response.data.org_title,
+						orgTitle: response.data.org_title,
 						members: response.data.members,
 					},
 					() => {
@@ -263,6 +268,7 @@ class UpdateOrgsComponent extends Component {
 		OrgsResources.retrieve_org(this.state.username, this.state.oldOrgId)
 			.then((response) => {
 				channels = response.data.channels;
+				console.log(response.data.org_title)
 				this.setState(
 					{
 						orgId: response.data.org_id,
@@ -489,7 +495,33 @@ class UpdateOrgsComponent extends Component {
 			}
 		});
 	}
-	
+
+	inviteUser = (invitee) => {
+		searchedUsers = [];
+		OrgsResources.invite_to_org(this.state.username, invitee, this.state.orgId).then(
+			(response) => {
+				this.setState((prevState) => ({
+					alerts: [...prevState.alerts, "User Successfully Emailed"],
+					searchKey: "",
+					inviteSent: true,
+				}));
+			}
+		);
+	};
+
+	removeInvitedUser = (unique_id) => {
+		OrgsResources.remove_invited_user_from_org(this.state.username, unique_id).then(
+			(response) => {
+				pendingUsers = [];
+				// Re-render the Page
+				this.setState((prevState) => ({
+					alerts: [...prevState.alerts, "Pending invite removed"],
+					inviteSent: true,
+				}));
+			}
+		);
+	};
+
 	// Promoting and Demoting Members
 	manageMember = (username, type) => {
 		let auth = {
@@ -639,7 +671,7 @@ class UpdateOrgsComponent extends Component {
 	}
 
 	render() {
-		return !this.state.is_verifed ? null : (
+		return !this.state.isVerifed ? null : (
 			<div className="app-window update-org-component">
 				<Container fluid>
 					<Form noValidate validated={this.state.validated}>
@@ -715,6 +747,7 @@ class UpdateOrgsComponent extends Component {
 												<FormControl
 													className="org-new-users"
 													type="text"
+													autoComplete="plz no"
 													id="search_user"
 													value={this.state.searchKey}
 													onChange={this.handleTypingSearchKey}

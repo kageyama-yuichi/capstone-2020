@@ -1,10 +1,6 @@
 import React, {Component} from "react";
 import {Tabs, Tab} from "react-bootstrap"
 class ChatTabbedSidebarComponent extends Component {
-	constructor(props) {
-		super(props);
-        this.state = {};
-	}
 
     mapUsers() {
 		let retDiv;

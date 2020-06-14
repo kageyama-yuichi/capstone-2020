@@ -9,11 +9,11 @@ class AddInstancesComponent extends Component {
 		super(props);
 		this.state = {
 			username: AuthenticationService.getLoggedInUserName(),
-			org_id: this.props.match.params.org_id,
-			channel_title: this.props.match.params.channel_title,
-			instance_title: "",
-			instance_title_error: false,
-			owned_ids: [],
+			orgId: this.props.match.params.org_id,
+			channelTitle: this.props.match.params.channel_title,
+			instanceTitle: "",
+			instanceTitleError: false,
+			ownedIds: [],
 			validated: false,
 		};
 		this.onSubmit = this.onSubmit.bind(this);
@@ -24,10 +24,10 @@ class AddInstancesComponent extends Component {
 
 		var error = "";
 		var internal_error = false;
-		var str2 = this.state.instance_title;
+		var str2 = this.state.instanceTitle;
 
 		// Ensure Length is 3 or Greater
-		if (this.state.instance_title.length < 3 || this.state.instance_title === "new") {
+		if (this.state.instanceTitle.length < 3 || this.state.instanceTitle === "new") {
 			error = "ID too short";
 
 			internal_error = true;
@@ -35,8 +35,8 @@ class AddInstancesComponent extends Component {
 
 		if (!internal_error) {
 			// Check if the ID Exists
-			for (let i = 0; i < this.state.owned_ids.length; i++) {
-				var str1 = this.state.owned_ids[i].instance_title;
+			for (let i = 0; i < this.state.ownedIds.length; i++) {
+				var str1 = this.state.ownedIds[i].instance_title;
 				// Compare the String Values
 				if (str1.valueOf() === str2.valueOf()) {
 					internal_error = true;
@@ -47,13 +47,13 @@ class AddInstancesComponent extends Component {
 				error = "ID Already Used";
 			} else {
 				let instance = {
-					instance_title: this.state.instance_title,
+					instance_title: this.state.instanceTitle,
 					instances: [],
 				};
 				OrgsResources.create_instance(
 					this.state.username,
-					this.state.org_id,
-					this.state.channel_title,
+					this.state.orgId,
+					this.state.channelTitle,
 					instance
 				).then(() => this.props.history.goBack());
 			}
@@ -66,7 +66,7 @@ class AddInstancesComponent extends Component {
 		this.setState({instanceTitleError: error, validated: true});
 	};
 
-	handle_typing_instance_title = (event) => {
+	handleTypingInstanceTitle = (event) => {
 		// Organisation ID Must Be Lowercase and have NO SPACES and Special Characters
 		this.setState({
 			instanceTitle: event.target.value,
@@ -80,15 +80,15 @@ class AddInstancesComponent extends Component {
 		// Retrieves All the Current Instance IDs For the Organisation
 		OrgsResources.retrieve_all_instance_titles(
 			this.state.username,
-			this.state.org_id,
-			this.state.channel_title
+			this.state.orgId,
+			this.state.channelTitle
 		).then((response) => {
 			for (let i = 0; i < response.data.length; i++) {
-				this.state.owned_ids.push({
+				this.state.ownedIds.push({
 					instance_title: response.data[i],
 				});
 				this.setState({
-					ownedIds: this.state.owned_ids,
+					ownedIds: this.state.ownedIds,
 				});
 			}
 		});
@@ -111,12 +111,12 @@ class AddInstancesComponent extends Component {
 								type="text"
 								name="instance_title"
 								id="instance_title"
-								value={this.state.instance_title}
-								onChange={this.handle_typing_instance_title}
+								value={this.state.instanceTitle}
+								onChange={this.handleTypingInstanceTitle}
 								placeholder="Instance Title"
 							/>
 							<Form.Control.Feedback type="invalid">
-								{this.state.instance_title_error}
+								{this.state.instanceTitleError}
 							</Form.Control.Feedback>
 						</Form.Group>
 						<Button variant="secondary" id="instance_create" type="submit">

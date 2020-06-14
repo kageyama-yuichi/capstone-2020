@@ -5,7 +5,7 @@ class MessageinputComponent extends Component {
 		super(props);
 		this.state = {
 			message: "",
-			is_typing: false,
+			isTyping: false,
         };
         this.handleSendMessage = this.handleSendMessage.bind(this);
 	}
@@ -25,7 +25,7 @@ class MessageinputComponent extends Component {
 			this.props.send_message("TYPING", "Stopped Typing");
 		} else {
 			// If the User was Not Typing, Set it to They Are
-			if (this.state.is_typing === false) {
+			if (this.state.isTyping === false) {
 				this.setState({
 					isTyping: true,
 				});

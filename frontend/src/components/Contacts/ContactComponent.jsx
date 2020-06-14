@@ -12,7 +12,7 @@ class ContactComponent extends Component {
         super(props)
         this.state = { 
 			username: AuthenticationService.getLoggedInUserName(),
-			search_key: "",
+			searchKey: "",
 			user: props.senderUsername,
             contactList: []
 		}
@@ -49,8 +49,8 @@ class ContactComponent extends Component {
 	};
 
 	handleSearchNewUsers = () => {
-		if (this.state.search_key !== "") {
-			OrgsResources.retrieve_all_basic_users_by_name(this.state.search_key).then((response) => {
+		if (this.state.searchKey !== "") {
+			OrgsResources.retrieve_all_basic_users_by_name(this.state.searchKey).then((response) => {
 				// Assign the Searched Users that Are Not in the Org to the Array
 				searched_users = [];
 				
@@ -170,7 +170,7 @@ class ContactComponent extends Component {
 					  className="org-new-users"
 					  type="text"
 					  id="search_user"
-					  value={this.state.search_key}
+					  value={this.state.searchKey}
 					  onChange={this.handleTypingSearchKey}
 					  placeholder="Enter the User to add"
 					  onKeyPress={(event) => {

@@ -9,8 +9,8 @@ class InstancesComponent extends Component {
 		super(props);
 		this.state = {
 			username: AuthenticationService.getLoggedInUserName(),
-			org_id: this.props.match.params.org_id,
-			channel_title: this.props.match.params.channel_title,
+			orgId: this.props.match.params.org_id,
+			channelTitle: this.props.match.params.channel_title,
 			instances: [],
 			todos: [],
 		};
@@ -28,7 +28,7 @@ class InstancesComponent extends Component {
 
 	handleOpenChat = (instance_title) => {
 		let url =
-			"/chat/" + this.state.org_id + "/" + this.state.channel_title + "/" + instance_title;
+			"/chat/" + this.state.orgId + "/" + this.state.channelTitle + "/" + instance_title;
 		this.props.history.push(url);
 	};
 
@@ -36,10 +36,10 @@ class InstancesComponent extends Component {
 
 	refreshInstances = () => {
 		// Retrieves All Instances from the Org Data
-		OrgsResources.retrieve_org(this.state.username, this.state.org_id).then((response) => {
+		OrgsResources.retrieve_org(this.state.username, this.state.orgId).then((response) => {
 			// Maps the Response Data (Channels.class) to JSONbject
 			for (let i = 0; i < response.data.channels.length; i++) {
-				if (response.data.channels[i].channel_title === this.state.channel_title) {
+				if (response.data.channels[i].channel_title === this.state.channelTitle) {
 					// Map the Response Data (Instances.class) to JSONObject
 					for (let j = 0; j < response.data.channels[i].instances.length; j++) {
 						this.state.instances.push({
@@ -59,8 +59,8 @@ class InstancesComponent extends Component {
 		// Retrieves the Todos for the Organisation Channels
 		OrgsResources.retrieve_org_todos(
 			this.state.username,
-			this.state.org_id,
-			this.state.channel_title
+			this.state.orgId,
+			this.state.channelTitle
 		).then((response) => {});
 	};
 

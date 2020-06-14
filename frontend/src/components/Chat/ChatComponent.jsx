@@ -20,7 +20,7 @@ var messages = [];
 var visible = 0;
 var oldMessageLength = 0;
 var shouldScrollToBottom = true;
-const instance_member_details = new Map();
+const instanceMemberDetails = new Map();
 
 
 class ChatComponent extends Component {
@@ -108,7 +108,7 @@ class ChatComponent extends Component {
 			messages.unshift({
 				message: Encryption.decrypt_message(obj[i].content),
 				sender: obj[i].sender,
-				name: instance_member_details.get(obj[i].sender).name,
+				name: instanceMemberDetails.get(obj[i].sender).name,
 				date_time: obj[i].date_time,
 			});
 			counter++;
@@ -138,7 +138,7 @@ class ChatComponent extends Component {
 		// Go through Server Message and Extract Users
 		for (let i = 0; i < obj.length; i++) {
 			// Checks if the User Exists
-			does_exist = instance_member_details.has(obj[i].username);
+			does_exist = instanceMemberDetails.has(obj[i].username);
 
 			if (!does_exist) {
 				// Used for Storing in the Map
@@ -153,7 +153,7 @@ class ChatComponent extends Component {
 					date_time: "",
 				};
 				// Add them to the Members
-				instance_member_details.set(obj[i].username, user_details);
+				instanceMemberDetails.set(obj[i].username, user_details);
 			}
 		}
 		// Sort the Members Map
@@ -170,7 +170,7 @@ class ChatComponent extends Component {
 		var message_text = JSON.parse(payload.body);
 		var does_require_sorting = false;
 		// This gets the Original Contents in the Map
-		let temp = instance_member_details.get(message_text.sender);
+		let temp = instanceMemberDetails.get(message_text.sender);
 
 		if (message_text.type === "JOIN") {
 			// Assign User to Online
@@ -199,7 +199,7 @@ class ChatComponent extends Component {
 			// Decrypt
 			messages.push({
 				message: Encryption.decrypt_message(message_text.content),
-				name: instance_member_details.get(message_text.sender).name,
+				name: instanceMemberDetails.get(message_text.sender).name,
 				sender: message_text.sender,
 				date_time: message_text.date_time,
 			});
@@ -210,7 +210,7 @@ class ChatComponent extends Component {
 			// do nothing...
 		}
 		// Overwrite the Old Contents
-		instance_member_details.set(message_text.sender, temp);
+		instanceMemberDetails.set(message_text.sender, temp);
 
 		if (does_require_sorting) {
 			// Sort the Members Map
@@ -224,9 +224,9 @@ class ChatComponent extends Component {
 	onChannelConnect = (payload) => {
 		var message_text = JSON.parse(payload.body);
 		// Checks if the Message was for this Org/Channel
-		if (instance_member_details.has(message_text.sender)) {
+		if (instanceMemberDetails.has(message_text.sender)) {
 			// This gets the Original Contents in the Map
-			let temp = instance_member_details.get(message_text.sender);
+			let temp = instanceMemberDetails.get(message_text.sender);
 
 			if (message_text.type === "JOIN") {
 				// Assign User to Online
@@ -248,7 +248,7 @@ class ChatComponent extends Component {
 				}
 			}
 			// Overwrite the Old Contents
-			instance_member_details.set(message_text.sender, temp);
+			instanceMemberDetails.set(message_text.sender, temp);
 			// Sort the Members Map
 			this.sortInstanceMemberDetailsMap();
 			// Re-renders the Users List
@@ -314,13 +314,13 @@ class ChatComponent extends Component {
 	sortInstanceMemberDetailsMap = () => {
 		// Create the Temporary Sorted Map
 		const map_sorted_temp = new Map(
-			[...instance_member_details.entries()].sort(this.sortByOnlineNames)
+			[...instanceMemberDetails.entries()].sort(this.sortByOnlineNames)
 		);
 		// Clear the Old Map
-		instance_member_details.clear();
+		instanceMemberDetails.clear();
 		// Assign the Temporary Sorted Map to the Members Map
 		for (let [key, value] of map_sorted_temp) {
-			instance_member_details.set(key, value);
+			instanceMemberDetails.set(key, value);
 		}
 	};
 
@@ -339,7 +339,7 @@ class ChatComponent extends Component {
 		visible = 0;
 		oldMessageLength = 0;
 		shouldScrollToBottom = true;
-		instance_member_details.clear();
+		instanceMemberDetails.clear();
 	}
 
 	componentDidUpdate(prevProps) {
@@ -469,7 +469,7 @@ class ChatComponent extends Component {
 							<Container className="ml-0 mr-0 pl-0 flex-fill pr-0">
 								<Container fluid className="pr-0" style={{height: "90%"}}>
 									<MessagesListComponent
-										instance_member_details={instance_member_details}
+										instance_member_details={instanceMemberDetails}
 										messages={messages}
 										readLast={this.state.readLast}
 										handleScroll={this.handleScroll}
@@ -489,7 +489,7 @@ class ChatComponent extends Component {
 								className="pl-0 pr-0 ml-0 mr-0 h-100 flex-fill"
 								style={{minWidth: "150px", maxWidth: "300px"}}>
 								<ChatTabbedSidebarComponent
-									instance_member_details={instance_member_details}
+									instance_member_details={instanceMemberDetails}
 								/>
 							</Container>
 						</div>

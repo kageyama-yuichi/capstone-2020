@@ -12,7 +12,7 @@ var extension = null;
 var counter = 0;
 var messageCounter = 0;
 var messages = [];
-const member_details = new Map();
+const memberDetails = new Map();
 
 class PrivateChatComponent extends Component {
 	constructor (props) {
@@ -20,12 +20,12 @@ class PrivateChatComponent extends Component {
 		this.state = {
 			username: AuthenticationService.getLoggedInUserName(),
 			channelConnected: false,
-			receiver_name: "",
+			receiverName: "",
 			message: "",
 			error: "",
 			
 			joined: false,
-			current_time: "",
+			currentTime: "",
 			openMembers: false,
 			isTyping: false,
 			bottom: true,
@@ -101,7 +101,7 @@ class PrivateChatComponent extends Component {
 				message: Encryption.decrypt_message(obj[i].content),
 				sender: obj[i].sender,
 				receiver: obj[i].receiver,
-				name: member_details.get(obj[i].sender).name,
+				name: memberDetails.get(obj[i].sender).name,
 				date_time: obj[i].date_time,
 			});
 			counter++;
@@ -125,7 +125,7 @@ class PrivateChatComponent extends Component {
 		// Go through Server Message and Extract Users
 		for (let i = 0; i < obj.length; i++) {
 			// Checks if the User Exists
-			does_exist = member_details.has(obj[i].username);
+			does_exist = memberDetails.has(obj[i].username);
 		
 			if (!does_exist) {
 				// Used for Storing in the Map
@@ -146,7 +146,7 @@ class PrivateChatComponent extends Component {
 					})
 				}
 				// Add them to the Members
-				member_details.set(obj[i].username, user_details);
+				memberDetails.set(obj[i].username, user_details);
 			}
 		}
 		
@@ -160,7 +160,7 @@ class PrivateChatComponent extends Component {
 	onMessageReceived = (payload) => {
 		var message_text = JSON.parse(payload.body);
 		// This gets the Original Contents in the Map
-		let temp = member_details.get(message_text.sender);
+		let temp = memberDetails.get(message_text.sender);
 		
 		if (message_text.type === "JOIN") {
 			// Assign User to Online
@@ -188,7 +188,7 @@ class PrivateChatComponent extends Component {
 			// Decrypt
 			messages.push({
 				message: Encryption.decrypt_message(message_text.content),
-				name: member_details.get(message_text.sender).name,
+				name: memberDetails.get(message_text.sender).name,
 				sender: message_text.sender,
 				date_time: message_text.date_time,
 			});
@@ -201,7 +201,7 @@ class PrivateChatComponent extends Component {
 			// do nothing...
 		}
 		// Overwrite the Old Contents
-		member_details.set(message_text.sender, temp);
+		memberDetails.set(message_text.sender, temp);
 		// Re-renders the Users List
 		this.forceUpdate();
 	};
@@ -210,9 +210,9 @@ class PrivateChatComponent extends Component {
 	onChannelConnect = (payload) => {
 		var message_text = JSON.parse(payload.body);
 		// Checks if the Message was for this Org/Channel
-		if(member_details.has(message_text.sender)){
+		if(memberDetails.has(message_text.sender)){
 			// This gets the Original Contents in the Map
-			let temp = member_details.get(message_text.sender);
+			let temp = memberDetails.get(message_text.sender);
 			
 			if (message_text.type === "JOIN") {
 				// Assign User to Online
@@ -234,7 +234,7 @@ class PrivateChatComponent extends Component {
 				} 
 			}
 			// Overwrite the Old Contents
-			member_details.set(message_text.sender, temp);
+			memberDetails.set(message_text.sender, temp);
 			// Re-renders the Users List
 			this.forceUpdate();
 		}
@@ -324,7 +324,7 @@ class PrivateChatComponent extends Component {
 		retDiv = messages.map((old_msg) => {
 			messageCounter++;
 			return (
-				<MessageComponent key={messageCounter} senderUsername={old_msg.sender} sender={member_details.get(old_msg.sender)} msg={old_msg}/>
+				<MessageComponent key={messageCounter} senderUsername={old_msg.sender} sender={memberDetails.get(old_msg.sender)} msg={old_msg}/>
 			);
 		});
 		return retDiv;
@@ -336,7 +336,7 @@ class PrivateChatComponent extends Component {
 			<div className="app-window chat-component">
 				<Container fluid style={{height: "100%"}} className="pr-0">
 					<Row className="title-header border-bottom">
-					<h1>{this.state.receiver_name}</h1>
+					<h1>{this.state.receiverName}</h1>
 					</Row>
 					<Row className="window-body">
 						<Col xs={10} className="h-100 inline-block">
