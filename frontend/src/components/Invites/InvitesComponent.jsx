@@ -2,8 +2,8 @@ import React, {Component} from "react";
 import InvitesResources from "./InvitesResources.js";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
 import "./InvitesComponent.css";
-import {withRouter} from "react-router-dom"
-import {Button, ButtonGroup, Container, Row, Col, ListGroup} from "react-bootstrap";
+import {withRouter} from "react-router-dom";
+import {Button, ButtonGroup, Container, ListGroup} from "react-bootstrap";
 
 const inviter_details = new Map();
 var invites = [];
@@ -16,39 +16,37 @@ class InvitesComponent extends Component {
 		this.state = {
 			username: AuthenticationService.getLoggedInUserName(),
 		};
-		this.load_inviter_details = this.load_inviter_details.bind(this);
-		this.handle_accept_invite = this.handle_accept_invite.bind(this);
-		this.handle_reject_invite = this.handle_reject_invite.bind(this);
+		this.loadInviterDetails = this.loadInviterDetails.bind(this);
+		this.handleAcceptInvite = this.handleAcceptInvite.bind(this);
+		this.handleRejectInvite = this.handleRejectInvite.bind(this);
 	}
 
 	// Function to Update the Organisation that the User clicked
-	handle_accept_invite = (unique_id) => {
+	handleAcceptInvite = (unique_id) => {
 		InvitesResources.user_decision_on_invite(unique_id, accepted).then((response) => {
 			// Redirect the User to the Orgs Tap
 			this.props.history.push("/orgs");
 		});
 	};
 	// Function to Allow the User to Reject an Organisational Invite
-	handle_reject_invite = (unique_id) => {
+	handleRejectInvite = (unique_id) => {
 		InvitesResources.user_decision_on_invite(unique_id, rejected).then((response) => {
-			this.refresh_invites();
+			this.refreshInvites();
 		});
 	};
 
-	componentDidUpdate() {}
-
-	refresh_invites = () => {
+	refreshInvites = () => {
 		InvitesResources.retrieve_pending_invites_for_user(this.state.username)
 			.then((response) => {
 				// Set all the Invites
 				invites = response.data;
 			})
 			.then(() => {
-				this.load_inviter_details();
+				this.loadInviterDetails();
 			});
 	};
 
-	load_inviter_details() {
+	loadInviterDetails() {
 		// Get the Basic User of the Inviter
 		var inviter_usernames = [];
 		// Get all the Inviter Usernames
@@ -74,7 +72,7 @@ class InvitesComponent extends Component {
 	}
 
 	componentDidMount() {
-		this.refresh_invites();
+		this.refreshInvites();
 	}
 
 	renderButtons(org) {}
@@ -84,7 +82,6 @@ class InvitesComponent extends Component {
 		// Ensure the Array Has Data
 		if (invites.length > 0 && inviter_details.size > 0) {
 			retDiv = invites.map((inv) => {
-				let temp_inviter = inviter_details.get(inv.inviter);
 				return (
 					<ListGroup.Item key={inv.uniqueId} className="invites bg-light text-dark">
 						<div className="d-flex justify-content-between">
@@ -96,13 +93,13 @@ class InvitesComponent extends Component {
 								<Button
 									key={inv.uniqueId + "accept"}
 									variant="success"
-									onClick={() => this.handle_accept_invite(inv.uniqueId)}>
+									onClick={() => this.handleAcceptInvite(inv.uniqueId)}>
 									<i className="fas fa-check"></i>
 								</Button>
 								<Button
 									key={inv.uniqueId + "decline"}
 									variant="danger"
-									onClick={() => this.handle_reject_invite(inv.uniqueId)}>
+									onClick={() => this.handleRejectInvite(inv.uniqueId)}>
 									<i className="fas fa-times"></i>
 								</Button>
 							</ButtonGroup>

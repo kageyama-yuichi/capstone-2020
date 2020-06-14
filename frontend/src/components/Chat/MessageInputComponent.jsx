@@ -5,12 +5,12 @@ class MessageinputComponent extends Component {
 		super(props);
 		this.state = {
 			message: "",
-			is_typing: false,
+			isTyping: false,
         };
         this.handleSendMessage = this.handleSendMessage.bind(this);
 	}
 
-	handle_typing = (event) => {
+	handleTyping = (event) => {
 		this.setState({
 			message: event.target.value,
 		});
@@ -19,15 +19,15 @@ class MessageinputComponent extends Component {
 		if (event.target.value === "") {
 			// Set the is_typing boolean to false
 			this.setState({
-				is_typing: false,
+				isTyping: false,
 			});
 			// Send a Message to the Server that User Stopped
 			this.props.send_message("TYPING", "Stopped Typing");
 		} else {
 			// If the User was Not Typing, Set it to They Are
-			if (this.state.is_typing === false) {
+			if (this.state.isTyping === false) {
 				this.setState({
-					is_typing: true,
+					isTyping: true,
 				});
 				// Send the Message off and Save if not "Started Typing"
 				this.props.send_message("TYPING", "Started Typing");
@@ -51,7 +51,7 @@ class MessageinputComponent extends Component {
                     autoComplete="off"
 					style={{borderRadius: "0px"}}
 					placeholder="Enter Message"
-					onChange={this.handle_typing}
+					onChange={this.handleTyping}
 					value={this.state.message}
 					onKeyPress={(event) => {
 						if (event.key === "Enter") {

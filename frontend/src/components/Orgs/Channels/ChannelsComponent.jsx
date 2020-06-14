@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import OrgsResources from "../OrgsResources.js";
 import AuthenticationService from "../../Authentication/AuthenticationService.js";
 import "../OrgsComponent.css";
-import {Container, Button, ButtonGroup, Row, Col, ListGroup} from "react-bootstrap";
+import {Container, Button, Row, Col, ListGroup} from "react-bootstrap";
 import {getRoleIconClassName} from "../OrgHelpers.js";
 
 /*
@@ -16,14 +16,14 @@ class ChannelsComponent extends Component {
 		super(props);
 		this.state = {
 			username: AuthenticationService.getLoggedInUserName(),
-			org_id: this.props.match.params.org_id,
+			orgId: this.props.match.params.org_id,
 			channels: [],
 			memberListOpen: [],
 		};
-		this.handle_open_channel = this.handle_open_channel.bind(this);
+		this.handleOpenChannel = this.handleOpenChannel.bind(this);
 	}
 
-	handle_create_channel = () => {
+	handleCreateChannel = () => {
 		var url =
 			this.props.history.location.pathname.slice(
 				0,
@@ -32,14 +32,14 @@ class ChannelsComponent extends Component {
 		this.props.history.push(url);
 	};
 
-	handle_open_channel = (channel_title) => {
-		let url = "/orgs/" + this.state.org_id + "/" + channel_title + "/instances";
+	handleOpenChannel = (channel_title) => {
+		let url = "/orgs/" + this.state.orgId + "/" + channel_title + "/instances";
 		this.props.history.push(url);
 	};
 
-	refresh_channels = () => {
+	refreshChannels = () => {
 		// Retrieves All Channels from the Org Data
-		OrgsResources.retrieve_org(this.state.username, this.state.org_id).then((response) => {
+		OrgsResources.retrieve_org(this.state.username, this.state.orgId).then((response) => {
 			this.setState({
 				channels: response.data.channels,
 			});
@@ -47,7 +47,7 @@ class ChannelsComponent extends Component {
 	};
 
 	componentDidMount() {
-		this.refresh_channels();
+		this.refreshChannels();
 	}
 
 	setRoleStyling = (role) => {
@@ -70,7 +70,6 @@ class ChannelsComponent extends Component {
 	}
 
 	render() {
-	
 		return (
 			<Container>
 				<Row>
@@ -78,7 +77,7 @@ class ChannelsComponent extends Component {
 						<h3>Channels</h3>
 					</Col>
 					<Col md={1}>
-						<Button variant="outline-dark" onClick={this.handle_create_channel}>
+						<Button variant="outline-dark" onClick={this.handleCreateChannel}>
 							<i className="fas fa-plus"></i>
 						</Button>
 					</Col>
@@ -89,14 +88,12 @@ class ChannelsComponent extends Component {
 							{this.state.channels.map((ch) => (
 								<ListGroup.Item
 									action
-									onClick={() => this.handle_open_channel(ch.channel_title)}
+									onClick={() => this.handleOpenChannel(ch.channel_title)}
 									key={ch.channel_title}
 									className="channels"
 									variant="dark">
-									
 									<div className="d-flex justify-content-between">
-									<div className="h-100 w-75">{ch.channel_title}</div>
-										
+										<div className="h-100 w-75">{ch.channel_title}</div>
 
 										<Button
 											variant="secondary"

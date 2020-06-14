@@ -1,5 +1,5 @@
-import React, {ReactDOM, Component, useRef, createRef} from "react";
-import {Container, Image, OverlayTrigger, Overlay} from "react-bootstrap";
+import React, { Component, createRef, ReactDOM} from "react";
+import {Container, Image, OverlayTrigger} from "react-bootstrap";
 import tempImg from "../../../assests/ProfileIcon.svg";
 import moment from "moment";
 import UserProfileOverlayComponent from "./UserProfileOverlayComponent.jsx";
@@ -17,7 +17,6 @@ class MessageComponent extends Component {
 			sender: props.msg.sender,
 			message: props.msg.message,
 			show: false,
-			target: null,
 			ref: createRef(),
 		};
 		this.handleClick = this.handleClick.bind(this);

@@ -10,18 +10,14 @@ import TeamsIcon from "../../assests/TeamsIcon.svg";
 import { Link } from "react-router-dom";
 import AuthenticationService from '../Authentication/AuthenticationService.js'
 
-const dashboardRegex = new RegExp("^\/(dashboard).*$")
-const profileRegex = new RegExp("^\/(profile).*$")
-const orgsRegex = new RegExp("^(\/(orgs).*)$")
-const agendaRegex = new RegExp("^\/(agenda).*$")
-const privateRegex = new RegExp("^\/(private).*$")
+const dashboardRegex = new RegExp("^/(dashboard).*$")
+const profileRegex = new RegExp("^/(profile).*$")
+const orgsRegex = new RegExp("^(/(orgs).*)$")
+const agendaRegex = new RegExp("^/(agenda).*$")
+const privateRegex = new RegExp("^/(private).*$")
 
 
 class SidebarComponent extends Component {
-
-	constructor(props) {
-		super(props);
-	}	
 
 	onClick() {
 		AuthenticationService.logout();
@@ -30,7 +26,7 @@ class SidebarComponent extends Component {
 
 	render() {
 		//Do not load sidebar on landing page
-		if (window.location.pathname === '/' || window.location.pathname.indexOf('/recover/password/') != -1) {
+		if (window.location.pathname === '/' || window.location.pathname.indexOf('/recover/password/') !== -1) {
 			return null;
 		} else {
 			return (
@@ -73,11 +69,6 @@ class SidebarComponent extends Component {
 								<span className="link-text">Logout</span>
 							</Link>
 						</li>
-
-						{/* <li className="sidebar-item">
-									<img src={SettingsIcon}></img>
-									<span className="link-text">Settings</span>
-								</li> */}
 					</ul>
 				</nav>
 			);

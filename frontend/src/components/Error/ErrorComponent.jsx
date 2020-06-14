@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Container, Row, Col, Card, CardDeck} from "react-bootstrap";
+import {Container, Row} from "react-bootstrap";
 // Sourced from: https://geekprank.com/fbi-warning/
 class ErrorComponent extends Component {
 	render() {

@@ -16,11 +16,11 @@ class OrgsWidgetComponent extends Component {
 		};
 	}
 
-	refresh_orgs = () => {
+	refreshOrgs = () => {
 		// Retrieves the Organisations of the User from the Server
 		OrgsResources.retrieve_orgs_sql(this.state.username).then((response) => {
 			// Maps the Response Data (Orgs.class) to JSObject
-			
+
 			var orgs = [];
 			var data;
 			var date;
@@ -38,7 +38,7 @@ class OrgsWidgetComponent extends Component {
 	};
 
 	componentDidMount() {
-		this.refresh_orgs();
+		this.refreshOrgs();
 	}
 
 	render() {
@@ -46,30 +46,36 @@ class OrgsWidgetComponent extends Component {
 			<Container fluid className="pl-1 mt-1">
 				<Tabs defaultActiveKey="recent">
 					<Tab eventKey="recent" title="Recent">
-						<CardDeck className="pt-2"style={{overflowY: "auto"}}>
-							{this.state.orgs.map((org) => (
-								<Card className="org-card mb-1" key={org.data.org_id}>
-									<Link
-										to={`orgs/${org.data.org_id}/channels`}
-										className="cards-fix">
-										<Card.Img
-											variant="top"
-											width="20rem"
-											height="140px"
-											src={tempImg}
-										/>
-										<Card.Body>
-											<Card.Title>{org.data.org_title}</Card.Title>
-										</Card.Body>
-										<Card.Footer>
-											<small>
-												{" "}
-												{`Updated ${org.date.format("ll [at] LT")}`}
-											</small>
-										</Card.Footer>
-									</Link>
-								</Card>
-							))}
+						<CardDeck className="pt-2" style={{overflowY: "auto"}}>
+							{this.state.orgs.length > 0 ? (
+								this.state.orgs.map((org) => (
+									<Card className="org-card mb-1" key={org.data.org_id}>
+										<Link
+											to={`orgs/${org.data.org_id}/channels`}
+											className="cards-fix">
+											<Card.Img
+												variant="top"
+												width="20rem"
+												height="140px"
+												src={tempImg}
+											/>
+											<Card.Body>
+												<Card.Title>{org.data.org_title}</Card.Title>
+											</Card.Body>
+											<Card.Footer>
+												<small>
+													{" "}
+													{`Updated ${org.date.format("ll [at] LT")}`}
+												</small>
+											</Card.Footer>
+										</Link>
+									</Card>
+								))
+							) : (
+								<Container>
+									<h3>Join a Organisation or Create one yourself!</h3>
+								</Container>
+							)}
 						</CardDeck>
 					</Tab>
 					<Tab eventKey="favourites" title="Favourites"></Tab>

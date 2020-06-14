@@ -70,12 +70,6 @@ public class Instances {
     public void add_message(ChatMessage msg) {
     	log.add(msg);
     }
-    /*
-    // Potentially a Remove Message Function
-    public void remove_message(ChatMessage msg) {
-    	log.remove(msg);
-    } 
-    */
     
     // Comparison 
  	@Override

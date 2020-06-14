@@ -5,8 +5,6 @@ import OrgsResources from "../Orgs/OrgsResources.js"
 import AuthenticationService from "../Authentication/AuthenticationService.js"
 
 var searched_users = [];
-var pending_users = [];
-const org_member_details = new Map();
 
 class ContactComponent extends Component {
 
@@ -14,21 +12,21 @@ class ContactComponent extends Component {
         super(props)
         this.state = { 
 			username: AuthenticationService.getLoggedInUserName(),
-			search_key: "",
+			searchKey: "",
 			user: props.senderUsername,
             contactList: []
 		}
 		this.handleRemove = this.handleRemove.bind(this);
-		this.handle_getContactList = this.handle_getContactList.bind(this);
+		this.handleGetContactList = this.handleGetContactList.bind(this);
 	}
 	
 	handleRemove(contact){
 		ContactsResource.remove_contact(this.state.username, contact).then((response) => {
-			this.refresh_contacts();
+			this.refreshContacts();
 		});
 	}
 
-	refresh_contacts = () => {
+	refreshContacts = () => {
 		// Retrieves the Contacts for the Organisation Channels
 		ContactsResource.getContactList(this.state.username).then((response) => {
 			this.setState({contactList: response.data});
@@ -36,29 +34,27 @@ class ContactComponent extends Component {
 	}
 	
 	componentDidMount() {
-		this.refresh_contacts();
+		this.refreshContacts();
 	}
 
-	handle_getContactList = (contact) => {
+	handleGetContactList = (contact) => {
 		var url = this.props.history.location.pathname + "/" + contact;
 		this.props.history.push(url);
 	};
 
-	handle_typing_search_key = (event) => {
+	handleTypingSearchKey = (event) => {
 		this.setState({
-			search_key: event.target.value.replace(/[^a-zA-Z1-9 ']/gi, ""),
+			searchKey: event.target.value.replace(/[^a-zA-Z1-9 ']/gi, ""),
 		});
 	};
 
-	handle_search_new_users = () => {
-		if (this.state.search_key != "") {
-			//var url = this.props.history.location.pathname;
-			//var url2 = this.props.history.location.pathname + "/" + contact;
-			OrgsResources.retrieve_all_basic_users_by_name(this.state.search_key).then((response) => {
+	handleSearchNewUsers = () => {
+		if (this.state.searchKey !== "") {
+			OrgsResources.retrieve_all_basic_users_by_name(this.state.searchKey).then((response) => {
 				// Assign the Searched Users that Are Not in the Org to the Array
 				searched_users = [];
 				
-				var temp = response.data.sort(this.sort_by_alphabetical_order);
+				var temp = response.data.sort(this.sortByAlphabeticalOrder);
 				for (let i = 0; i < temp.length; i++) {
 					if(this.state.username === temp[i].username) continue;
 					var isAlreadyContact = false;
@@ -74,7 +70,7 @@ class ContactComponent extends Component {
 				}
 				// Re-render the Page to Display Array
 				this.setState({
-					search_key: "",
+					searchKey: "",
 				});
 			});
 		} else {
@@ -88,13 +84,13 @@ class ContactComponent extends Component {
 			searched_users = [];
 			// Re-render the Page to Display Array
 			this.setState({
-				search_key: "",
+				searchKey: "",
 			});
-			this.refresh_contacts();
+			this.refreshContacts();
 		});
 	};
 	
-	sort_by_alphabetical_order = (a, b) => {
+	sortByAlphabeticalOrder = (a, b) => {
 		const user_a_name = a.fname.toUpperCase() + " " + a.lname.toUpperCase();
 		const user_b_name = b.fname.toUpperCase() + " " + b.lname.toUpperCase();
 
@@ -174,12 +170,12 @@ class ContactComponent extends Component {
 					  className="org-new-users"
 					  type="text"
 					  id="search_user"
-					  value={this.state.search_key}
-					  onChange={this.handle_typing_search_key}
+					  value={this.state.searchKey}
+					  onChange={this.handleTypingSearchKey}
 					  placeholder="Enter the User to add"
 					  onKeyPress={(event) => {
 						  if (event.key === "Enter") {
-							  this.handle_search_new_users();
+							  this.handleSearchNewUsers();
 							}
 						}}
 						/>
@@ -195,7 +191,7 @@ class ContactComponent extends Component {
 					<ListGroup>
 						{this.state.contactList.map(contact =>  (
 							<ListGroup.Item key={contact} 
-							onClick={() => this.handle_getContactList(contact)}
+							onClick={() => this.handleGetContactList(contact)}
 							>
 							<div className="d-flex justify-content-between">
 								{contact}

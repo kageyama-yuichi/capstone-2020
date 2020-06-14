@@ -4,16 +4,15 @@ import AuthenticationService from "../Authentication/AuthenticationService.js";
 import "./ChatComponent.css";
 import Encryption from "./Encryption.js";
 import {Container} from "react-bootstrap";
-import MessageComponent from "./Message/MessageComponent.jsx";
 import OrgResources from "../Orgs/OrgsResources.js";
 import MessageInputComponent from "./MessageInputComponent.jsx";
 import ChatTabbedSidebarComponent from "./ChatTabbedSidebarComponent.jsx";
 import MessagesListComponent from "./MessagesListComponent";
 
 var stomp_client = null;
-var orgs_id = null;
-var channel_title = null;
-var instance_title = null;
+var orgsId = null;
+var channelTitle = null;
+var instanceTitle = null;
 var extension = null;
 var counter = 0;
 var messageCounter = 0;
@@ -21,35 +20,29 @@ var messages = [];
 var visible = 0;
 var oldMessageLength = 0;
 var shouldScrollToBottom = true;
-const instance_member_details = new Map();
+const instanceMemberDetails = new Map();
 
-// Sender in All Instances are the Usernames of the User
-
-/* Things Left to Do:
-	- Bubbles for Users (Pull Users infromation from instance_member_details
-*/
 
 class ChatComponent extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			username: AuthenticationService.getLoggedInUserName(),
-			member_list: [],
+			memberList: [],
 			readLast: "",
 			joined: false,
-			bell_ring: false,
-			org_id: props.org_id,
-			channel_title: props.channel_title,
-			instance_title: props.instance_title,
+			orgId: props.org_id,
+			channelTitle: props.channel_title,
+			instanceTitle: props.instance_title,
 		};
 		this.handleScrollToBottom = this.handleScrollToBottom.bind(this);
 	}
 	// Function to Connect the User to the Server
-	my_connect = () => {
-		orgs_id = "/" + this.props.org_id;
-		channel_title = "/" + this.props.channel_title;
-		instance_title = "/" + this.props.instance_title;
-		extension = orgs_id + channel_title + instance_title;
+	myConnect = () => {
+		orgsId = "/" + this.props.org_id;
+		channelTitle = "/" + this.props.channel_title;
+		instanceTitle = "/" + this.props.instance_title;
+		extension = orgsId + channelTitle + instanceTitle;
 
 		// Create the Socket
 		const Stomp = require("stompjs");
@@ -59,13 +52,13 @@ class ChatComponent extends Component {
 		// Disables Console Messages
 		stomp_client.debug = null;
 		// Connect the User
-		stomp_client.connect({}, this.on_connected, this.on_error);
+		stomp_client.connect({}, this.onConnected, this.onError);
 	};
 
 	// Subscribe the User to the Groups and Send the Server member of User
-	on_connected = () => {
+	onConnected = () => {
 		this.setState({
-			channel_connected: true,
+			channelConnected: true,
 		});
 		// Subscribe to Fetching History and Members
 		// This has changed to Subscribe based on your Username so that when others join
@@ -73,23 +66,23 @@ class ChatComponent extends Component {
 		// e.g., load 20 per page and then using javascript .unshift() push the new chat
 		stomp_client.subscribe(
 			"/group/members" + extension + "/" + this.state.username,
-			this.on_members_received,
+			this.onMembersReceived,
 			{}
 		);
 		stomp_client.subscribe(
 			"/group/history" + extension + "/" + this.state.username,
-			this.on_history_received,
+			this.onHistoryReceived,
 			{}
 		);
 		// Subscribing to the public Group
-		stomp_client.subscribe("/group" + extension, this.on_message_received, {});
+		stomp_client.subscribe("/group" + extension, this.onMessageReceived, {});
 		// Subscribe to the Join and Leave for Live Feedback
-		stomp_client.subscribe("/online", this.on_channel_connect, {});
-		this.fetch_members();
+		stomp_client.subscribe("/online", this.onChannelConnect, {});
+		this.fetchMembers();
 	};
 
 	// Send Messages to the Server
-	send_message = (type, value) => {
+	sendMessage = (type, value) => {
 		var valid_message = true;
 		if (stomp_client) {
 			if (value === "") valid_message = false;
@@ -107,7 +100,7 @@ class ChatComponent extends Component {
 	};
 
 	// Handles Chat History
-	on_history_received = (payload) => {
+	onHistoryReceived = (payload) => {
 		var obj = JSON.parse(payload.body);
 		// Iterate over
 		for (let i = obj.length - 1; i >= 0; i--) {
@@ -115,7 +108,7 @@ class ChatComponent extends Component {
 			messages.unshift({
 				message: Encryption.decrypt_message(obj[i].content),
 				sender: obj[i].sender,
-				name: instance_member_details.get(obj[i].sender).name,
+				name: instanceMemberDetails.get(obj[i].sender).name,
 				date_time: obj[i].date_time,
 			});
 			counter++;
@@ -138,14 +131,14 @@ class ChatComponent extends Component {
 	};
 
 	// Handles Member Loading
-	on_members_received = (payload) => {
+	onMembersReceived = (payload) => {
 		var obj = JSON.parse(payload.body);
 		var does_exist = false;
 
 		// Go through Server Message and Extract Users
 		for (let i = 0; i < obj.length; i++) {
 			// Checks if the User Exists
-			does_exist = instance_member_details.has(obj[i].username);
+			does_exist = instanceMemberDetails.has(obj[i].username);
 
 			if (!does_exist) {
 				// Used for Storing in the Map
@@ -160,24 +153,24 @@ class ChatComponent extends Component {
 					date_time: "",
 				};
 				// Add them to the Members
-				instance_member_details.set(obj[i].username, user_details);
+				instanceMemberDetails.set(obj[i].username, user_details);
 			}
 		}
 		// Sort the Members Map
-		this.sort_instance_member_details_map();
+		this.sortInstanceMemberDetailsMap();
 
 		// Unsubscribe from Retrieving Members for Server Stability
 		stomp_client.unsubscribe("/group/members" + extension + "/" + this.state.username, {});
 		// Now Fetch the History
-		return this.fetch_history();
+		return this.fetchHistory();
 	};
 
 	// Handles Server Responses Accordingly
-	on_message_received = (payload) => {
+	onMessageReceived = (payload) => {
 		var message_text = JSON.parse(payload.body);
 		var does_require_sorting = false;
 		// This gets the Original Contents in the Map
-		let temp = instance_member_details.get(message_text.sender);
+		let temp = instanceMemberDetails.get(message_text.sender);
 
 		if (message_text.type === "JOIN") {
 			// Assign User to Online
@@ -186,7 +179,7 @@ class ChatComponent extends Component {
 			does_require_sorting = true;
 
 			this.setState({
-				bell_ring: true,
+				bellRing: true,
 			});
 		} else if (message_text.type === "LEAVE") {
 			// Assign User to Offline
@@ -195,7 +188,7 @@ class ChatComponent extends Component {
 			does_require_sorting = true;
 
 			this.setState({
-				bell_ring: true,
+				bellRing: true,
 			});
 		} else if (message_text.type === "TYPING") {
 			// Assign User to Typing or Online depending on State
@@ -206,7 +199,7 @@ class ChatComponent extends Component {
 			// Decrypt
 			messages.push({
 				message: Encryption.decrypt_message(message_text.content),
-				name: instance_member_details.get(message_text.sender).name,
+				name: instanceMemberDetails.get(message_text.sender).name,
 				sender: message_text.sender,
 				date_time: message_text.date_time,
 			});
@@ -217,23 +210,23 @@ class ChatComponent extends Component {
 			// do nothing...
 		}
 		// Overwrite the Old Contents
-		instance_member_details.set(message_text.sender, temp);
+		instanceMemberDetails.set(message_text.sender, temp);
 
 		if (does_require_sorting) {
 			// Sort the Members Map
-			this.sort_instance_member_details_map();
+			this.sortInstanceMemberDetailsMap();
 		}
 		// Re-renders the Users List
 		this.forceUpdate();
 	};
 
 	// Handles Server Responses Accordingly
-	on_channel_connect = (payload) => {
+	onChannelConnect = (payload) => {
 		var message_text = JSON.parse(payload.body);
 		// Checks if the Message was for this Org/Channel
-		if (instance_member_details.has(message_text.sender)) {
+		if (instanceMemberDetails.has(message_text.sender)) {
 			// This gets the Original Contents in the Map
-			let temp = instance_member_details.get(message_text.sender);
+			let temp = instanceMemberDetails.get(message_text.sender);
 
 			if (message_text.type === "JOIN") {
 				// Assign User to Online
@@ -241,7 +234,7 @@ class ChatComponent extends Component {
 				temp.date_time = message_text.date_time;
 
 				this.setState({
-					bell_ring: true,
+					bellRing: true,
 				});
 			} else {
 				if (message_text.type === "LEAVE") {
@@ -250,31 +243,31 @@ class ChatComponent extends Component {
 					temp.date_time = message_text.date_time;
 
 					this.setState({
-						bell_ring: true,
+						bellRing: true,
 					});
 				}
 			}
 			// Overwrite the Old Contents
-			instance_member_details.set(message_text.sender, temp);
+			instanceMemberDetails.set(message_text.sender, temp);
 			// Sort the Members Map
-			this.sort_instance_member_details_map();
+			this.sortInstanceMemberDetailsMap();
 			// Re-renders the Users List
 			this.forceUpdate();
 		}
 	};
 
-	on_error = (error) => {
+	onError = (error) => {
 		this.setState({
 			error:
 				"Could not connect you to the Chat Room Server. Please refresh this page and try again!",
 		});
 	};
 
-	fetch_history = () => {
+	fetchHistory = () => {
 		stomp_client.send("/app/fetch_history" + extension + "/" + this.state.username);
 	};
 
-	fetch_members = () => {
+	fetchMembers = () => {
 		stomp_client.send("/app/fetch_members" + extension + "/" + this.state.username);
 	};
 
@@ -290,13 +283,13 @@ class ChatComponent extends Component {
 		}
 	};
 
-	handle_send_message = (message) => {
-		this.send_message("CHAT", message);
+	handleSendMessage = (message) => {
+		this.sendMessage("CHAT", message);
 	};
 
 	// This function is a complementary function to .sort() where it
 	// helps Sort by Status (Online on Top) and then Name
-	sort_by_online_names = (a, b) => {
+	sortByOnlineNames = (a, b) => {
 		const user_a_name = a[1].name.toUpperCase();
 		const user_a_status = a[1].status;
 		const user_b_name = b[1].name.toUpperCase();
@@ -318,16 +311,16 @@ class ChatComponent extends Component {
 	};
 
 	// Function to Keep the Members Map Sorted
-	sort_instance_member_details_map = () => {
+	sortInstanceMemberDetailsMap = () => {
 		// Create the Temporary Sorted Map
 		const map_sorted_temp = new Map(
-			[...instance_member_details.entries()].sort(this.sort_by_online_names)
+			[...instanceMemberDetails.entries()].sort(this.sortByOnlineNames)
 		);
 		// Clear the Old Map
-		instance_member_details.clear();
+		instanceMemberDetails.clear();
 		// Assign the Temporary Sorted Map to the Members Map
 		for (let [key, value] of map_sorted_temp) {
-			instance_member_details.set(key, value);
+			instanceMemberDetails.set(key, value);
 		}
 	};
 
@@ -336,9 +329,9 @@ class ChatComponent extends Component {
 			stomp_client.disconnect();
 		}
 		stomp_client = null;
-		orgs_id = null;
-		channel_title = null;
-		instance_title = null;
+		orgsId = null;
+		channelTitle = null;
+		instanceTitle = null;
 		extension = null;
 		counter = 0;
 		messageCounter = 0;
@@ -346,7 +339,7 @@ class ChatComponent extends Component {
 		visible = 0;
 		oldMessageLength = 0;
 		shouldScrollToBottom = true;
-		instance_member_details.clear();
+		instanceMemberDetails.clear();
 	}
 
 	componentDidUpdate(prevProps) {
@@ -358,14 +351,14 @@ class ChatComponent extends Component {
 			this.resetLocalVariables();
 			this.setState(
 				{
-					channel_title: this.props.channel_title,
-					instance_title: this.props.instance_title,
+					channelTitle: this.props.channel_title,
+					instanceTitle: this.props.instance_title,
 					joined: false,
 					bottom: true,
 				},
 				() => {
 					this.getReadLast();
-					this.my_connect();
+					this.myConnect();
 				}
 			);
 		} else {
@@ -384,16 +377,17 @@ class ChatComponent extends Component {
 			console.log(visible, messages)
 			OrgResources.setChannelInstanceChatTime(
 				this.state.username,
-				this.state.org_id,
-				this.state.channel_title,
-				this.state.instance_title,
-				new String(messages[visible].date_time)
+				this.state.orgId,
+				this.state.channelTitle,
+				this.state.instanceTitle,
+				messages[visible].date_time
 			);
 		}
 
 		this.resetLocalVariables();
 	}
 
+	//Called when message list div is scrolled to update the viewed last of the user
 	handleScroll(event) {
 		var messageContainerHeight = 863;
 		var chatDiv = document.getElementById("scrollable-chat");
@@ -431,12 +425,12 @@ class ChatComponent extends Component {
 	}
 
 	getReadLast() {
-		if (this.state.channel_title && this.state.instance_title) {
+		if (this.state.channelTitle && this.state.instanceTitle) {
 			OrgResources.getChannelInstanceChatTime(
 				this.state.username,
-				this.state.org_id,
-				this.state.channel_title,
-				this.state.instance_title
+				this.state.orgId,
+				this.state.channelTitle,
+				this.state.instanceTitle
 			).then((response) => {
 				this.setState({ readLast: response.data });
 				console.log(response.data)
@@ -445,18 +439,18 @@ class ChatComponent extends Component {
 	}
 
 	componentDidMount() {
-		this.my_connect();
+		this.myConnect();
 
 		this.getReadLast();
 
 		this.setState({
-			current_time: new Date().toLocaleString(),
+			currentTime: new Date().toLocaleString(),
 		});
 		this.timerID = setInterval(
 			() =>
-				this.state.bell_ring
+				this.state.bellRing
 					? this.setState({
-							bell_ring: false,
+							bellRing: false,
 					  })
 					: "",
 			10000
@@ -465,17 +459,17 @@ class ChatComponent extends Component {
 	render() {
 		return (
 			<div className="chat-component">
-				{this.state.instance_title ? (
+				{this.state.instanceTitle ? (
 					<Container fluid style={{height: "100%"}} className="pr-0">
 						<h2 className="title-header border-bottom">
-							{this.state.instance_title}
+							{this.state.instanceTitle}
 						</h2>
 
 						<div className="d-flex window-body w-100">
 							<Container className="ml-0 mr-0 pl-0 flex-fill pr-0">
 								<Container fluid className="pr-0" style={{height: "90%"}}>
 									<MessagesListComponent
-										instance_member_details={instance_member_details}
+										instance_member_details={instanceMemberDetails}
 										messages={messages}
 										readLast={this.state.readLast}
 										handleScroll={this.handleScroll}
@@ -486,8 +480,8 @@ class ChatComponent extends Component {
 									/>
 								</Container>
 								<MessageInputComponent
-									handleSendMessage={this.handle_send_message}
-									send_message={this.send_message}
+									handleSendMessage={this.handleSendMessage}
+									send_message={this.sendMessage}
 								/>
 							</Container>
 							<Container
@@ -495,7 +489,7 @@ class ChatComponent extends Component {
 								className="pl-0 pr-0 ml-0 mr-0 h-100 flex-fill"
 								style={{minWidth: "150px", maxWidth: "300px"}}>
 								<ChatTabbedSidebarComponent
-									instance_member_details={instance_member_details}
+									instance_member_details={instanceMemberDetails}
 								/>
 							</Container>
 						</div>

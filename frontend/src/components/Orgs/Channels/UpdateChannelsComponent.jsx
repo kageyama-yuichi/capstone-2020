@@ -19,7 +19,7 @@ import {
 } from "react-bootstrap";
 import MemberListComponent from "../UpdateOrgs/MemberListComponent";
 
-const org_member_details = new Map();
+const orgMemberDetails = new Map();
 
 class UpdateChannelsComponent extends Component {
 	constructor(props) {
@@ -27,37 +27,36 @@ class UpdateChannelsComponent extends Component {
 		this.state = {
 			username: AuthenticationService.getLoggedInUserName(),
 			channel: props.location.state.channel,
-			channel_title: props.match.params.channel_title,
-			old_channel_title: props.match.params.channel_title,
-			org_id: props.match.params.org_id,
+			channelTitle: props.match.params.channel_title,
+			oldChannelTitle: props.match.params.channel_title,
+			orgId: props.match.params.org_id,
 			org: null,
-			channel_title_error: "",
-			owned_ids: [],
-			member_details_loaded: false,
+			channelTitleError: "",
+			ownedIds: [],
+			memberDetailsLoaded: false,
 			members: props.location.state.channel.members,
-			is_verifed: false,
-			search_key: "",
-			searched_users: [],
+			isVerifed: false,
+			searchKey: "",
+			searchedUsers: [],
 			alerts: [],
 		};
-		this.on_submit = this.on_submit.bind(this);
+		this.onSubmit = this.onSubmit.bind(this);
 		this.handleCancel = this.handleCancel.bind(this);
 		this.handleAddInstanceClick = this.handleAddInstanceClick.bind(this);
-		this.handleInstanceDelete = this.handleInstanceDelete.bind(this)
+		this.handleInstanceDelete = this.handleInstanceDelete.bind(this);
 	}
 
-	on_submit = (e) => {
+	onSubmit = (e) => {
 		e.preventDefault();
 		e.stopPropagation();
 		var internal_error = false;
 		var error = "";
-		var str2 = this.state.channel_title;
 
 		// Ensure Length is 3 or Greater
-		if (this.state.channel_title.length < 3 || this.state.channel_title === "new") {
+		if (this.state.channelTitle.length < 3 || this.state.channelTitle === "new") {
 			error = "Channel title too short";
 			internal_error = true;
-		} else if (this.state.channel_title.length > 100) {
+		} else if (this.state.channelTitle.length > 100) {
 			// Max length 100
 			error = "Channel title too long";
 			internal_error = true;
@@ -67,22 +66,22 @@ class UpdateChannelsComponent extends Component {
 			// Check if the ID Exists
 			OrgsResources.validateChannelTitle(
 				this.state.username,
-				this.state.org_id,
-				this.state.old_channel_title,
-				this.state.channel_title
+				this.state.orgId,
+				this.state.oldChannelTitle,
+				this.state.channelTitle
 			).then((response) => {
 				if (!response.data) {
 					error = "ID already used";
 					this.setState({
-						channel_title_error: true,
+						channelTitleError: true,
 					});
 				} else {
 					let channel = this.state.channel;
-					channel.channel_title = this.state.channel_title;
+					channel.channel_title = this.state.channelTitle;
 					OrgsResources.update_channel(
 						this.state.username,
-						this.state.org_id,
-						this.state.old_channel_title,
+						this.state.orgId,
+						this.state.oldChannelTitle,
 						channel
 					).then(() => this.props.history.goBack());
 				}
@@ -93,32 +92,32 @@ class UpdateChannelsComponent extends Component {
 			document.getElementById("org_title").setCustomValidity("invalid");
 		}
 
-		this.setState({channel_title_error: error, validated: true});
+		this.setState({channelTitleError: error, validated: true});
 	};
 
-	handle_typing_channel_title = (event) => {
+	handleTypingChannelTitle = (event) => {
 		// Organisation ID Must Be Lowercase and have NO SPACES and Special Characters
 		this.setState({
-			channel_title: event.target.value,
-			channel_title_error: false,
+			channelTitle: event.target.value,
+			channelTitleError: false,
 		});
 	};
 
-	handle_typing_search_key = (event) => {
+	handleTypingSearchKey = (event) => {
 		this.setState({
-			search_key: event.target.value.replace(/[^a-zA-Z ']/gi, ""),
+			searchKey: event.target.value.replace(/[^a-zA-Z ']/gi, ""),
 		});
 	};
 
 	//Searches for members that are not in the channel but in the org
-	handle_search_new_users = () => {
-		if (this.state.search_key != "") {
+	handleSearchNewUsers = () => {
+		if (this.state.searchKey !== "") {
 			// Search for the Users Specified and Update Area
 
 			// Assign the Searched Users that Are Not in the Org to the Array
 			var searched_users = [];
-			var search_key = this.state.search_key.toLowerCase();
-			var filtered = new Map(org_member_details);
+			var search_key = this.state.searchKey.toLowerCase();
+			var filtered = new Map(orgMemberDetails);
 			for (var i in this.state.members) {
 				if (filtered.has(this.state.members[i].username)) {
 					filtered.delete(this.state.members[i].username);
@@ -133,7 +132,7 @@ class UpdateChannelsComponent extends Component {
 				}
 			});
 
-			this.setState({searched_users: searched_users});
+			this.setState({searchedUsers: searched_users});
 		} else {
 			// Do Nothing
 		}
@@ -143,22 +142,22 @@ class UpdateChannelsComponent extends Component {
 		this.props.history.goBack();
 	}
 	handleAddInstanceClick() {
-		let url = "/orgs/" + this.state.org_id + "/" + this.state.channel_title + "/new";
+		let url = "/orgs/" + this.state.orgId + "/" + this.state.channelTitle + "/new";
 		this.props.history.push(url);
 	}
 	//Opens ChannelInstanceListComponent at the given channel and instance
 	handleInstanceClick(instance_title, e) {
 		e.preventDefault();
-		var url = "/orgs/" + this.state.org_id + "/channels";
+		var url = "/orgs/" + this.state.orgId + "/channels";
 
 		//If the current user is an admin or org owner
-		let role = org_member_details.get(this.state.username).role;
+		let role = orgMemberDetails.get(this.state.username).role;
 		if (role === "ADMIN" || role === "ORG_OWNER") {
 			//Open the chat
 			this.props.history.push({
 				pathname: url,
 				state: {
-					channel_title: this.state.channel_title,
+					channel_title: this.state.channelTitle,
 					instance_title: instance_title,
 				},
 			});
@@ -170,7 +169,7 @@ class UpdateChannelsComponent extends Component {
 					this.props.history.push({
 						pathname: url,
 						state: {
-							channel_title: this.state.channel_title,
+							channel_title: this.state.channelTitle,
 							instance_title: instance_title,
 						},
 					});
@@ -183,13 +182,13 @@ class UpdateChannelsComponent extends Component {
 		let add = [{username: user.username, role: user.value.role}];
 		OrgsResources.add_users_to_channel(
 			this.state.username,
-			this.state.org_id,
-			this.state.channel_title,
+			this.state.orgId,
+			this.state.channelTitle,
 			add
 		).then((response) => {
 			this.loadChannel();
 			this.loadOrg();
-			this.setState({searched_users: [], search_key: ""});
+			this.setState({searchedUsers: [], search_key: ""});
 		});
 	};
 
@@ -223,7 +222,7 @@ class UpdateChannelsComponent extends Component {
 	}
 
 	loadOrg() {
-		OrgsResources.retrieve_org(this.state.username, this.state.org_id).then((response) => {
+		OrgsResources.retrieve_org(this.state.username, this.state.orgId).then((response) => {
 			this.setState({org: response.data});
 			this.loadChannel();
 		});
@@ -232,17 +231,17 @@ class UpdateChannelsComponent extends Component {
 	loadChannel() {
 		OrgsResources.retrieve_channel(
 			this.state.username,
-			this.state.org_id,
-			this.state.old_channel_title
+			this.state.orgId,
+			this.state.oldChannelTitle
 		).then((response) => {
 			this.setState(
 				{channel: response.data, members: response.data.members},
-				this.load_org_member_details()
+				this.loadOrgMemberDetails()
 			);
 		});
 	}
 
-	sort_by_role = () => {
+	sortByRole = () => {
 		let org_owner;
 		let admins = [];
 		let team_leaders = [];
@@ -262,9 +261,9 @@ class UpdateChannelsComponent extends Component {
 		}
 
 		// Sort the Arrays by Alphabetical Order
-		admins = admins.sort(this.sort_by_alphabetical_order);
-		team_leaders = team_leaders.sort(this.sort_by_alphabetical_order);
-		team_members = team_members.sort(this.sort_by_alphabetical_order);
+		admins = admins.sort(this.sortByAlphabeticalOrder);
+		team_leaders = team_leaders.sort(this.sortByAlphabeticalOrder);
+		team_members = team_members.sort(this.sortByAlphabeticalOrder);
 
 		// Create the New this.state.members
 		let new_members = [];
@@ -284,9 +283,9 @@ class UpdateChannelsComponent extends Component {
 		});
 	};
 
-	sort_by_alphabetical_order = (a, b) => {
-		const user_a_name = org_member_details.get(a.username).name.toUpperCase();
-		const user_b_name = org_member_details.get(b.username).name.toUpperCase();
+	sortByAlphabeticalOrder = (a, b) => {
+		const user_a_name = orgMemberDetails.get(a.username).name.toUpperCase();
+		const user_b_name = orgMemberDetails.get(b.username).name.toUpperCase();
 
 		let comparison;
 		if (user_a_name > user_b_name) {
@@ -297,14 +296,14 @@ class UpdateChannelsComponent extends Component {
 		return comparison;
 	};
 
-	manage_member = (username, new_role) => {
+	manageMember = (username, new_role) => {
 		let auth = {
 			username: this.state.username,
-			role: org_member_details.get(this.state.username).role,
+			role: orgMemberDetails.get(this.state.username).role,
 		};
 		let member = {
 			username: username,
-			role: org_member_details.get(username).role,
+			role: orgMemberDetails.get(username).role,
 		};
 		let new_managed = {
 			username: username,
@@ -315,14 +314,14 @@ class UpdateChannelsComponent extends Component {
 		body.push(member);
 		body.push(new_managed);
 		// Push Request to Server
-		OrgsResources.manage_users_in_org(this.state.org_id, body).then((response) => {
+		OrgsResources.manage_users_in_org(this.state.orgId, body).then((response) => {
 			alert("The User has been Modified");
 			// Reload the Page as Alot of Modifications can Occur
 			window.location.reload(false);
 		});
 	};
 
-	remove_member = (username) => {
+	removeMember = (username) => {
 		let remove = [];
 		for (var i in this.state.members) {
 			if (this.state.members[i].username === username) {
@@ -333,8 +332,8 @@ class UpdateChannelsComponent extends Component {
 
 		OrgsResources.remove_users_from_channel(
 			this.state.username,
-			this.state.org_id,
-			this.state.old_channel_title,
+			this.state.orgId,
+			this.state.oldChannelTitle,
 			remove
 		).then((response) => {
 			this.setState((prevState) => ({
@@ -344,7 +343,7 @@ class UpdateChannelsComponent extends Component {
 		});
 	};
 
-	load_org_member_details() {
+	loadOrgMemberDetails() {
 		// Create the Map for the Member Details
 		OrgsResources.retrieve_basic_users_in_orgs(this.state.org.members).then((response) => {
 			// Go through the Response Data which is the Basic User and Strip Data
@@ -358,25 +357,22 @@ class UpdateChannelsComponent extends Component {
 					image_path: response.data[i].image_path,
 				};
 				// Add them to the Details Map
-				org_member_details.set(response.data[i].username, user_details);
+				orgMemberDetails.set(response.data[i].username, user_details);
 			}
 			this.setState({
-				member_details_loaded: true,
+				memberDetailsLoaded: true,
 			});
-			// // Sort this.state.members to correct Heirarchy
-			// this.sort_by_role();
-			// // Sort this.state.channel[i].members to correct Heirarchy
-			// this.sort_by_role_channels();
 
 			// Check if they are in the Organisation
-			if (org_member_details.has(this.state.username)) {
+			if (orgMemberDetails.has(this.state.username)) {
 				// Check if they have Sufficient Permissions
 				if (
-					org_member_details.get(this.state.username).role === "ORG_OWNER" ||
-					org_member_details.get(this.state.username).role === "ADMIN"
+					orgMemberDetails.get(this.state.username).role === "ORG_OWNER" ||
+					orgMemberDetails.get(this.state.username).role === "ADMIN" || 
+					orgMemberDetails.get(this.state.username).role === "TEAM_LEADER"
 				) {
 					this.setState({
-						is_verifed: true,
+						isVerifed: true,
 					});
 				} else {
 					alert("You don't have permissions to view this page");
@@ -412,8 +408,8 @@ class UpdateChannelsComponent extends Component {
 	handleInstanceDelete(instance_title) {
 		OrgsResources.delete_instance(
 			this.state.username,
-			this.state.org_id,
-			this.state.channel_title,
+			this.state.orgId,
+			this.state.channelTitle,
 			instance_title
 		).then(() => {
 			this.setState((prevState) => ({
@@ -427,7 +423,7 @@ class UpdateChannelsComponent extends Component {
 		return (
 			<div className="app-window update-org-component">
 				<Container fluid>
-					<Form noValidate validated={this.state.validated} onSubmit={e => {e.preventDefault()}} className="update-org-form">
+					
 						<h1>
 							Update Channel: <strong>{this.state.channel.channel_title}</strong>
 						</h1>
@@ -439,8 +435,7 @@ class UpdateChannelsComponent extends Component {
 										type="text"
 										name="id"
 										id="org_id"
-										disabled="true"
-										value={this.state.org_id}
+										value={this.state.orgId}
 										placeholder="Organisation ID"
 										disabled
 									/>
@@ -453,13 +448,13 @@ class UpdateChannelsComponent extends Component {
 										type="text"
 										name="title"
 										id="org_title"
-										value={this.state.channel_title}
-										onChange={this.handle_typing_channel_title}
+										value={this.state.channelTitle}
+										onChange={this.handleTypingChannelTitle}
 										placeholder="Organisation Title"
 									/>
 
 									<FormControl.Feedback type="invalid">
-										{this.state.channel_title_error}
+										{this.state.channelTitleError}
 									</FormControl.Feedback>
 								</Form.Group>
 							</Col>
@@ -476,14 +471,14 @@ class UpdateChannelsComponent extends Component {
 												</Col>
 											</Row>
 											{this.state.members.length > 0 &&
-											org_member_details.size > 0 ? (
+											orgMemberDetails.size > 0 ? (
 												<MemberListComponent
 													show_buttons={true}
 													show_manage_buttons={false}
 													username={this.state.username}
 													members={this.state.members}
-													org_member_details={org_member_details}
-													remove_member={this.remove_member}
+													org_member_details={orgMemberDetails}
+													remove_member={this.removeMember}
 												/>
 											) : null}
 										</Col>
@@ -500,21 +495,19 @@ class UpdateChannelsComponent extends Component {
 															className="search-input org-new-users"
 															type="text"
 															id="search_user"
-															value={this.state.search_key}
-															onChange={this.handle_typing_search_key}
+															value={this.state.searchKey}
+															onChange={this.handleTypingSearchKey}
 															placeholder="Enter the Name of the User"
 															onKeyPress={(event) => {
 																if (event.key === "Enter") {
-																	this.handle_search_new_users();
+																	this.handleSearchNewUsers();
 																}
 															}}
 														/>
 														<InputGroup.Append>
 															<Button
 																type="button"
-																onClick={
-																	this.handle_search_new_users
-																}>
+																onClick={this.handleSearchNewUsers}>
 																<i className="fas fa-search"></i>
 															</Button>
 														</InputGroup.Append>
@@ -523,7 +516,7 @@ class UpdateChannelsComponent extends Component {
 												<Row>
 													<ListGroup className="org-new-users">
 														{this.mapNonOrgUsers(
-															this.state.searched_users,
+															this.state.searchedUsers,
 															true
 														)}
 													</ListGroup>
@@ -541,7 +534,6 @@ class UpdateChannelsComponent extends Component {
 										</Col>
 										<Col md={1}>
 											<OverlayTrigger
-												delay={{show: 400, hide: 0}}
 												delay={{show: 400, hide: 0}}
 												placement="left"
 												overlay={<Tooltip>New Instance</Tooltip>}>
@@ -581,7 +573,7 @@ class UpdateChannelsComponent extends Component {
 																	onClick={(e) => {
 																		e.preventDefault();
 																		e.stopPropagation();
-																		
+
 																		this.handleInstanceDelete(
 																			instance.instance_title
 																		);
@@ -613,12 +605,11 @@ class UpdateChannelsComponent extends Component {
 									type="button"
 									variant="secondary"
 									style={{whiteSpace: "nowrap"}}
-									onClick={() => this.on_submit.bind(this)}>
+									onClick={() => this.onSubmit.bind(this)}>
 									Update Channel
 								</Button>
 							</Form.Group>
 						</Row>
-					</Form>
 				</Container>
 				{this.mapToastAlerts()}
 			</div>

@@ -9,31 +9,31 @@ class AddChannelsComponent extends Component {
 		super(props);
 		this.state = {
 			username: AuthenticationService.getLoggedInUserName(),
-			org_id: this.props.match.params.org_id,
-			channel_title: "",
-			channel_title_error: "",
-			owned_ids: [],
+			orgId: this.props.match.params.org_id,
+			channelTitle: "",
+			channelTitleError: "",
+			ownedIds: [],
 			validated: false,
 		};
-		this.on_submit = this.on_submit.bind(this);
+		this.onSubmit = this.onSubmit.bind(this);
 	}
 
-	on_submit = (e) => {
+	onSubmit = (e) => {
 		e.preventDefault();
 		var internal_error = false;
 		var error = "";
-		var str2 = this.state.channel_title;
+		var str2 = this.state.channelTitle;
 
 		// Ensure Length is 3 or Greater
-		if (this.state.channel_title.length < 3 || this.state.channel_title === "new") {
+		if (this.state.channelTitle.length < 3 || this.state.channelTitle === "new") {
 			error = "Channel title too short";
 			internal_error = true;
 		}
 
 		if (!internal_error) {
 			// Check if the ID Exists
-			for (let i = 0; i < this.state.owned_ids.length; i++) {
-				var str1 = this.state.owned_ids[i].channel_title;
+			for (let i = 0; i < this.state.ownedIds.length; i++) {
+				var str1 = this.state.ownedIds[i].channel_title;
 				// Compare the String Values
 				if (str1.valueOf() === str2.valueOf()) {
 					internal_error = true;
@@ -41,17 +41,16 @@ class AddChannelsComponent extends Component {
 			}
 
 			if (internal_error) {
-
 				error = "Channel title already in use";
 			} else {
 				let channel = {
-					channel_title: this.state.channel_title,
+					channel_title: this.state.channelTitle,
 					members: [],
 					instances: [],
 				};
 				OrgsResources.create_channel(
 					this.state.username,
-					this.state.org_id,
+					this.state.orgId,
 					channel
 				).then(() => this.props.history.goBack());
 			}
@@ -61,29 +60,27 @@ class AddChannelsComponent extends Component {
 			e.currentTarget.querySelector(".form-control").setCustomValidity("invalid");
 		}
 
-		this.setState({channel_title_error: error, validated: true});
+		this.setState({channelTitleError: error, validated: true});
 	};
 
-	handle_typing_channel_title = (event) => {
+	handleTypingChannelTitle = (event) => {
 		// Organisation ID Must Be Lowercase and have NO SPACES and Special Characters
 		this.setState({
-			channel_title: event.target.value,
-			channel_title_error: false,
+			channelTitle: event.target.value,
+			channelTitleError: false,
 		});
 	};
 
-	componentDidUpdate() {}
-
 	componentDidMount() {
 		// Retrieves All the Current Channel IDs For the Organisation
-		OrgsResources.retrieve_all_channel_titles(this.state.username, this.state.org_id).then(
+		OrgsResources.retrieve_all_channel_titles(this.state.username, this.state.orgId).then(
 			(response) => {
 				for (let i = 0; i < response.data.length; i++) {
-					this.state.owned_ids.push({
+					this.state.ownedIds.push({
 						channel_title: response.data[i],
 					});
 					this.setState({
-						owned_ids: this.state.owned_ids,
+						ownedIds: this.state.ownedIds,
 					});
 				}
 			}
@@ -99,19 +96,19 @@ class AddChannelsComponent extends Component {
 					<Form
 						noValidate
 						validated={this.state.validated}
-						onSubmit={this.on_submit.bind(this)}>
+						onSubmit={this.onSubmit.bind(this)}>
 						<Form.Group>
 							<Form.Label>Channel Title</Form.Label>
 							<Form.Control
 								type="text"
 								name="channel_title"
 								id="channel_title"
-								value={this.state.channel_title}
-								onChange={this.handle_typing_channel_title}
+								value={this.state.channelTitle}
+								onChange={this.handleTypingChannelTitle}
 								placeholder="Channel Title"
 							/>
 							<Form.Control.Feedback type="invalid">
-								{this.state.channel_title_error}
+								{this.state.channelTitleError}
 							</Form.Control.Feedback>
 						</Form.Group>
 						<Button id="channel_create" variant="secondary" type="submit">

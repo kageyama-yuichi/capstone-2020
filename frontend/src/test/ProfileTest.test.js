@@ -51,12 +51,7 @@ import ProfileComponent from '../components/Profile/ProfileComponent';
 			expect(wrapper.state('lastname')).toEqual('Ross');
 		});
 		
-		/*
-		it('Bio input check',()=> {
-			wrapper.find({ className: 'bio-container' }).simulate('change', {target: {name: 'bio', value: 'This is a test'}});
-			expect(wrapper.state('bio')).toEqual('This is a test');
-		});
-		*/
+	
         
 		
 		 

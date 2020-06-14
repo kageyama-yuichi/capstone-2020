@@ -39,9 +39,7 @@ import LandingComponent from '../components/Landing/LandingComponent';
 		
 		
 		
-		//Do Login Success and Fail renders if required
-		//Login Success should render no errors
-		//Login Fail should render an error
+
   });
 	
 	

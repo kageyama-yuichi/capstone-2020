@@ -1,7 +1,6 @@
 import React, {Component} from "react";
 import "./TodoEditComponent.css";
 import moment from "moment";
-import TodoResources from "./TodoResources.js";
 import {Form, Button} from "react-bootstrap";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
 import {TwitterPicker} from "react-color";

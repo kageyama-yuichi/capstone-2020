@@ -5,13 +5,6 @@ import AuthenticationService from "../Authentication/AuthenticationService.js";
 import PlacesAutoComplete from "../Places/PlacesAutoComplete.jsx";
 import Encryption from "../Chat/Encryption.js";
 
-// What's left to be done:
-// When they register, redirect to Dashboard/username
-// Currently this.props.history is undefined so cannot be pushed
-
-// TO ENABLE PLACES AUTOCOMPLETE
-//	set ENABLE_AUTOCOMPLETE in Contants.js to true
-
 class RegisterComponent extends Component {
 	constructor(props) {
 		super(props);
@@ -67,7 +60,6 @@ class RegisterComponent extends Component {
 		} else if (!emailRegex.test(fields.email)) {
 			errors.email = "Enter a valid email";
 		}
-		//Might want to validate so that emails are unique
 
 		//Address will be validated using google place api
 		if (!fields.address) {
@@ -85,7 +77,6 @@ class RegisterComponent extends Component {
 		} else if (fields.username.length > 20) {
 			errors.username = "Username is too long";
 		}
-		//Will have to check if username is unique
 
 		//Password expects at least 1 lowercase letter, 1 uppercase letter and 1 digit.
 		//Length should be greater than 6 characters

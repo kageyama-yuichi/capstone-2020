@@ -13,7 +13,6 @@ import OrgsComponent from '../Orgs/OrgsComponent.jsx'
 import AddOrgsComponent from '../Orgs/AddOrgsComponent.jsx'
 import UpdateOrgsComponent from '../Orgs/UpdateOrgs/UpdateOrgsComponent.jsx'
 
-import ChannelsComponent from '../Orgs/Channels/ChannelsComponent.jsx'
 import AddChannelsComponent from '../Orgs/Channels/AddChannelsComponent.jsx'
 import UpdateChannelsComponent from '../Orgs/Channels/UpdateChannelsComponent.jsx'
 
