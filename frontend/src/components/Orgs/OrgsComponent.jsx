@@ -14,7 +14,7 @@ class OrgsComponent extends Component {
 			username: AuthenticationService.getLoggedInUserName(),
 			orgs: [],
 		};
-		this.handle_create_org = this.handleCreateOrg.bind(this);
+		this.handleCreateOrg = this.handleCreateOrg.bind(this);
 		this.handleUpdateOrg = this.handleUpdateOrg.bind(this);
 	}
 

@@ -368,7 +368,8 @@ class UpdateChannelsComponent extends Component {
 				// Check if they have Sufficient Permissions
 				if (
 					orgMemberDetails.get(this.state.username).role === "ORG_OWNER" ||
-					orgMemberDetails.get(this.state.username).role === "ADMIN"
+					orgMemberDetails.get(this.state.username).role === "ADMIN" || 
+					orgMemberDetails.get(this.state.username).role === "TEAM_LEADER"
 				) {
 					this.setState({
 						isVerifed: true,
@@ -422,13 +423,7 @@ class UpdateChannelsComponent extends Component {
 		return (
 			<div className="app-window update-org-component">
 				<Container fluid>
-					<Form
-						noValidate
-						validated={this.state.validated}
-						onSubmit={(e) => {
-							e.preventDefault();
-						}}
-						className="update-org-form">
+					
 						<h1>
 							Update Channel: <strong>{this.state.channel.channel_title}</strong>
 						</h1>
@@ -615,7 +610,6 @@ class UpdateChannelsComponent extends Component {
 								</Button>
 							</Form.Group>
 						</Row>
-					</Form>
 				</Container>
 				{this.mapToastAlerts()}
 			</div>

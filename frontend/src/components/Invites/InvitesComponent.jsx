@@ -16,7 +16,7 @@ class InvitesComponent extends Component {
 		this.state = {
 			username: AuthenticationService.getLoggedInUserName(),
 		};
-		this.load_inviter_details = this.loadInviterDetails.bind(this);
+		this.loadInviterDetails = this.loadInviterDetails.bind(this);
 		this.handleAcceptInvite = this.handleAcceptInvite.bind(this);
 		this.handleRejectInvite = this.handleRejectInvite.bind(this);
 	}
