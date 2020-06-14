@@ -7,7 +7,6 @@ import tempImg from "../../assests/orgImg.svg";
 
 import {Button, Card, CardDeck, Container} from "react-bootstrap";
 
-
 class OrgsComponent extends Component {
 	constructor(props) {
 		super(props);
@@ -15,29 +14,26 @@ class OrgsComponent extends Component {
 			username: AuthenticationService.getLoggedInUserName(),
 			orgs: [],
 		};
-		this.handle_create_org = this.handle_create_org.bind(this);
-		this.handle_update_org = this.handle_update_org.bind(this);
+		this.handle_create_org = this.handleCreateOrg.bind(this);
+		this.handleUpdateOrg = this.handleUpdateOrg.bind(this);
 	}
 
-	handle_goto_channel = (org_id) => {
+	handleGoToChannel = (org_id) => {
 		var url = this.props.history.location.pathname + "/" + org_id + "/channels";
 		this.props.history.push(url);
 	};
 	// Function to Send the User to the Create Organisation Screen
-	handle_create_org() {
+	handleCreateOrg() {
 		this.props.history.push("/orgs/new");
 	}
 
 	// Function to Update the Organisation that the User clicked
-	handle_update_org = (org_id) => {
+	handleUpdateOrg = (org_id) => {
 		var url = this.props.history.location.pathname + "/" + org_id;
 		this.props.history.push(url);
 	};
 
-	componentDidUpdate() {
-	}
-
-	refresh_orgs = () => {
+	refreshOrgs = () => {
 		// Retrieves the Organisations of the User from the Server
 		OrgsResources.retrieve_orgs(this.state.username).then((response) => {
 			// Maps the Response Data (Orgs.class) to JSObject
@@ -60,19 +56,18 @@ class OrgsComponent extends Component {
 					orgs: this.state.orgs,
 				});
 			}
-
 		});
 	};
 
 	componentDidMount() {
-		this.refresh_orgs();
+		this.refreshOrgs();
 	}
 
 	renderButtons(org) {
 		if (org.user_role === "ORG_OWNER" || org.user_role === "ADMIN") {
 			return (
 				<Card.Footer>
-					<Button onClick={() => this.handle_update_org(org.org_id)} variant="info">
+					<Button onClick={() => this.handleUpdateOrg(org.org_id)} variant="info">
 						Edit
 					</Button>
 				</Card.Footer>
@@ -93,15 +88,17 @@ class OrgsComponent extends Component {
 						<Button
 							style={{whiteSpace: "nowrap"}}
 							variant="primary"
-							onClick={this.handle_create_org}>
+							onClick={this.handleCreateOrg}>
 							New org
 						</Button>
 					</div>
 					<CardDeck className="window-body" style={{height: "auto", overflowY: "auto"}}>
 						{this.state.orgs.map((org) => (
 							<Card className="org-card mb-1" key={org.org_id}>
-								<Link to={"orgs/" + org.org_id + "/channels"} className="unselectable cards-fix">
-									<Card.Img 
+								<Link
+									to={"orgs/" + org.org_id + "/channels"}
+									className="unselectable cards-fix">
+									<Card.Img
 										className="unselectable"
 										variant="top"
 										width="20rem"

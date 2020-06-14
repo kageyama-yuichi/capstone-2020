@@ -10,7 +10,7 @@ class MessageinputComponent extends Component {
         this.handleSendMessage = this.handleSendMessage.bind(this);
 	}
 
-	handle_typing = (event) => {
+	handleTyping = (event) => {
 		this.setState({
 			message: event.target.value,
 		});
@@ -51,7 +51,7 @@ class MessageinputComponent extends Component {
                     autoComplete="off"
 					style={{borderRadius: "0px"}}
 					placeholder="Enter Message"
-					onChange={this.handle_typing}
+					onChange={this.handleTyping}
 					value={this.state.message}
 					onKeyPress={(event) => {
 						if (event.key === "Enter") {

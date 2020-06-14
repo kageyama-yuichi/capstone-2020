@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {Container, Form, Button} from "react-bootstrap";
 import PasswordChangeResources from "./PasswordChangeResources.js";
 import AuthenticationService from "../Authentication/AuthenticationService.js";
-import Encryption from '../Chat/Encryption.js';
+import Encryption from "../Chat/Encryption.js";
 
 class PasswordChangeComponent extends Component {
 	constructor(props) {
@@ -12,7 +12,7 @@ class PasswordChangeComponent extends Component {
 			oldPassword: "",
 			newPassword: "",
 			confirmPassword: "",
-			token: -1
+			token: -1,
 		};
 		this.handleCancel = this.handleCancel.bind(this);
 		this.handleUpdate = this.handleUpdate.bind(this);
@@ -21,45 +21,50 @@ class PasswordChangeComponent extends Component {
 	handleCancel() {
 		this.props.history.goBack();
 	}
-	
-	handle_typing_oldPassword = (event) => {
+
+	handleTypingOldPassword = (event) => {
 		this.setState({
 			oldPassword: event.target.value,
 		});
 	};
-	
-	handle_typing_newPassword = (event) => {
+
+	handleTypingNewPassword = (event) => {
 		this.setState({
 			newPassword: event.target.value,
 		});
 	};
-	
-	handle_typing_confirmPassword = (event) => {
+
+	handleTypingConfirmPassword = (event) => {
 		this.setState({
 			confirmPassword: event.target.value,
 		});
 	};
-	
+
 	handleChange(event) {
 		const {name: fieldName, value} = event.target;
 		this.setState({
 			[fieldName]: value,
 		});
 	}
-	
-	handleUpdate(){
+
+	handleUpdate() {
 		if (this.state.newPassword === this.state.confirmPassword) {
-				this.setState({newPassword : Encryption.encrpyt_message(this.state.newPassword)})
-				
-				console.log(this.state.username + " " + this.state.newPassword + " " + this.state.token);
-				PasswordChangeResources.updateUserPassword(this.state.username, this.state.newPassword, this.state.token)
-				this.props.history.push(`/dashboard`);
-			}
-			else{
-				console.log("New Password: " +this.state.newPassword);
-				console.log("Confirm Password: " + this.state.confirmPassword);
-				console.log("New password don't match");
-			}
+			this.setState({newPassword: Encryption.encrpyt_message(this.state.newPassword)});
+
+			console.log(
+				this.state.username + " " + this.state.newPassword + " " + this.state.token
+			);
+			PasswordChangeResources.updateUserPassword(
+				this.state.username,
+				this.state.newPassword,
+				this.state.token
+			);
+			this.props.history.push(`/dashboard`);
+		} else {
+			console.log("New Password: " + this.state.newPassword);
+			console.log("Confirm Password: " + this.state.confirmPassword);
+			console.log("New password don't match");
+		}
 	}
 
 	render() {
@@ -73,24 +78,28 @@ class PasswordChangeComponent extends Component {
 					<Form className="d-flex w-50 ml-auto mr-auto flex-column flex-fill ">
 						<Form.Group>
 							<Form.Label>New Password</Form.Label>
-							<Form.Control 
-								placeholder="New Password" required
+							<Form.Control
+								placeholder="New Password"
+								required
 								className="newPassword-input"
-								name="newPassword" 
+								name="newPassword"
 								type="password"
 								onChange={this.handleChange.bind(this)}
-								value={this.state.newPassword}/>
+								value={this.state.newPassword}
+							/>
 							<Form.Control.Feedback></Form.Control.Feedback>
 						</Form.Group>
 						<Form.Group>
 							<Form.Label>Confirm New Password</Form.Label>
-							<Form.Control 
-								placeholder="Confirm New Password" required
+							<Form.Control
+								placeholder="Confirm New Password"
+								required
 								className="confirmPassword-input"
-								name="confirmPassword" 
+								name="confirmPassword"
 								type="password"
 								onChange={this.handleChange.bind(this)}
-								value={this.state.confirmPassword}/>
+								value={this.state.confirmPassword}
+							/>
 							<Form.Control.Feedback></Form.Control.Feedback>
 						</Form.Group>
 
@@ -101,9 +110,7 @@ class PasswordChangeComponent extends Component {
 								onClick={this.handleCancel}>
 								CANCEL
 							</Button>
-							<Button 
-								variant="secondary" 
-								onClick={this.handleUpdate}>
+							<Button variant="secondary" onClick={this.handleUpdate}>
 								SAVE
 							</Button>
 						</Form.Group>

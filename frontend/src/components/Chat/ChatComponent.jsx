@@ -10,9 +10,9 @@ import ChatTabbedSidebarComponent from "./ChatTabbedSidebarComponent.jsx";
 import MessagesListComponent from "./MessagesListComponent";
 
 var stomp_client = null;
-var orgs_id = null;
-var channel_title = null;
-var instance_title = null;
+var orgsId = null;
+var channelTitle = null;
+var instanceTitle = null;
 var extension = null;
 var counter = 0;
 var messageCounter = 0;
@@ -28,22 +28,21 @@ class ChatComponent extends Component {
 		super(props);
 		this.state = {
 			username: AuthenticationService.getLoggedInUserName(),
-			member_list: [],
+			memberList: [],
 			readLast: "",
 			joined: false,
-			bell_ring: false,
-			org_id: props.org_id,
-			channel_title: props.channel_title,
-			instance_title: props.instance_title,
+			orgId: props.org_id,
+			channelTitle: props.channel_title,
+			instanceTitle: props.instance_title,
 		};
 		this.handleScrollToBottom = this.handleScrollToBottom.bind(this);
 	}
 	// Function to Connect the User to the Server
-	my_connect = () => {
-		orgs_id = "/" + this.props.org_id;
-		channel_title = "/" + this.props.channel_title;
-		instance_title = "/" + this.props.instance_title;
-		extension = orgs_id + channel_title + instance_title;
+	myConnect = () => {
+		orgsId = "/" + this.props.org_id;
+		channelTitle = "/" + this.props.channel_title;
+		instanceTitle = "/" + this.props.instance_title;
+		extension = orgsId + channelTitle + instanceTitle;
 
 		// Create the Socket
 		const Stomp = require("stompjs");
@@ -53,11 +52,11 @@ class ChatComponent extends Component {
 		// Disables Console Messages
 		stomp_client.debug = null;
 		// Connect the User
-		stomp_client.connect({}, this.on_connected, this.on_error);
+		stomp_client.connect({}, this.onConnected, this.onError);
 	};
 
 	// Subscribe the User to the Groups and Send the Server member of User
-	on_connected = () => {
+	onConnected = () => {
 		this.setState({
 			channel_connected: true,
 		});
@@ -67,23 +66,23 @@ class ChatComponent extends Component {
 		// e.g., load 20 per page and then using javascript .unshift() push the new chat
 		stomp_client.subscribe(
 			"/group/members" + extension + "/" + this.state.username,
-			this.on_members_received,
+			this.onMembersReceived,
 			{}
 		);
 		stomp_client.subscribe(
 			"/group/history" + extension + "/" + this.state.username,
-			this.on_history_received,
+			this.onHistoryReceived,
 			{}
 		);
 		// Subscribing to the public Group
-		stomp_client.subscribe("/group" + extension, this.on_message_received, {});
+		stomp_client.subscribe("/group" + extension, this.onMessageReceived, {});
 		// Subscribe to the Join and Leave for Live Feedback
-		stomp_client.subscribe("/online", this.on_channel_connect, {});
-		this.fetch_members();
+		stomp_client.subscribe("/online", this.onChannelConnect, {});
+		this.fetchMembers();
 	};
 
 	// Send Messages to the Server
-	send_message = (type, value) => {
+	sendMessage = (type, value) => {
 		var valid_message = true;
 		if (stomp_client) {
 			if (value === "") valid_message = false;
@@ -101,7 +100,7 @@ class ChatComponent extends Component {
 	};
 
 	// Handles Chat History
-	on_history_received = (payload) => {
+	onHistoryReceived = (payload) => {
 		var obj = JSON.parse(payload.body);
 		// Iterate over
 		for (let i = obj.length - 1; i >= 0; i--) {
@@ -132,7 +131,7 @@ class ChatComponent extends Component {
 	};
 
 	// Handles Member Loading
-	on_members_received = (payload) => {
+	onMembersReceived = (payload) => {
 		var obj = JSON.parse(payload.body);
 		var does_exist = false;
 
@@ -158,16 +157,16 @@ class ChatComponent extends Component {
 			}
 		}
 		// Sort the Members Map
-		this.sort_instance_member_details_map();
+		this.sortInstanceMemberDetailsMap();
 
 		// Unsubscribe from Retrieving Members for Server Stability
 		stomp_client.unsubscribe("/group/members" + extension + "/" + this.state.username, {});
 		// Now Fetch the History
-		return this.fetch_history();
+		return this.fetchHistory();
 	};
 
 	// Handles Server Responses Accordingly
-	on_message_received = (payload) => {
+	onMessageReceived = (payload) => {
 		var message_text = JSON.parse(payload.body);
 		var does_require_sorting = false;
 		// This gets the Original Contents in the Map
@@ -215,14 +214,14 @@ class ChatComponent extends Component {
 
 		if (does_require_sorting) {
 			// Sort the Members Map
-			this.sort_instance_member_details_map();
+			this.sortInstanceMemberDetailsMap();
 		}
 		// Re-renders the Users List
 		this.forceUpdate();
 	};
 
 	// Handles Server Responses Accordingly
-	on_channel_connect = (payload) => {
+	onChannelConnect = (payload) => {
 		var message_text = JSON.parse(payload.body);
 		// Checks if the Message was for this Org/Channel
 		if (instance_member_details.has(message_text.sender)) {
@@ -251,24 +250,24 @@ class ChatComponent extends Component {
 			// Overwrite the Old Contents
 			instance_member_details.set(message_text.sender, temp);
 			// Sort the Members Map
-			this.sort_instance_member_details_map();
+			this.sortInstanceMemberDetailsMap();
 			// Re-renders the Users List
 			this.forceUpdate();
 		}
 	};
 
-	on_error = (error) => {
+	onError = (error) => {
 		this.setState({
 			error:
 				"Could not connect you to the Chat Room Server. Please refresh this page and try again!",
 		});
 	};
 
-	fetch_history = () => {
+	fetchHistory = () => {
 		stomp_client.send("/app/fetch_history" + extension + "/" + this.state.username);
 	};
 
-	fetch_members = () => {
+	fetchMembers = () => {
 		stomp_client.send("/app/fetch_members" + extension + "/" + this.state.username);
 	};
 
@@ -284,13 +283,13 @@ class ChatComponent extends Component {
 		}
 	};
 
-	handle_send_message = (message) => {
-		this.send_message("CHAT", message);
+	handleSendMessage = (message) => {
+		this.sendMessage("CHAT", message);
 	};
 
 	// This function is a complementary function to .sort() where it
 	// helps Sort by Status (Online on Top) and then Name
-	sort_by_online_names = (a, b) => {
+	sortByOnlineNames = (a, b) => {
 		const user_a_name = a[1].name.toUpperCase();
 		const user_a_status = a[1].status;
 		const user_b_name = b[1].name.toUpperCase();
@@ -312,10 +311,10 @@ class ChatComponent extends Component {
 	};
 
 	// Function to Keep the Members Map Sorted
-	sort_instance_member_details_map = () => {
+	sortInstanceMemberDetailsMap = () => {
 		// Create the Temporary Sorted Map
 		const map_sorted_temp = new Map(
-			[...instance_member_details.entries()].sort(this.sort_by_online_names)
+			[...instance_member_details.entries()].sort(this.sortByOnlineNames)
 		);
 		// Clear the Old Map
 		instance_member_details.clear();
@@ -330,9 +329,9 @@ class ChatComponent extends Component {
 			stomp_client.disconnect();
 		}
 		stomp_client = null;
-		orgs_id = null;
-		channel_title = null;
-		instance_title = null;
+		orgsId = null;
+		channelTitle = null;
+		instanceTitle = null;
 		extension = null;
 		counter = 0;
 		messageCounter = 0;
@@ -359,7 +358,7 @@ class ChatComponent extends Component {
 				},
 				() => {
 					this.getReadLast();
-					this.my_connect();
+					this.myConnect();
 				}
 			);
 		} else {
@@ -378,9 +377,9 @@ class ChatComponent extends Component {
 			console.log(visible, messages)
 			OrgResources.setChannelInstanceChatTime(
 				this.state.username,
-				this.state.org_id,
-				this.state.channel_title,
-				this.state.instance_title,
+				this.state.orgId,
+				this.state.channelTitle,
+				this.state.instanceTitle,
 				messages[visible].date_time
 			);
 		}
@@ -426,12 +425,12 @@ class ChatComponent extends Component {
 	}
 
 	getReadLast() {
-		if (this.state.channel_title && this.state.instance_title) {
+		if (this.state.channelTitle && this.state.instanceTitle) {
 			OrgResources.getChannelInstanceChatTime(
 				this.state.username,
-				this.state.org_id,
-				this.state.channel_title,
-				this.state.instance_title
+				this.state.orgId,
+				this.state.channelTitle,
+				this.state.instanceTitle
 			).then((response) => {
 				this.setState({ readLast: response.data });
 				console.log(response.data)
@@ -440,7 +439,7 @@ class ChatComponent extends Component {
 	}
 
 	componentDidMount() {
-		this.my_connect();
+		this.myConnect();
 
 		this.getReadLast();
 
@@ -449,7 +448,7 @@ class ChatComponent extends Component {
 		});
 		this.timerID = setInterval(
 			() =>
-				this.state.bell_ring
+				this.state.bellRing
 					? this.setState({
 							bell_ring: false,
 					  })
@@ -460,10 +459,10 @@ class ChatComponent extends Component {
 	render() {
 		return (
 			<div className="chat-component">
-				{this.state.instance_title ? (
+				{this.state.instanceTitle ? (
 					<Container fluid style={{height: "100%"}} className="pr-0">
 						<h2 className="title-header border-bottom">
-							{this.state.instance_title}
+							{this.state.instanceTitle}
 						</h2>
 
 						<div className="d-flex window-body w-100">
@@ -481,8 +480,8 @@ class ChatComponent extends Component {
 									/>
 								</Container>
 								<MessageInputComponent
-									handleSendMessage={this.handle_send_message}
-									send_message={this.send_message}
+									handleSendMessage={this.handleSendMessage}
+									send_message={this.sendMessage}
 								/>
 							</Container>
 							<Container

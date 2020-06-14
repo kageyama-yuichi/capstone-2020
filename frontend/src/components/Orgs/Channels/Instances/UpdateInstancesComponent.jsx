@@ -17,10 +17,10 @@ class UpdateInstancesComponent extends Component {
 			owned_ids: [],
 			validated: false,
 		};
-		this.on_submit = this.on_submit.bind(this);
+		this.onSubmit = this.onSubmit.bind(this);
 	}
 
-	on_submit = (e) => {
+	onSubmit = (e) => {
 		e.preventDefault();
 		var error = "";
 
@@ -109,7 +109,7 @@ class UpdateInstancesComponent extends Component {
 					<Form
 						noValidate
 						validated={this.state.validated}
-						onSubmit={this.on_submit.bind(this)}>
+						onSubmit={this.onSubmit.bind(this)}>
 						<Form.Group>
 							<Form.Label>Instance Title</Form.Label>
 							<Form.Control
@@ -132,7 +132,6 @@ class UpdateInstancesComponent extends Component {
 				</Container>
 			</div>
 		);
-		
 	}
 }
 

@@ -17,16 +17,16 @@ class ContactComponent extends Component {
             contactList: []
 		}
 		this.handleRemove = this.handleRemove.bind(this);
-		this.handle_getContactList = this.handle_getContactList.bind(this);
+		this.handleGetContactList = this.handleGetContactList.bind(this);
 	}
 	
 	handleRemove(contact){
 		ContactsResource.remove_contact(this.state.username, contact).then((response) => {
-			this.refresh_contacts();
+			this.refreshContacts();
 		});
 	}
 
-	refresh_contacts = () => {
+	refreshContacts = () => {
 		// Retrieves the Contacts for the Organisation Channels
 		ContactsResource.getContactList(this.state.username).then((response) => {
 			this.setState({contactList: response.data});
@@ -34,27 +34,27 @@ class ContactComponent extends Component {
 	}
 	
 	componentDidMount() {
-		this.refresh_contacts();
+		this.refreshContacts();
 	}
 
-	handle_getContactList = (contact) => {
+	handleGetContactList = (contact) => {
 		var url = this.props.history.location.pathname + "/" + contact;
 		this.props.history.push(url);
 	};
 
-	handle_typing_search_key = (event) => {
+	handleTypingSearchKey = (event) => {
 		this.setState({
 			search_key: event.target.value.replace(/[^a-zA-Z1-9 ']/gi, ""),
 		});
 	};
 
-	handle_search_new_users = () => {
+	handleSearchNewUsers = () => {
 		if (this.state.search_key !== "") {
 			OrgsResources.retrieve_all_basic_users_by_name(this.state.search_key).then((response) => {
 				// Assign the Searched Users that Are Not in the Org to the Array
 				searched_users = [];
 				
-				var temp = response.data.sort(this.sort_by_alphabetical_order);
+				var temp = response.data.sort(this.sortByAlphabeticalOrder);
 				for (let i = 0; i < temp.length; i++) {
 					if(this.state.username === temp[i].username) continue;
 					var isAlreadyContact = false;
@@ -86,11 +86,11 @@ class ContactComponent extends Component {
 			this.setState({
 				search_key: "",
 			});
-			this.refresh_contacts();
+			this.refreshContacts();
 		});
 	};
 	
-	sort_by_alphabetical_order = (a, b) => {
+	sortByAlphabeticalOrder = (a, b) => {
 		const user_a_name = a.fname.toUpperCase() + " " + a.lname.toUpperCase();
 		const user_b_name = b.fname.toUpperCase() + " " + b.lname.toUpperCase();
 
@@ -171,11 +171,11 @@ class ContactComponent extends Component {
 					  type="text"
 					  id="search_user"
 					  value={this.state.search_key}
-					  onChange={this.handle_typing_search_key}
+					  onChange={this.handleTypingSearchKey}
 					  placeholder="Enter the User to add"
 					  onKeyPress={(event) => {
 						  if (event.key === "Enter") {
-							  this.handle_search_new_users();
+							  this.handleSearchNewUsers();
 							}
 						}}
 						/>
@@ -191,7 +191,7 @@ class ContactComponent extends Component {
 					<ListGroup>
 						{this.state.contactList.map(contact =>  (
 							<ListGroup.Item key={contact} 
-							onClick={() => this.handle_getContactList(contact)}
+							onClick={() => this.handleGetContactList(contact)}
 							>
 							<div className="d-flex justify-content-between">
 								{contact}

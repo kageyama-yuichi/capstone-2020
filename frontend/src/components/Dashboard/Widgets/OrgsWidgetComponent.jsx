@@ -16,7 +16,7 @@ class OrgsWidgetComponent extends Component {
 		};
 	}
 
-	refresh_orgs = () => {
+	refreshOrgs = () => {
 		// Retrieves the Organisations of the User from the Server
 		OrgsResources.retrieve_orgs_sql(this.state.username).then((response) => {
 			// Maps the Response Data (Orgs.class) to JSObject
@@ -38,7 +38,7 @@ class OrgsWidgetComponent extends Component {
 	};
 
 	componentDidMount() {
-		this.refresh_orgs();
+		this.refreshOrgs();
 	}
 
 	render() {

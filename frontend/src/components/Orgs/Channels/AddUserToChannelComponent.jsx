@@ -2,16 +2,9 @@ import React, {Component} from "react";
 import OrgsResources from "../OrgsResources.js";
 import AuthenticationService from "../../Authentication/AuthenticationService.js";
 import "../OrgsComponent.css";
-import {
-	Container,
-	Button,
-	ButtonGroup,
-	ToggleButton,
-	ToggleButtonGroup,
+import {Container, Button, ButtonGroup, ToggleButton, ToggleButtonGroup} from "react-bootstrap";
 
-} from "react-bootstrap";
-
-var member_difference = [];
+var memberDifference = [];
 
 class AddUserToChannelComponent extends Component {
 	constructor(props) {
@@ -22,14 +15,14 @@ class AddUserToChannelComponent extends Component {
 		};
 		this.mapOrgUsers = this.mapOrgUsers.bind(this);
 		this.onChange = this.onChange.bind(this);
-		this.add_users_to_channel = this.add_users_to_channel.bind(this);
+		this.addUsersToChannel = this.addUsersToChannel.bind(this);
 	}
 
 	onChange = (value) => {
 		this.setState({value});
 	};
 
-	add_users_to_channel = () => {
+	addUsersToChannel = () => {
 		let new_users_to_channels = [];
 		// Go through this.props.members and get the Role and Push
 		for (let i = 0; i < this.props.members.length; i++) {
@@ -56,7 +49,7 @@ class AddUserToChannelComponent extends Component {
 		// Make a Temporary Map
 		const temp_map = new Map([...this.props.org_member_details.entries()]);
 		// Reset the Array for Consistency
-		member_difference = [];
+		memberDifference = [];
 
 		// Calculate the Member Difference
 		for (let i = 0; i < this.props.current_members_in_channel.length; i++) {
@@ -67,7 +60,7 @@ class AddUserToChannelComponent extends Component {
 		// Linear Map to Variable with Sorting Already Completed
 		for (let i = 0; i < this.props.members.length; i++) {
 			if (temp_map.has(this.props.members[i].username)) {
-				member_difference.push(this.props.members[i]);
+				memberDifference.push(this.props.members[i]);
 			}
 		}
 		this.forceUpdate();
@@ -97,7 +90,7 @@ class AddUserToChannelComponent extends Component {
 	mapOrgUsers() {
 		let retDiv;
 
-		retDiv = member_difference.map((member) => {
+		retDiv = memberDifference.map((member) => {
 			return (
 				<ToggleButton
 					key={member.username}
@@ -139,7 +132,7 @@ class AddUserToChannelComponent extends Component {
 								variant="secondary">
 								Cancel
 							</Button>
-							<Button onClick={() => this.add_users_to_channel()} variant="primary">
+							<Button onClick={() => this.addUsersToChannel()} variant="primary">
 								Add Users
 							</Button>
 						</ButtonGroup>

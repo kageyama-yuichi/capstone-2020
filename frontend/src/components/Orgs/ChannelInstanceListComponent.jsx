@@ -18,37 +18,37 @@ class ChannelListComponent extends Component {
 		super(props);
 		this.state = {
 			username: AuthenticationService.getLoggedInUserName(),
-			org_id: props.orgId,
+			orgId: props.orgId,
 			channels: [],
 			isExpanded: [],
 			channel_title: "",
-			org_title: ""
+			orgTitle: "",
 		};
 
 		this.handleAddInstanceClick = this.handleAddInstanceClick.bind(this);
 	}
 
 	componentDidMount() {
-		this.refresh_channels();
+		this.refreshChannels();
 	}
 
-	refresh_channels = () => {
+	refreshChannels = () => {
 		// Retrieves All Channels from the Org Data
-		OrgsResources.retrieve_org(this.state.username, this.state.org_id).then((response) => {
+		OrgsResources.retrieve_org(this.state.username, this.state.orgId).then((response) => {
 			let isExpanded = [];
 			response.data.channels.map((ch) => {
 				isExpanded[ch.channel_title] = false;
 			});
 			this.setState({
-				org_title: response.data.org_title,
+				orgTitle: response.data.org_title,
 				channels: response.data.channels,
 				isExpanded: isExpanded,
 			});
 		});
 	};
 
-	handle_create_channel = () => {
-		var url = "/orgs/" + this.state.org_id + "/new";
+	handleCreateChannel = () => {
+		var url = "/orgs/" + this.state.orgId + "/new";
 		this.props.history.push(url);
 	};
 
@@ -60,17 +60,17 @@ class ChannelListComponent extends Component {
 	}
 
 	handleAddInstanceClick(channel_title) {
-		let url = "/orgs/" + this.state.org_id + "/" + channel_title + "/new";
+		let url = "/orgs/" + this.state.orgId + "/" + channel_title + "/new";
 		this.props.history.push(url);
 	}
 
 	handleChannelSettingsClick(ch) {
-		let url = "/orgs/" + this.state.org_id + "/" + ch.channel_title;
+		let url = "/orgs/" + this.state.orgId + "/" + ch.channel_title;
 		this.props.history.push({
 			pathname: url,
 			state: {
 				channel: ch,
-				org_id: this.state.org_id,
+				org_id: this.state.orgId,
 			},
 		});
 	}
@@ -86,7 +86,7 @@ class ChannelListComponent extends Component {
 	}
 
 	onClick(channel_title) {
-		OrgsResources.addFavChannel(this.state.username, this.state.org_id, channel_title);
+		OrgsResources.addFavChannel(this.state.username, this.state.orgId, channel_title);
 	}
 
 	getRole(members) {
@@ -146,7 +146,7 @@ class ChannelListComponent extends Component {
 			<div className="side-channel-list border-right bg-light">
 				<Container fluid>
 					<div className="d-flex justify-content-between">
-						<h3>{this.state.org_title}</h3>
+						<h3>{this.state.orgTitle}</h3>
 					</div>
 
 					{this.state.channels.map((ch) =>

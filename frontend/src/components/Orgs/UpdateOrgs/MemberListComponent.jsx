@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {ListGroup, Button, ButtonGroup, OverlayTrigger, Tooltip} from "react-bootstrap";
 import {getRoleIconClassName} from "../OrgHelpers.js";
 
-var org_member_details = new Map();
+var orgMemberDetails = new Map();
 
 class MemberListComponent extends Component {
 	constructor(props) {
@@ -11,7 +11,7 @@ class MemberListComponent extends Component {
 			username: props.username,
 			members: props.members,
 		};
-		org_member_details = new Map(props.org_member_details);
+		orgMemberDetails = new Map(props.org_member_details);
 	}
 
 	roleToString(role) {
@@ -31,15 +31,16 @@ class MemberListComponent extends Component {
 	mapOrgUsers(mapper, show_buttons) {
 		let retDiv;
 		// Ensure the Map Has Data
-		if (org_member_details.size > 0) {
+		if (orgMemberDetails.size > 0) {
 			retDiv = mapper.map((member) => {
 				return (
 					<ListGroup.Item key={member.username} className="bg-light text-dark">
 						<div className="d-flex justify-content-between">
 							<p>
-								{org_member_details.get(member.username).name}{" "}
+								{orgMemberDetails.get(member.username).name}{" "}
 								{member.role === "TEAM_MEMBER" ? null : (
-									<OverlayTrigger delay={{ show: 400, hide: 0 }}
+									<OverlayTrigger
+										delay={{show: 400, hide: 0}}
 										placement="right"
 										overlay={
 											<Tooltip>{this.roleToString(member.role)}</Tooltip>
@@ -60,10 +61,10 @@ class MemberListComponent extends Component {
 		}
 		return retDiv;
 	}
-	manage_member(username, role) {
+	manageMember(username, role) {
 		this.props.manage_member(username, role);
 	}
-	remove_member(username) {
+	removeMember(username) {
 		this.props.remove_member(username);
 	}
 	// Maps all the Member Buttons for Promoting, Demoting and Removing
@@ -72,38 +73,41 @@ class MemberListComponent extends Component {
 
 		//Set to null if show_manage_buttons prop is false
 		let demote = this.props.show_manage_buttons ? (
-			<OverlayTrigger delay={{ show: 400, hide: 0 }}
+			<OverlayTrigger
+				delay={{show: 400, hide: 0}}
 				key={username + "demote"}
 				placement="bottom"
 				overlay={<Tooltip>Demote</Tooltip>}>
-				<Button variant="warning" onClick={() => this.manage_member(username, "demote")}>
+				<Button variant="warning" onClick={() => this.manageMember(username, "demote")}>
 					<i className="fas fa-chevron-down"></i>
 				</Button>
 			</OverlayTrigger>
 		) : null;
 		let promote = this.props.show_manage_buttons ? (
-			<OverlayTrigger delay={{ show: 400, hide: 0 }}
+			<OverlayTrigger
+				delay={{show: 400, hide: 0}}
 				key={username + "promote"}
 				placement="bottom"
 				overlay={<Tooltip>Promote</Tooltip>}>
-				<Button variant="success" onClick={() => this.manage_member(username, "promote")}>
+				<Button variant="success" onClick={() => this.manageMember(username, "promote")}>
 					<i className="fas fa-chevron-up"></i>
 				</Button>
 			</OverlayTrigger>
 		) : null;
 		let remove = (
-			<OverlayTrigger delay={{ show: 400, hide: 0 }}
+			<OverlayTrigger
+				delay={{show: 400, hide: 0}}
 				key={username + "remove"}
 				placement="bottom"
 				overlay={<Tooltip>Remove</Tooltip>}>
-				<Button variant="danger" onClick={() => this.remove_member(username)}>
+				<Button variant="danger" onClick={() => this.removeMember(username)}>
 					<i className="fas fa-times"></i>
 				</Button>
 			</OverlayTrigger>
 		);
 
 		// if the Managing User is an Organisation Owner
-		if (org_member_details.get(this.state.username).role === "ORG_OWNER") {
+		if (orgMemberDetails.get(this.state.username).role === "ORG_OWNER") {
 			// Member Button Loading from Input
 			if (role === "ORG_OWNER") {
 				// Display Nothing
@@ -114,7 +118,7 @@ class MemberListComponent extends Component {
 			} else {
 				ret = [promote, remove];
 			}
-		} else if (org_member_details.get(this.state.username).role === "ADMIN") {
+		} else if (orgMemberDetails.get(this.state.username).role === "ADMIN") {
 			// Member Button Loading from Input
 			if (role === "ORG_OWNER") {
 				// Display Nothing

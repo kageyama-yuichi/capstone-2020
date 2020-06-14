@@ -15,10 +15,10 @@ class AddChannelsComponent extends Component {
 			owned_ids: [],
 			validated: false,
 		};
-		this.on_submit = this.on_submit.bind(this);
+		this.onSubmit = this.onSubmit.bind(this);
 	}
 
-	on_submit = (e) => {
+	onSubmit = (e) => {
 		e.preventDefault();
 		var internal_error = false;
 		var error = "";
@@ -41,7 +41,6 @@ class AddChannelsComponent extends Component {
 			}
 
 			if (internal_error) {
-
 				error = "Channel title already in use";
 			} else {
 				let channel = {
@@ -64,15 +63,13 @@ class AddChannelsComponent extends Component {
 		this.setState({channel_title_error: error, validated: true});
 	};
 
-	handle_typing_channel_title = (event) => {
+	handleTypingChannelTitle = (event) => {
 		// Organisation ID Must Be Lowercase and have NO SPACES and Special Characters
 		this.setState({
 			channel_title: event.target.value,
 			channel_title_error: false,
 		});
 	};
-
-	componentDidUpdate() {}
 
 	componentDidMount() {
 		// Retrieves All the Current Channel IDs For the Organisation
@@ -99,7 +96,7 @@ class AddChannelsComponent extends Component {
 					<Form
 						noValidate
 						validated={this.state.validated}
-						onSubmit={this.on_submit.bind(this)}>
+						onSubmit={this.onSubmit.bind(this)}>
 						<Form.Group>
 							<Form.Label>Channel Title</Form.Label>
 							<Form.Control
@@ -107,7 +104,7 @@ class AddChannelsComponent extends Component {
 								name="channel_title"
 								id="channel_title"
 								value={this.state.channel_title}
-								onChange={this.handle_typing_channel_title}
+								onChange={this.handleTypingChannelTitle}
 								placeholder="Channel Title"
 							/>
 							<Form.Control.Feedback type="invalid">

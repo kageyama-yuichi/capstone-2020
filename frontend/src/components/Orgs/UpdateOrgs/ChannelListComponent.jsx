@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {ListGroup, Button, ButtonGroup, OverlayTrigger, Tooltip} from "react-bootstrap";
 import MemberListComponent from "./MemberListComponent.jsx";
 
-const org_member_details = new Map();
+const orgMemberDetails = new Map();
 
 class ChannelListComponent extends Component {
 	constructor(props) {
@@ -11,7 +11,7 @@ class ChannelListComponent extends Component {
 			memberListOpen: [],
 			channels: props.channels,
 		};
-		props.org_member_details.forEach((value, key) => org_member_details.set(key, value));
+		props.org_member_details.forEach((value, key) => orgMemberDetails.set(key, value));
 	}
 
 	componentDidMount() {
@@ -41,7 +41,8 @@ class ChannelListComponent extends Component {
 						<div className="d-flex justify-content-between">
 							{ch.channel_title}
 							<ButtonGroup className="align-self-end">
-								<OverlayTrigger delay={{ show: 400, hide: 0 }}
+								<OverlayTrigger
+									delay={{show: 400, hide: 0}}
 									placement="bottom"
 									overlay={<Tooltip>Members</Tooltip>}>
 									<Button
@@ -57,8 +58,9 @@ class ChannelListComponent extends Component {
 										)}
 									</Button>
 								</OverlayTrigger>
-								
-								<OverlayTrigger delay={{ show: 400, hide: 0 }}
+
+								<OverlayTrigger
+									delay={{show: 400, hide: 0}}
 									placement="bottom"
 									overlay={<Tooltip>Edit Channel</Tooltip>}>
 									<Button
@@ -68,7 +70,8 @@ class ChannelListComponent extends Component {
 										<i className="fas fa-edit"></i>
 									</Button>
 								</OverlayTrigger>
-								<OverlayTrigger delay={{ show: 400, hide: 0 }}
+								<OverlayTrigger
+									delay={{show: 400, hide: 0}}
 									placement="bottom"
 									overlay={<Tooltip>Delete Channel</Tooltip>}>
 									<Button
@@ -94,7 +97,7 @@ class ChannelListComponent extends Component {
 								remove_member={this.props.remove_member}
 								username={this.state.username}
 								members={ch.members}
-								org_member_details={org_member_details}
+								org_member_details={orgMemberDetails}
 							/>
 						</ListGroup>
 					</ListGroup.Item>

@@ -2,14 +2,7 @@ import React, {Component} from "react";
 import OrgsResources from "../OrgsResources.js";
 import AuthenticationService from "../../Authentication/AuthenticationService.js";
 import "../OrgsComponent.css";
-import {
-	Container,
-	Button,
-	ButtonGroup,
-	ToggleButton,
-	ToggleButtonGroup,
-
-} from "react-bootstrap";
+import {Container, Button, ButtonGroup, ToggleButton, ToggleButtonGroup} from "react-bootstrap";
 
 class RemoveUserFromChannelComponent extends Component {
 	constructor(props) {
@@ -20,14 +13,14 @@ class RemoveUserFromChannelComponent extends Component {
 		};
 		this.mapOrgUsers = this.mapOrgUsers.bind(this);
 		this.onChange = this.onChange.bind(this);
-		this.remove_the_users_from_channel = this.remove_the_users_from_channel.bind(this);
+		this.removeTheUsersFromChannel = this.removeTheUsersFromChannel.bind(this);
 	}
 
 	onChange = (value) => {
 		this.setState({value});
 	};
 
-	remove_the_users_from_channel = () => {
+	removeTheUsersFromChannel = () => {
 		let removed_users_from_channel = [];
 		// Go through this.props.current_members_in_channel and get the Role and Push
 		for (let i = 0; i < this.props.current_members_in_channel.length; i++) {
@@ -117,7 +110,7 @@ class RemoveUserFromChannelComponent extends Component {
 								Cancel
 							</Button>
 							<Button
-								onClick={() => this.remove_the_users_from_channel()}
+								onClick={() => this.removeTheUsersFromChannel()}
 								className="mt-auto"
 								variant="primary">
 								Remove Users

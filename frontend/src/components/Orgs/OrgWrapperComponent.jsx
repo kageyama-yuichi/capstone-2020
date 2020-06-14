@@ -8,9 +8,9 @@ class OrgWrapperComponent extends Component {
 		super(props);
 		this.state = {
 			username: AuthenticationService.getLoggedInUserName(),
-			org_id: this.props.match.params.org_id,
-			channel_title: props.location.state ? props.location.state.channel_title : "",
-			instance_title: props.location.state ? props.location.state.instance_title : "",
+			orgId: this.props.match.params.org_id,
+			channelTitle: props.location.state ? props.location.state.channel_title : "",
+			instanceTitle: props.location.state ? props.location.state.instance_title : "",
 			role: null,
 			instanceSelected: true,
 		};
@@ -46,20 +46,20 @@ class OrgWrapperComponent extends Component {
 						{...this.props}
 						todoCallback={this.handleTodoClick}
 						callback={this.handleInstanceClick}
-						orgId={this.state.org_id}
+						orgId={this.state.orgId}
 					/>
 					{this.state.instanceSelected ? (
 						<ChatComponent
 							{...this.props}
-							org_id={this.state.org_id}
-							channel_title={this.state.channel_title}
-							instance_title={this.state.instance_title}
+							org_id={this.state.orgId}
+							channel_title={this.state.channelTitle}
+							instance_title={this.state.instanceTitle}
 						/>
 					) : (
 						<div className="w-100">
 							<ChannelAgendaComponent
-								orgId={this.state.org_id}
-								channelTitle={this.state.channel_title}
+								orgId={this.state.orgId}
+								channelTitle={this.state.channelTitle}
 								role={this.state.role}
 							/>
 						</div>

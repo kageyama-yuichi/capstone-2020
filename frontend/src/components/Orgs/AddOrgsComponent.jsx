@@ -1,6 +1,6 @@
-import AuthenticationService from '../Authentication/AuthenticationService.js'
-import OrgsResources from './OrgsResources.js'
-import React, {Component} from 'react'
+import AuthenticationService from "../Authentication/AuthenticationService.js";
+import OrgsResources from "./OrgsResources.js";
+import React, {Component} from "react";
 import {Form, Container, Button} from "react-bootstrap";
 import "./AddOrgsComponent.css";
 
@@ -9,37 +9,37 @@ class AddOrgsComponent extends Component {
 		super(props);
 		this.state = {
 			username: AuthenticationService.getLoggedInUserName(),
-			org_id: '',
-			org_title: '',
-			owned_ids: [],
+			orgId: "",
+			orgTitle: "",
+			ownedIds: [],
 			errors: [],
 			validated: false,
 		};
-		this.on_submit = this.on_submit.bind(this);
+		this.onSubmit = this.onSubmit.bind(this);
 	}
 
 	handleValidation(e) {
 		e.preventDefault();
 		var formIsValid = true;
-		var str2 = this.state.org_id;
+		var str2 = this.state.orgId;
 		var errors = {};
-		if (this.state.org_id.length < 3 || this.state.org_id === "new") {
+		if (this.state.orgId.length < 3 || this.state.orgId === "new") {
 			errors.id = "Org ID is too short";
 			formIsValid = false;
-		} else if (this.state.org_id.match(".*?[A-Z\\s].*")) {
-			errors.id = "Org ID can only contain letters numbers and underscores"
+		} else if (this.state.orgId.match(".*?[A-Z\\s].*")) {
+			errors.id = "Org ID can only contain letters numbers and underscores";
 			formIsValid = false;
 		}
 		// Ensure Length is 3 or Greater
-		if (this.state.org_title.length < 3) {
+		if (this.state.orgTitle.length < 3) {
 			errors.title = "Org Title is too short";
 			formIsValid = false;
 		}
 
 		if (formIsValid) {
 			// Check if the ID Exists
-			for (let i = 0; i < this.state.owned_ids.length; i++) {
-				var str1 = this.state.owned_ids[i].org_id;
+			for (let i = 0; i < this.state.ownedIds.length; i++) {
+				var str1 = this.state.ownedIds[i].org_id;
 				// Compare the String Values
 				if (str1.valueOf() === str2.valueOf()) {
 					formIsValid = false;
@@ -69,13 +69,13 @@ class AddOrgsComponent extends Component {
 		return formIsValid;
 	}
 
-	on_submit = (e) => {
+	onSubmit = (e) => {
 		e.preventDefault();
 
 		if (this.handleValidation(e)) {
 			let org = {
-				org_id: this.state.org_id,
-				org_title: this.state.org_title,
+				org_id: this.state.orgId,
+				org_title: this.state.orgTitle,
 				channels: [],
 				members: [],
 			};
@@ -87,7 +87,7 @@ class AddOrgsComponent extends Component {
 		this.setState({validated: true});
 	};
 
-	handle_typing_org_id = (event) => {
+	handleTypingOrgId = (event) => {
 		// Organisation ID Must Be Lowercase and have NO SPACES and Special Characters
 		this.setState({
 			org_id: event.target.value
@@ -97,7 +97,7 @@ class AddOrgsComponent extends Component {
 			error: false,
 		});
 	};
-	handle_typing_org_title = (event) => {
+	handleTypingOrgTitle = (event) => {
 		this.setState({
 			org_title: event.target.value,
 			error: false,
@@ -108,11 +108,11 @@ class AddOrgsComponent extends Component {
 		// Retrieves All the Current Organisations IDs
 		OrgsResources.retrieve_all_orgs(this.state.username).then((response) => {
 			for (let i = 0; i < response.data.length; i++) {
-				this.state.owned_ids.push({
+				this.state.ownedIds.push({
 					org_id: response.data[i],
 				});
 				this.setState({
-					owned_ids: this.state.owned_ids,
+					owned_ids: this.state.ownedIds,
 				});
 			}
 		});
@@ -126,15 +126,15 @@ class AddOrgsComponent extends Component {
 					<Form
 						noValidate
 						validated={this.state.validated}
-						onSubmit={this.on_submit.bind(this)}>
+						onSubmit={this.onSubmit.bind(this)}>
 						<Form.Group controlId="formOrgId">
 							<Form.Label>Organisation Id</Form.Label>
 							<Form.Control
 								autoComplete="off123"
 								name="id"
 								type="text"
-								value={this.state.org_id}
-								onChange={this.handle_typing_org_id}
+								value={this.state.orgId}
+								onChange={this.handleTypingOrgId}
 								placeholder="Enter a unique id"
 							/>
 							<Form.Control.Feedback type="invalid">
@@ -146,8 +146,8 @@ class AddOrgsComponent extends Component {
 							<Form.Control
 								type="text"
 								name="title"
-								value={this.state.org_title}
-								onChange={this.handle_typing_org_title}
+								value={this.state.orgTitle}
+								onChange={this.handleTypingOrgTitle}
 								placeholder="Enter a title"
 							/>
 							<Form.Control.Feedback type="invalid">
@@ -158,11 +158,15 @@ class AddOrgsComponent extends Component {
 							<Button variant="secondary" type="submit">
 								Submit
 							</Button>
+							<Button
+								onClick={() => this.props.history.goBack()}
+								variant="outline-primary">
+								Cancel
+							</Button>
 						</Form.Group>
 					</Form>
 				</Container>
 			</div>
-
 		);
 	}
 }
